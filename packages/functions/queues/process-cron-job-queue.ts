@@ -5,7 +5,10 @@ import { sendSlackMessage } from "@/services/slack/sendSlackMessage";
 
 export const handler: SQSHandler = async () => {
   try {
-    sendSlackMessage(Config.CORE_SLACK_CHANNEL_ID, "Hello from Birthday bot!");
+    await sendSlackMessage(
+      Config.CORE_SLACK_CHANNEL_ID,
+      "Hello from Birthday bot!",
+    );
   } catch (error) {
     console.error(`Error processing trigger jobs: ${error as string}`);
   }
