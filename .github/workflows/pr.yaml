@@ -1,0 +1,35 @@
+name: PR checks
+
+on: pull_request
+
+jobs:
+  lint-build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_STAGING }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_STAGING }}
+          aws-region: eu-central-1
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install Dependencies and Lint
+        run: |
+          yarn
+          yarn lint
+
+      - name: Build
+        run: yarn build --stage pr
+
+      - name: Test
+        run: yarn test:ci
+
+      - name: SIB
+        run: yarn sib --pipeline

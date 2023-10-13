@@ -1,1 +1,1 @@
-import "../.sst/types/index";
+import "../../.sst/types/index";

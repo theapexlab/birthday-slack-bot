@@ -3,6 +3,9 @@
   "compilerOptions": {
     "module": "esnext",
     "moduleResolution": "node",
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "@/services/*": ["services/*"]
+    }
   }
 }

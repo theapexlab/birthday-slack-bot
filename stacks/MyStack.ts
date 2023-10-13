@@ -1,17 +1,22 @@
 import type { StackContext } from "sst/constructs";
-import { Api } from "sst/constructs";
+import { Queue, use } from "sst/constructs";
 
-export function MyStack({ stack }: StackContext): void {
-  const api = new Api(stack, "api", {
-    defaults: {
-      function: {},
-    },
-    routes: {
-      "GET /healthcheck": "packages/functions/lambdas/healthcheck.handler",
+import { ConfigStack } from "./ConfigStack";
+
+export function MyStack({ stack }: StackContext) {
+  const secrets = use(ConfigStack);
+
+  const processTriggerJob = new Queue(stack, "process-trigger-job", {
+    consumer: {
+      function: {
+        handler: "packages/functions/queues/process-cron-job-queue.handler",
+        timeout: 10,
+        bind: secrets,
+      },
     },
   });
 
-  stack.addOutputs({
-    ApiEndpoint: api.url,
-  });
+  return {
+    processTriggerJob,
+  };
 }
