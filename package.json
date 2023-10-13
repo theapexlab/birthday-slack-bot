@@ -12,7 +12,9 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --ext ts --report-unused-disable-directives --max-warnings 0",
     "format": "prettier --write \"**/*.ts\"",
-    "prepare": "husky install"
+    "format:check": "prettier --check \"**/*.ts\"",
+    "prepare": "husky install",
+    "test:ci": "vitest run --passWithNoTests"
   },
   "dependencies": {
     "sst": "^2.28.1"

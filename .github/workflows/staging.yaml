@@ -1,0 +1,41 @@
+name: Staging release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    env:
+      stage: staging
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_STAGING }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_STAGING }}
+          aws-region: eu-central-1
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Set secrets
+        run: |
+          npx sst secrets set SLACK_LOG_LEVEL "${{ secrets.SLACK_LOG_LEVEL_STAGING }}" --stage "${{ env.stage }}"
+          npx sst secrets set SLACK_BOT_TOKEN "${{ secrets.SLACK_BOT_TOKEN_STAGING }}" --stage "${{ env.stage }}"
+          npx sst secrets set SLACK_SIGNING_SECRET "${{ secrets.SLACK_SIGNING_SECRET_STAGING }}" --stage "${{ env.stage }}"
+          npx sst secrets set CORE_SLACK_CHANNEL_ID "${{ secrets.CORE_SLACK_CHANNEL_ID_STAGING }}" --stage "${{ env.stage }}"
+          npx sst secrets set RANDOM_SLACK_CHANNEL_ID "${{ secrets.RANDOM_SLACK_CHANNEL_ID_STAGING }}" --stage "${{ env.stage }}"
+
+      - name: Deploy stack
+        run: yarn deploy --stage "${{ env.stage }}"
