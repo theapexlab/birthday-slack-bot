@@ -5,7 +5,9 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
-      "@/services/*": ["services/*"]
+      "@/services/*": ["../core/services/*"],
+      "@/utils/*": ["utils/*"],
+      "@/types/*": ["../core/types/*"]
     }
   }
 }

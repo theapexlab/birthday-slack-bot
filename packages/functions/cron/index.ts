@@ -1,4 +1,4 @@
-import { sendQueueMessage } from "@/services/sqs/sendQueueMessage";
+import { sendQueueMessage } from "@/utils/sqs/sendQueueMessage";
 
 export const handler = async () => {
   try {
