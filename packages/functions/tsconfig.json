@@ -5,6 +5,7 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
+      "@/events": ["../core/events"],
       "@/services/*": ["../core/services/*"],
       "@/utils/*": ["utils/*"],
       "@/types/*": ["../core/types/*"]

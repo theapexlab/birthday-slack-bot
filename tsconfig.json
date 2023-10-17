@@ -3,6 +3,10 @@
   "exclude": ["packages"],
   "compilerOptions": {
     "module": "esnext",
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "@/functions/*": ["packages/functions/*"]
+    }
   }
 }
