@@ -20,7 +20,7 @@ module.exports = defineConfig({
     ],
     sourceType: "module",
   },
-  ignorePatterns: [".eslintrc.cjs"],
+  ignorePatterns: [".eslintrc.cjs", "lint-staged.config.cjs"],
   rules: {
     curly: ["error", "all"],
     "default-param-last": ["error"],
