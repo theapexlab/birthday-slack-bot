@@ -1,7 +1,7 @@
 import type { StackContext } from "sst/constructs";
-import { Api, EventBus, use } from "sst/constructs";
+import { Api, EventBus, Queue, use } from "sst/constructs";
 
-import { subscribeToEvent } from "@/functions/utils/eventBridge/subscribeToEvent";
+import { eventTypes } from "@/events/index";
 
 import { ConfigStack } from "./ConfigStack";
 
@@ -10,33 +10,32 @@ export function MyStack({ stack }: StackContext) {
 
   const eventBus = new EventBus(stack, "Bus", {});
 
-  subscribeToEvent({
-    bus: eventBus,
-    handler: "packages/functions/events/memberJoinedChannel.handler",
-    type: "memberJoinedChannel",
-    bind: secrets,
-  });
-
-  subscribeToEvent({
-    bus: eventBus,
-    handler: "packages/functions/events/botJoined.handler",
-    type: "botJoined",
-    bind: secrets,
-  });
-
-  subscribeToEvent({
-    bus: eventBus,
-    handler: "packages/functions/events/userJoined.handler",
-    type: "userJoined",
-    bind: secrets,
-  });
-
-  subscribeToEvent({
-    bus: eventBus,
-    handler: "packages/functions/events/memberLeftChannel.handler",
-    type: "memberLeftChannel",
-    bind: secrets,
-  });
+  eventBus.addRules(
+    stack,
+    eventTypes.reduce(
+      (rules, eventType) => ({
+        ...rules,
+        [eventType]: {
+          pattern: { detailType: [eventType] },
+          targets: {
+            function: new Queue(stack, `${eventType}-queue`, {
+              consumer: {
+                function: {
+                  handler: `packages/functions/events/${eventType}.handler`,
+                  permissions: [eventBus],
+                  environment: {
+                    eventBusName: eventBus.eventBusName,
+                  },
+                  bind: secrets,
+                },
+              },
+            }),
+          },
+        },
+      }),
+      {},
+    ),
+  );
 
   const api = new Api(stack, "Api", {
     defaults: {
