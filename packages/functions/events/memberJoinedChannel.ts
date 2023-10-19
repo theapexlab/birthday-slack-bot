@@ -26,7 +26,7 @@ export const handler = handleEvent("memberJoinedChannel", async (event) => {
       return;
     }
 
-    publishEvent("userJoined", {
+    publishEvent("askBirthday", {
       user: event.user,
     });
   } catch (error) {

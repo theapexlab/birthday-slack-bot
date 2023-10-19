@@ -5,7 +5,7 @@ const Events = z.object({
     channel: z.string(),
     user: z.string(),
   }),
-  userJoined: z.object({
+  askBirthday: z.object({
     user: z.string(),
   }),
   botJoined: z.object({
