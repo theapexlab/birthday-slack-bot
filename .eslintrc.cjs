@@ -15,11 +15,12 @@ module.exports = defineConfig({
     ecmaVersion: 6,
     project: [
       path.resolve(__dirname, "./tsconfig.json"),
+      path.resolve(__dirname, "packages/core/tsconfig.json"),
       path.resolve(__dirname, "packages/functions/tsconfig.json"),
     ],
     sourceType: "module",
   },
-  ignorePatterns: [".eslintrc.cjs"],
+  ignorePatterns: [".eslintrc.cjs", "lint-staged.config.cjs"],
   rules: {
     curly: ["error", "all"],
     "default-param-last": ["error"],
