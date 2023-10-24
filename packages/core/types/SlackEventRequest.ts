@@ -29,3 +29,5 @@ export const SlackCallbackRequestSchema = z.union([
   SlackEventRequestSchema,
   SlackChallengeRequestSchema,
 ]);
+
+export type SlackCallbackRequest = z.infer<typeof SlackCallbackRequestSchema>;

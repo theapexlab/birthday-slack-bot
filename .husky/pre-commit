@@ -3,3 +3,4 @@
 
 pnpm lint-staged
 pnpm build && npx sib --pipeline
+pnpm test:ci

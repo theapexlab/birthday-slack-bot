@@ -12,6 +12,6 @@ export const handler = handleEvent("botJoined", async ({ channel }) => {
       });
     }
   } catch (error) {
-    console.error("Error processing botJoined event: ", error as string);
+    console.error("Error processing botJoined event: ", error);
   }
 });

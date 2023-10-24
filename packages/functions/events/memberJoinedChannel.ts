@@ -30,6 +30,6 @@ export const handler = handleEvent("memberJoinedChannel", async (event) => {
       user: event.user,
     });
   } catch (error) {
-    console.error(`Error processing slack event: ${error as string}`);
+    console.error(`Error processing slack event: ${error}`);
   }
 });

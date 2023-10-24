@@ -1,7 +1,7 @@
 import type { StackContext } from "sst/constructs";
 import { Api, EventBus, Queue, use } from "sst/constructs";
 
-import { eventTypes } from "@/events/index";
+import { eventTypes } from "@/events";
 
 import { ConfigStack } from "./ConfigStack";
 
@@ -24,7 +24,7 @@ export function MyStack({ stack }: StackContext) {
                   handler: `packages/functions/events/${eventType}.handler`,
                   permissions: [eventBus],
                   environment: {
-                    eventBusName: eventBus.eventBusName,
+                    EVENT_BUS_NAME: eventBus.eventBusName,
                   },
                   bind: secrets,
                 },

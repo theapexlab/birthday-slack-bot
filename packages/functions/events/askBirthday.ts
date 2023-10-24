@@ -5,7 +5,7 @@ import { handleEvent } from "@/utils/eventBridge/handleEvent";
 export const handler = handleEvent("askBirthday", async ({ user }) => {
   const userInfo = await getUserInfo(user);
 
-  if (!userInfo.user || userInfo.user.is_bot || userInfo.user.deleted) {
+  if (!userInfo.user || userInfo.user.is_bot) {
     return;
   }
 
