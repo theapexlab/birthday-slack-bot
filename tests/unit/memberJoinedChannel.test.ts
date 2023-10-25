@@ -17,6 +17,7 @@ const constants = vi.hoisted(() => ({
   otherChannelId: "C999",
   otherBotUserId: "B999",
   userId: "U001",
+  eventId: "E001",
 }));
 
 vi.mock("@aws-sdk/client-eventbridge", async () => {
@@ -66,6 +67,7 @@ describe("Member joined channel", () => {
     const event = {
       user: constants.userId,
       channel: constants.otherChannelId,
+      eventId: constants.eventId,
     } satisfies Events["memberJoinedChannel"];
 
     await sendMockSqsMessage("memberJoinedChannel", event, handler);
@@ -77,6 +79,7 @@ describe("Member joined channel", () => {
     const event = {
       user: constants.birthdayBotUserId,
       channel: constants.coreChannelId,
+      eventId: constants.eventId,
     } satisfies Events["memberJoinedChannel"];
 
     await sendMockSqsMessage("memberJoinedChannel", event, handler);
@@ -85,6 +88,7 @@ describe("Member joined channel", () => {
     expect(PutEventsCommand).toHaveBeenCalledWith(
       mockEventBridgePayload("botJoined", {
         channel: constants.coreChannelId,
+        eventId: constants.eventId,
       }),
     );
   });
@@ -93,6 +97,7 @@ describe("Member joined channel", () => {
     const event = {
       user: constants.userId,
       channel: constants.coreChannelId,
+      eventId: constants.eventId,
     } satisfies Events["memberJoinedChannel"];
 
     await sendMockSqsMessage("memberJoinedChannel", event, handler);
@@ -101,6 +106,7 @@ describe("Member joined channel", () => {
     expect(PutEventsCommand).toHaveBeenCalledWith(
       mockEventBridgePayload("askBirthday", {
         user: constants.userId,
+        eventId: constants.eventId,
       }),
     );
   });
@@ -109,6 +115,7 @@ describe("Member joined channel", () => {
     const event = {
       user: constants.otherBotUserId,
       channel: constants.coreChannelId,
+      eventId: constants.eventId,
     } satisfies Events["memberJoinedChannel"];
 
     getUserInfoMock.mockResolvedValueOnce({

@@ -6,14 +6,16 @@ export const deleteDmMessages = async (app: App) => {
     limit: 1,
   });
 
-  for (const message of chat.messages ?? []) {
-    if (!message.ts) {
-      continue;
-    }
+  await Promise.all(
+    chat.messages?.map(async (message) => {
+      if (!message.ts) {
+        return;
+      }
 
-    await app.client.chat.delete({
-      channel: import.meta.env.VITE_SLACK_DM_ID,
-      ts: message.ts,
-    });
-  }
+      await app.client.chat.delete({
+        channel: import.meta.env.VITE_SLACK_DM_ID,
+        ts: message.ts,
+      });
+    }) ?? [],
+  );
 };

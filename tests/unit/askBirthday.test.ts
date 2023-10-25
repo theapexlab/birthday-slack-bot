@@ -11,6 +11,7 @@ const constants = vi.hoisted(() => ({
   otherBotUserId: "B999",
   userId: "U001",
   userName: "Foo",
+  eventId: "E001",
 }));
 
 vi.mock("@/services/slack/createSlackApp", () => ({
@@ -50,6 +51,7 @@ describe("Member joined channel", () => {
   it("Should not do anything if user is a bot", async () => {
     const event = {
       user: constants.otherBotUserId,
+      eventId: constants.eventId,
     } satisfies Events["askBirthday"];
 
     getUserInfoMock.mockResolvedValueOnce({
@@ -66,6 +68,7 @@ describe("Member joined channel", () => {
   it("Should send dm to user if exists and not bot", async () => {
     const event = {
       user: constants.userId,
+      eventId: constants.eventId,
     } satisfies Events["askBirthday"];
 
     const sendDMMock = vi.spyOn(
@@ -105,6 +108,12 @@ describe("Member joined channel", () => {
           },
         },
       ],
+      metadata: {
+        event_type: "askBirthday",
+        event_payload: {
+          originalEventId: constants.eventId,
+        },
+      },
     });
   });
 });

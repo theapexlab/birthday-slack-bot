@@ -22,23 +22,35 @@ export const handler: APIGatewayProxyHandlerV2 = async (request) => {
       };
     }
 
+    console.log(
+      `SLACK_EVENT: ${validatedBody.event.type} ${validatedBody.event_id}`,
+    );
+
     switch (validatedBody.event.type) {
       case "member_joined_channel":
-        await publishEvent("memberJoinedChannel", validatedBody.event);
+        await publishEvent("memberJoinedChannel", {
+          ...validatedBody.event,
+          eventId: validatedBody.event_id,
+        });
         break;
 
       case "member_left_channel":
-        await publishEvent("memberLeftChannel", validatedBody.event);
+        await publishEvent("memberLeftChannel", {
+          ...validatedBody.event,
+          eventId: validatedBody.event_id,
+        });
         break;
     }
 
     return {
       statusCode: 200,
+      body: JSON.stringify({}),
     };
   } catch (error) {
     console.error(`Error handling slack callback: ${error as string}`);
     return {
       statusCode: 500,
+      body: JSON.stringify({}),
     };
   }
 };

@@ -1,5 +1,5 @@
 import { App } from "@slack/bolt";
-import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { deleteDmMessages } from "@/testUtils/deleteDmMessages";
 import { sendMockSlackEvent } from "@/testUtils/sendMockSlackEvent";
@@ -15,13 +15,13 @@ const app = new App({
 });
 
 describe("Slack events", () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     await deleteDmMessages(app);
-  });
+  }, 10_000);
 
-  afterEach(async () => {
+  afterAll(async () => {
     await deleteDmMessages(app);
-  });
+  }, 10_000);
 
   it("Should return challenge on slack event endpoint", async () => {
     const res = await sendMockSlackEvent({
@@ -35,38 +35,44 @@ describe("Slack events", () => {
   });
 
   it("Should send DM to user when they join the channel", async () => {
+    const eventId = "E1_" + Date.now().toString();
+
     await sendMockSlackEvent({
       type: "event_callback",
       event: {
         type: "member_joined_channel",
-        channel: import.meta.env.VITE_SLACK_CHANNEL_ID,
+        channel: import.meta.env.VITE_CORE_SLACK_CHANNEL_ID,
         user: import.meta.env.VITE_SLACK_USER_ID,
       },
+      event_id: eventId,
     });
 
-    const chat = await waitForDm(app);
+    const chat = await waitForDm(app, eventId);
 
     expect(chat.messages?.length).toEqual(1);
     expect(chat.messages![0].text).toEqual(
       "Please share your birthday with us! :birthday:",
     );
-  }, 10_000);
+  }, 20_000);
 
   it("Should send DM to all users when bot joins the channel", async () => {
+    const eventId = "E2_" + Date.now().toString();
+
     await sendMockSlackEvent({
       type: "event_callback",
       event: {
         type: "member_joined_channel",
-        channel: import.meta.env.VITE_SLACK_CHANNEL_ID,
+        channel: import.meta.env.VITE_CORE_SLACK_CHANNEL_ID,
         user: import.meta.env.VITE_SLACK_BOT_USER_ID,
       },
+      event_id: eventId,
     });
 
-    const chat = await waitForDm(app);
+    const chat = await waitForDm(app, eventId);
 
     expect(chat.messages?.length).toEqual(1);
     expect(chat.messages![0].text).toEqual(
       "Please share your birthday with us! :birthday:",
     );
-  }, 10_000);
+  }, 20_000);
 });

@@ -4,15 +4,19 @@ const Events = z.object({
   memberJoinedChannel: z.object({
     channel: z.string(),
     user: z.string(),
+    eventId: z.string(),
   }),
   askBirthday: z.object({
     user: z.string(),
+    eventId: z.string(),
   }),
   botJoined: z.object({
     channel: z.string(),
+    eventId: z.string(),
   }),
   memberLeftChannel: z.object({
     user: z.string(),
+    eventId: z.string(),
   }),
 });
 

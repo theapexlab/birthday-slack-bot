@@ -10,8 +10,10 @@ const client = new EventBridgeClient({});
 export const publishEvent = <T extends EventType>(
   event: T,
   payload: Events[T],
-) =>
-  client.send(
+) => {
+  console.log("Publishing event", event, payload);
+
+  return client.send(
     new PutEventsCommand({
       Entries: [
         {
@@ -23,3 +25,4 @@ export const publishEvent = <T extends EventType>(
       ],
     }),
   );
+};

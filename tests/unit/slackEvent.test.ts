@@ -12,6 +12,7 @@ const constants = vi.hoisted(() => ({
   challenge: "challenge",
   coreChannelId: "C001",
   userId: "U001",
+  eventId: "E001",
 }));
 
 vi.mock("@aws-sdk/client-eventbridge", async () => {
@@ -61,11 +62,15 @@ describe("Handle slack events", () => {
     await callWithMockSlackEvent({
       type: "event_callback",
       event,
+      event_id: constants.eventId,
     });
 
     expect(eventBridge.send).toHaveBeenCalledOnce();
     expect(PutEventsCommand).toHaveBeenCalledWith(
-      mockEventBridgePayload("memberJoinedChannel", event),
+      mockEventBridgePayload("memberJoinedChannel", {
+        ...event,
+        eventId: constants.eventId,
+      }),
     );
   });
 
@@ -79,11 +84,15 @@ describe("Handle slack events", () => {
     await callWithMockSlackEvent({
       type: "event_callback",
       event,
+      event_id: constants.eventId,
     });
 
     expect(eventBridge.send).toHaveBeenCalledOnce();
     expect(PutEventsCommand).toHaveBeenCalledWith(
-      mockEventBridgePayload("memberLeftChannel", event),
+      mockEventBridgePayload("memberLeftChannel", {
+        ...event,
+        eventId: constants.eventId,
+      }),
     );
   });
 });

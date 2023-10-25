@@ -1,11 +1,20 @@
 name: PR checks
 
-on: pull_request
+on:
+  pull_request:
+    types: [opened, synchronize, closed]
+    branches: [main]
 
 jobs:
   lint-build-and-test:
+    if: github.event.action == 'opened' || github.event.action == 'synchronize'
     runs-on: ubuntu-latest
     steps:
+      - name: Inject slug variables
+        uses: rlespinasse/github-slug-action@v4
+
+      - run: echo "STAGE=pr-${{ github.event.number }}-${{ env.GITHUB_HEAD_REF_SLUG }}" >> $GITHUB_ENV
+
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -49,10 +58,65 @@ jobs:
         run: pnpm format:check
 
       - name: Build
-        run: pnpm build --stage pr
-
-      - name: Test
-        run: pnpm test:ci
+        run: pnpm build --stage ${{ env.STAGE }}
 
       - name: SIB
         run: pnpm sib --pipeline
+
+      - name: Run unit tests
+        run: pnpm test:unit
+
+      - name: Set secrets
+        run: |
+          npx sst secrets set SLACK_LOG_LEVEL "${{ secrets.SLACK_LOG_LEVEL_TEST }}" --stage ${{ env.STAGE }}
+          npx sst secrets set SLACK_BOT_TOKEN "${{ secrets.SLACK_BOT_TOKEN_TEST }}" --stage ${{ env.STAGE }}
+          npx sst secrets set SLACK_SIGNING_SECRET "${{ secrets.SLACK_SIGNING_SECRET_TEST }}" --stage ${{ env.STAGE }}
+          npx sst secrets set CORE_SLACK_CHANNEL_ID "${{ secrets.CORE_SLACK_CHANNEL_ID_TEST }}" --stage ${{ env.STAGE }}
+          npx sst secrets set RANDOM_SLACK_CHANNEL_ID "${{ secrets.RANDOM_SLACK_CHANNEL_ID_TEST }}" --stage ${{ env.STAGE }}
+
+      - name: Deploy stack
+        run: pnpm run deploy --stage ${{ env.STAGE }}
+
+      - name: Extract api endpoint
+        id: sst-output
+        run: |
+          URL=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-MyStack"].ApiEndpoint' .sst/outputs.json)
+          echo "apiEndpoint=$URL" >> "$GITHUB_OUTPUT"
+
+      - name: Run integration tests
+        run: pnpm test:integration
+        env:
+          VITE_API_URL: ${{ steps.sst-output.outputs.apiEndpoint }}
+          VITE_SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN_TEST }}
+          VITE_SLACK_SIGNING_SECRET: ${{ secrets.SLACK_SIGNING_SECRET_TEST }}
+          VITE_SLACK_USER_ID: ${{ secrets.SLACK_USER_ID_TEST }}
+          VITE_SLACK_BOT_USER_ID: ${{ secrets.SLACK_BOT_USER_ID_TEST }}
+          VITE_CORE_SLACK_CHANNEL_ID: ${{ secrets.CORE_SLACK_CHANNEL_ID_TEST }}
+          VITE_SLACK_DM_ID: ${{ secrets.SLACK_DM_ID_TEST }}
+
+  destroy:
+    if: github.event.action == 'closed'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Inject slug variables
+        uses: rlespinasse/github-slug-action@v4
+
+      - run: echo "STAGE=pr-${{ github.event.number }}-${{ env.GITHUB_HEAD_REF_SLUG }}" >> $GITHUB_ENV
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_STAGING }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_STAGING }}
+          aws-region: eu-central-1
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Delete stack
+        run: npx sst remove --stage ${{ env.STAGE }}

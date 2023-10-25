@@ -2,11 +2,14 @@ import { createSlackApp } from "@/services/slack/createSlackApp";
 import { getUserInfo } from "@/services/slack/getUserInfo";
 import { handleEvent } from "@/utils/eventBridge/handleEvent";
 
-export const handler = handleEvent("askBirthday", async ({ user }) => {
+export const handler = handleEvent("askBirthday", async ({ user, eventId }) => {
   try {
+    console.log(`ASK_BIRTHDAY: ${user} ${eventId}`);
+
     const userInfo = await getUserInfo(user);
 
     if (!userInfo.user || userInfo.user.is_bot) {
+      console.log("ASK_BIRTHDAY: User is a bot, ignoring");
       return;
     }
 
@@ -41,8 +44,14 @@ export const handler = handleEvent("askBirthday", async ({ user }) => {
           },
         },
       ],
+      metadata: {
+        event_type: "askBirthday",
+        event_payload: {
+          originalEventId: eventId,
+        },
+      },
     });
   } catch (error) {
-    console.log("Error processing askBirthday event: ", error);
+    console.error("Error processing askBirthday event: ", error);
   }
 });

@@ -21,6 +21,7 @@ export type SlackEvent = z.infer<typeof SlackEventSchema>;
 export const SlackEventRequestSchema = z.object({
   event: SlackEventSchema,
   type: z.literal("event_callback"),
+  event_id: z.string(),
 });
 
 export type SlackEventRequest = z.infer<typeof SlackEventRequestSchema>;

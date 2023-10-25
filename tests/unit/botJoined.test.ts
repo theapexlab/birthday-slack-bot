@@ -12,6 +12,7 @@ import { sendMockSqsMessage } from "@/testUtils/sendMockSqsMessage";
 const constants = vi.hoisted(() => ({
   channelMembers: ["U001", "U002", "U003", "U004"],
   coreChannelId: "C001",
+  eventId: "E001",
 }));
 
 vi.mock("@aws-sdk/client-eventbridge", async () => {
@@ -44,6 +45,7 @@ describe("Bot joined channel", () => {
   it("Should put askBirthday event for each user", async () => {
     const event = {
       channel: constants.coreChannelId,
+      eventId: constants.eventId,
     } satisfies Events["botJoined"];
 
     await sendMockSqsMessage("botJoined", event, handler);
@@ -52,7 +54,10 @@ describe("Bot joined channel", () => {
 
     for (const user of constants.channelMembers) {
       expect(PutEventsCommand).toHaveBeenCalledWith(
-        mockEventBridgePayload("askBirthday", { user }),
+        mockEventBridgePayload("askBirthday", {
+          user,
+          eventId: constants.eventId,
+        }),
       );
     }
   });
