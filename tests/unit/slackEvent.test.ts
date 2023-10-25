@@ -4,8 +4,8 @@ import {
 } from "@aws-sdk/client-eventbridge";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { callWithMockSlackEvent } from "@/testUtils/callWithMockSlackEvent";
 import { mockEventBridgePayload } from "@/testUtils/mockEventBridgePayload";
-import { callWithMockSlackEvent } from "@/testUtils/sendMockSlackEvent";
 import type { SlackEvent } from "@/types/SlackEventRequest";
 
 const constants = vi.hoisted(() => ({
