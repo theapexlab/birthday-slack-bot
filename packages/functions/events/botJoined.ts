@@ -10,12 +10,14 @@ export const handler = handleEvent(
 
       const users = await getChannelMembers(channel);
 
-      for (const user of users) {
-        publishEvent("askBirthday", {
-          user,
-          eventId,
-        });
-      }
+      await Promise.all(
+        users.map((user) =>
+          publishEvent("askBirthday", {
+            user,
+            eventId,
+          }),
+        ),
+      );
     } catch (error) {
       console.error("Error processing botJoined event: ", error);
     }
