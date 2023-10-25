@@ -6,8 +6,6 @@ export const handler = handleEvent(
   "botJoined",
   async ({ channel, eventId }) => {
     try {
-      console.log(`BOT_JOINED: ${channel} ${eventId}`);
-
       const users = await getChannelMembers(channel);
 
       await Promise.all(

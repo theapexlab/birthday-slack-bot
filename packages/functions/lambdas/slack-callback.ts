@@ -22,10 +22,6 @@ export const handler: APIGatewayProxyHandlerV2 = async (request) => {
       };
     }
 
-    console.log(
-      `SLACK_EVENT: ${validatedBody.event.type} ${validatedBody.event_id}`,
-    );
-
     switch (validatedBody.event.type) {
       case "member_joined_channel":
         await publishEvent("memberJoinedChannel", {

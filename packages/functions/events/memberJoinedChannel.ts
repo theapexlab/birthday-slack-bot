@@ -7,14 +7,7 @@ import { publishEvent } from "@/utils/eventBridge/publishEvent";
 
 export const handler = handleEvent("memberJoinedChannel", async (event) => {
   try {
-    console.log(
-      `MEMBER_JOINED_CHANNEL: ${event.channel} ${event.user} ${event.eventId}`,
-    );
-
     if (event.channel !== Config.CORE_SLACK_CHANNEL_ID) {
-      console.log(
-        `MEMBER_JOINED_CHANNEL: Ignoring event from channel ${event.channel}`,
-      );
       return;
     }
 
