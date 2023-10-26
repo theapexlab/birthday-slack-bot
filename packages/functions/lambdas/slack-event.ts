@@ -36,10 +36,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (
         break;
 
       case "member_left_channel":
-        await publishEvent("memberLeftChannel", {
-          ...validatedBody.event,
-          eventId: validatedBody.event_id,
-        });
+        await publishEvent("memberLeftChannel", validatedBody.event);
         break;
     }
 

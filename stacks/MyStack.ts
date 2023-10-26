@@ -53,6 +53,17 @@ export function MyStack({ stack }: StackContext) {
     },
   });
 
+  if (stack.stage !== "staging" && stack.stage !== "production") {
+    api.addRoutes(stack, {
+      "POST /slack/test-payload":
+        "packages/functions/lambdas/listen-for-test-payloads.handler",
+    });
+
+    api
+      .getFunction("POST /slack/test-payload")
+      ?.addEnvironment("REDIS_URL", "redis://localhost:6379");
+  }
+
   api.attachPermissions([eventBus]);
 
   stack.addOutputs({

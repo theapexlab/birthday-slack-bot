@@ -3,17 +3,13 @@ import { handleEvent } from "@/utils/eventBridge/handleEvent";
 
 export const handler = handleEvent(
   "birthdayConfirmed",
-  async ({ user, team, birthday, responseUrl, eventId }) => {
+  async ({ user, team, birthday, responseUrl }) => {
     await fetch(responseUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(
-        constructBirthdayConfirmedMessage({
-          eventId,
-        }),
-      ),
+      body: JSON.stringify(constructBirthdayConfirmedMessage()),
     });
 
     console.log(

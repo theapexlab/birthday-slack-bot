@@ -89,10 +89,7 @@ describe("Handle slack events", () => {
 
     expect(eventBridge.send).toHaveBeenCalledOnce();
     expect(PutEventsCommand).toHaveBeenCalledWith(
-      mockEventBridgePayload("memberLeftChannel", {
-        ...event,
-        eventId: constants.eventId,
-      }),
+      mockEventBridgePayload("memberLeftChannel", event),
     );
   });
 });

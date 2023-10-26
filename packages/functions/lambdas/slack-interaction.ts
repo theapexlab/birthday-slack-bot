@@ -15,7 +15,6 @@ export const handler: APIGatewayProxyHandlerV2 = async (request) => {
         await publishEvent("birthdayFilled", {
           birthday: parsedData.actions[0].selected_date,
           responseUrl: parsedData.response_url,
-          eventId: parsedData.actions[0].action_ts,
         });
         break;
       case "birthdayConfirm":
@@ -24,25 +23,25 @@ export const handler: APIGatewayProxyHandlerV2 = async (request) => {
           team: parsedData.user.team_id,
           birthday: parsedData.actions[0].value,
           responseUrl: parsedData.response_url,
-          eventId: parsedData.actions[0].action_ts,
         });
         break;
       case "birthdayIncorrect":
         await publishEvent("askBirthday", {
           user: parsedData.user.id,
           responseUrl: parsedData.response_url,
-          eventId: parsedData.actions[0].action_ts,
         });
         break;
     }
 
     return {
       statusCode: 200,
+      body: JSON.stringify({}),
     };
   } catch (error) {
     console.error(`Error handling slack interaction: ${error}`);
     return {
       statusCode: 500,
+      body: JSON.stringify({}),
     };
   }
 };

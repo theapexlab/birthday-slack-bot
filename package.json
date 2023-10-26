@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "sst dev",
+    "dev": "docker-compose up -d && sst dev",
     "build": "sst build",
     "deploy": "sst deploy",
     "remove": "sst remove",
@@ -18,7 +18,7 @@
     "prepare": "husky install",
     "test": "vitest watch",
     "test:unit": "vitest run unit",
-    "test:integration": "vitest run integration --threads false --single-thread"
+    "test:integration": "docker-compose up  --no-recreate -d && vitest run integration --threads false --single-thread"
   },
   "dependencies": {
     "sst": "^2.28.1"

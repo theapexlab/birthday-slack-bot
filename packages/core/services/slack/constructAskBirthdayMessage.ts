@@ -6,7 +6,7 @@ import { pickBirthdayActionId } from "@/types/SlackInteractionRequest";
 type Arguments = {
   user: string;
   name: string;
-  eventId: string;
+  eventId?: string;
 };
 
 const constructBaseAskBirthdayMessage = ({

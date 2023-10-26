@@ -4,15 +4,9 @@ import {
   birthdayIncorrectActionId,
 } from "@/types/SlackInteractionRequest";
 
-type Arguments = {
-  birthday: string;
-  eventId: string;
-};
-
-export const constructConfirmBirthdayMessage = ({
-  birthday,
-  eventId,
-}: Arguments): ChatReplaceMessageArguments =>
+export const constructConfirmBirthdayMessage = (
+  birthday: string,
+): ChatReplaceMessageArguments =>
   ({
     replace_original: true,
     text: "Confirm your birthday",
@@ -55,7 +49,6 @@ export const constructConfirmBirthdayMessage = ({
     metadata: {
       event_type: "confirmBirthday",
       event_payload: {
-        originalEventId: eventId,
         birthday,
       },
     },
