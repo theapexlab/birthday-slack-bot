@@ -78,6 +78,9 @@ importers:
       '@slack/bolt':
         specifier: ^3.14.0
         version: 3.14.0
+      '@slack/web-api':
+        specifier: ^6.9.0
+        version: 6.9.0
       zod:
         specifier: ^3.22.4
         version: 3.22.4

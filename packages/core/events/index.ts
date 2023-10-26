@@ -1,24 +1,29 @@
 import { z } from "zod";
 
+const BaseEvent = z.object({
+  eventId: z.string(),
+});
+
 const Events = z.object({
-  memberJoinedChannel: z.object({
+  memberJoinedChannel: BaseEvent.extend({
     channel: z.string(),
     user: z.string(),
-    eventId: z.string(),
   }),
-  askBirthday: z.object({
+  askBirthday: BaseEvent.extend({
     user: z.string(),
-    eventId: z.string(),
+    responseUrl: z.string().optional(),
   }),
-  botJoined: z.object({
+  botJoined: BaseEvent.extend({
     channel: z.string(),
-    eventId: z.string(),
   }),
-  memberLeftChannel: z.object({
+  memberLeftChannel: BaseEvent.extend({
     user: z.string(),
-    eventId: z.string(),
   }),
-  birthdayFilled: z.object({
+  birthdayFilled: BaseEvent.extend({
+    birthday: z.string(),
+    responseUrl: z.string(),
+  }),
+  birthdayConfirmed: BaseEvent.extend({
     user: z.string(),
     team: z.string(),
     birthday: z.string(),
