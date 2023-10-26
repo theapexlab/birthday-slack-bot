@@ -1,7 +1,7 @@
 import type { SlackCallbackRequest } from "@/types/SlackEventRequest";
 
 export const sendMockSlackEvent = async (body: SlackCallbackRequest) =>
-  fetch(`${import.meta.env.VITE_API_URL}/slack/callback`, {
+  fetch(`${import.meta.env.VITE_API_URL}/slack/event`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

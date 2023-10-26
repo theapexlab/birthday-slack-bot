@@ -12,10 +12,10 @@ export const handleEvent =
       event.Records.map((record) => {
         const parsedRecord = JSON.parse(record.body);
 
-        const type = parsedRecord["detail-type"];
+        const parsedType = parsedRecord["detail-type"];
 
-        if (type !== type) {
-          throw new Error(`Expected event type ${type} but got ${type}`);
+        if (type !== parsedType) {
+          throw new Error(`Expected event type ${parsedType} but got ${type}`);
         }
         const detail = parsedRecord.detail as Events[T];
 

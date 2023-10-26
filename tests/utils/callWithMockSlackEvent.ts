@@ -1,4 +1,4 @@
-import { handler } from "@/functions/lambdas/slack-callback";
+import { handler } from "@/functions/lambdas/slack-event";
 import type { SlackCallbackRequest } from "@/types/SlackEventRequest";
 
 export const callWithMockSlackEvent = async (body: SlackCallbackRequest) =>

@@ -1,9 +1,14 @@
-import type { APIGatewayProxyHandlerV2 } from "aws-lambda";
+import type {
+  APIGatewayProxyEventV2,
+  APIGatewayProxyHandlerV2,
+} from "aws-lambda";
 
 import { SlackCallbackRequestSchema } from "@/types/SlackEventRequest";
 import { publishEvent } from "@/utils/eventBridge/publishEvent";
 
-export const handler: APIGatewayProxyHandlerV2 = async (request) => {
+export const handler: APIGatewayProxyHandlerV2 = async (
+  request: APIGatewayProxyEventV2,
+) => {
   try {
     if (!request.body) {
       throw new Error("No request body");
@@ -43,7 +48,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (request) => {
       body: JSON.stringify({}),
     };
   } catch (error) {
-    console.error(`Error handling slack callback: ${error as string}`);
+    console.error(`Error handling slack event: ${error}`);
     return {
       statusCode: 500,
       body: JSON.stringify({}),

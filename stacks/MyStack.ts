@@ -47,8 +47,9 @@ export function MyStack({ stack }: StackContext) {
       },
     },
     routes: {
-      "POST /slack/callback":
-        "packages/functions/lambdas/slack-callback.handler",
+      "POST /slack/event": "packages/functions/lambdas/slack-event.handler",
+      "POST /slack/interaction":
+        "packages/functions/lambdas/slack-interaction.handler",
     },
   });
 
