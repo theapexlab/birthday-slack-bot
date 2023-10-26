@@ -14,8 +14,9 @@ export const handler = handleEvent("memberJoinedChannel", async (event) => {
     const botUserId = await getBotUserId();
 
     if (event.user === botUserId) {
-      publishEvent("botJoined", {
+      await publishEvent("botJoined", {
         channel: event.channel,
+        eventId: event.eventId,
       });
       return;
     }
@@ -26,10 +27,11 @@ export const handler = handleEvent("memberJoinedChannel", async (event) => {
       return;
     }
 
-    publishEvent("askBirthday", {
+    await publishEvent("askBirthday", {
       user: event.user,
+      eventId: event.eventId,
     });
   } catch (error) {
-    console.error(`Error processing slack event: ${error as string}`);
+    console.error(`Error processing slack event: ${error}`);
   }
 });

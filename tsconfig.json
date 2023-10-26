@@ -6,8 +6,12 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
-      "@/events/*": ["packages/core/events/*"],
-      "@/functions/*": ["packages/functions/*"]
+      "@/events": ["packages/core/events/index.ts"],
+      "@/functions/*": ["packages/functions/*"],
+      "@/services/*": ["packages/core/services/*"],
+      "@/types/*": ["packages/core/types/*"],
+      "@/testUtils/*": ["tests/utils/*"],
+      "@/utils/*": ["packages/functions/utils/*"]
     }
   }
 }

@@ -57,4 +57,4 @@ jobs:
           npx sst secrets set RANDOM_SLACK_CHANNEL_ID "${{ secrets.RANDOM_SLACK_CHANNEL_ID_STAGING }}" --stage "${{ env.stage }}"
 
       - name: Deploy stack
-        run: pnpm deploy --stage "${{ env.stage }}"
+        run: pnpm run deploy --stage "${{ env.stage }}"
