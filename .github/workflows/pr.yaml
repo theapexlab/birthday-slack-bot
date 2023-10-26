@@ -2,12 +2,11 @@ name: PR checks
 
 on:
   pull_request:
-    types: [opened, synchronize, closed]
+    types: [opened, synchronize]
     branches: [main]
 
 jobs:
   lint-build-and-test:
-    if: github.event.action == 'opened' || github.event.action == 'synchronize'
     runs-on: ubuntu-latest
     steps:
       - name: Inject slug variables
@@ -93,30 +92,3 @@ jobs:
           VITE_SLACK_BOT_USER_ID: ${{ secrets.SLACK_BOT_USER_ID_TEST }}
           VITE_CORE_SLACK_CHANNEL_ID: ${{ secrets.CORE_SLACK_CHANNEL_ID_TEST }}
           VITE_SLACK_DM_ID: ${{ secrets.SLACK_DM_ID_TEST }}
-
-  destroy:
-    if: github.event.action == 'closed'
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Inject slug variables
-        uses: rlespinasse/github-slug-action@v4
-
-      - run: echo "STAGE=pr-${{ github.event.number }}-${{ env.GITHUB_HEAD_REF_SLUG }}" >> $GITHUB_ENV
-
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_STAGING }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_STAGING }}
-          aws-region: eu-central-1
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: "18"
-
-      - name: Delete stack
-        run: npx sst remove --stage ${{ env.STAGE }}
