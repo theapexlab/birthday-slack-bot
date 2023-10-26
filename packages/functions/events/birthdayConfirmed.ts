@@ -1,3 +1,4 @@
+import { saveBirthday } from "@/db/saveBirthday";
 import { constructBirthdayConfirmedMessage } from "@/services/slack/constructBirthdayConfirmedMessage";
 import { handleEvent } from "@/utils/eventBridge/handleEvent";
 
@@ -12,10 +13,6 @@ export const handler = handleEvent(
       body: JSON.stringify(constructBirthdayConfirmedMessage()),
     });
 
-    console.log(
-      `User ${user} from team ${team} confirmed their birthday: ${birthday}`,
-    );
-
-    // TODO: Save birthday to database
+    await saveBirthday({ user, teamId: team, birthday });
   },
 );

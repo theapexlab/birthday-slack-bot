@@ -1,4 +1,11 @@
 services:
+  postgres:
+    image: "postgres:15.4"
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env.local
+
   redis:
     image: redis:7
     ports:
