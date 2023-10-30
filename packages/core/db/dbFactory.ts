@@ -21,6 +21,8 @@ type FactoryPayload = {
 };
 
 export const dbFactory = (type: DbType, payload: FactoryPayload) => {
+  console.log(`Creating db of type ${type}: ${JSON.stringify(payload)}`);
+
   if (type === "node") {
     const pool = new pg.Pool({
       ...payload.node,
@@ -45,9 +47,13 @@ export const dbFactory = (type: DbType, payload: FactoryPayload) => {
   return [
     db,
     async () => {
-      await migrateRds(db, {
-        migrationsFolder,
-      });
+      try {
+        await migrateRds(db, {
+          migrationsFolder,
+        });
+      } catch (error) {
+        console.error(`Error migrating db: ${error}`);
+      }
     },
   ] as const;
 };
