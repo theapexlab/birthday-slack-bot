@@ -10,6 +10,8 @@ export function MyStack({ stack }: StackContext) {
   const secrets = use(ConfigStack);
   const { db } = use(StorageStack);
 
+  const bind = [...secrets, ...(db ? [db] : [])];
+
   const eventBus = new EventBus(stack, "Bus", {});
 
   eventBus.addRules(
@@ -29,7 +31,7 @@ export function MyStack({ stack }: StackContext) {
                     EVENT_BUS_NAME: eventBus.eventBusName,
                     DB_URL: process.env.DB_URL || "",
                   },
-                  bind: [...secrets, db],
+                  bind,
                 },
               },
             }),
@@ -43,7 +45,7 @@ export function MyStack({ stack }: StackContext) {
   const api = new Api(stack, "Api", {
     defaults: {
       function: {
-        bind: [...secrets, db],
+        bind,
         environment: {
           EVENT_BUS_NAME: eventBus.eventBusName,
           DB_URL: process.env.DB_URL || "",
@@ -68,7 +70,7 @@ export function MyStack({ stack }: StackContext) {
 
   const migrationFn = new Function(stack, "MigrateDb", {
     handler: "packages/functions/lambdas/migrateDb.handler",
-    bind: [...secrets, db],
+    bind,
     environment: {
       DB_URL: process.env.DB_URL || "",
     },

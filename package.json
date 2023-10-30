@@ -20,7 +20,8 @@
     "test:unit": "vitest run unit",
     "test:integration": "vitest run integration --threads false --single-thread",
     "migration:generate": "cd packages/core && pnpm migration:generate",
-    "migration:run": "tsx scripts/migrate.ts"
+    "migration:local": "NODE_ENV=development tsx scripts/migrateLocal.ts",
+    "migration:ci": "tsx scripts/migrateCi.ts"
   },
   "dependencies": {
     "sst": "^2.28.1"

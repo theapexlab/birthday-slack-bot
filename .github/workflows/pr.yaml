@@ -91,7 +91,7 @@ jobs:
           echo "database=$DATABASE" >> "$GITHUB_OUTPUT"
 
       - name: Migration
-        run: pnpm migration:run ${{ steps.sst-output.outputs.migrationFunction }}
+        run: pnpm migration:ci ${{ steps.sst-output.outputs.migrationFunction }}
 
       - name: Run integration tests
         run: pnpm test:integration
