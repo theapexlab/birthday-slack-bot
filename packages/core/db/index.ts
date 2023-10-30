@@ -2,8 +2,7 @@ import { RDS } from "sst/node/rds";
 
 import { dbFactory } from "./dbFactory";
 
-// export const [db, migrate] = dbFactory(process.env.IS_LOCAL ? "node" : "aws", {
-export const [db, migrate] = dbFactory("aws", {
+export const [db, migrate] = dbFactory(process.env.IS_LOCAL ? "node" : "aws", {
   node: {
     connectionString: process.env.DB_URL ?? "",
   },
