@@ -73,6 +73,11 @@ export function MyStack({ stack }: StackContext) {
     environment: {
       DB_URL: process.env.DB_URL || "",
     },
+    copyFiles: [
+      {
+        from: "packages/core/db/migrations",
+      },
+    ],
   });
 
   stack.addOutputs({
