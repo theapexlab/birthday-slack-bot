@@ -13,6 +13,7 @@ const constants = vi.hoisted(() => ({
   coreChannelId: "C001",
   userId: "U001",
   eventId: "E001",
+  teamId: "T001",
 }));
 
 vi.mock("@aws-sdk/client-eventbridge", async () => {
@@ -56,6 +57,7 @@ describe("Handle slack events", () => {
     const event = {
       type: "member_joined_channel",
       user: constants.userId,
+      team: constants.teamId,
       channel: constants.coreChannelId,
     } satisfies SlackEvent;
 
@@ -78,6 +80,7 @@ describe("Handle slack events", () => {
     const event = {
       type: "member_left_channel",
       user: constants.userId,
+      team: constants.teamId,
       channel: constants.coreChannelId,
     } satisfies SlackEvent;
 

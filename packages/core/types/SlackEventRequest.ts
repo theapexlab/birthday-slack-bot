@@ -13,6 +13,7 @@ export const SlackEventSchema = z.object({
     z.literal("member_left_channel"),
   ]),
   user: z.string(),
+  team: z.string(),
   channel: z.string(),
 });
 

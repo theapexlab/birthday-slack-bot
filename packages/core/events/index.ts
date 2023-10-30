@@ -18,6 +18,7 @@ const Events = z.object({
   }),
   memberLeftChannel: z.object({
     user: z.string(),
+    team: z.string(),
   }),
   birthdayFilled: z.object({
     birthday: z.string(),

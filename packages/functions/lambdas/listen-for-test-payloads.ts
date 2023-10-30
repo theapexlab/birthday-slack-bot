@@ -1,6 +1,7 @@
 import type { APIGatewayProxyHandlerV2 } from "aws-lambda";
 
-import { redis } from "@/services/redis/redisClient";
+import { db } from "@/db/index";
+import { testItems } from "@/db/schema";
 
 export const handler: APIGatewayProxyHandlerV2 = async (request) => {
   try {
@@ -14,7 +15,10 @@ export const handler: APIGatewayProxyHandlerV2 = async (request) => {
       throw new Error("No testId");
     }
 
-    await redis.set(`test:${key}`, request.body, "EX", 60);
+    await db.insert(testItems).values({
+      id: key,
+      payload: request.body,
+    });
 
     return {
       statusCode: 200,

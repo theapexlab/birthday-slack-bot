@@ -55,7 +55,15 @@ npx sst secrets set RANDOM_SLACK_CHANNEL_ID <your-test-channel>
 ```
 
 3. Install dependencies: `pnpm i`
-4. Run sst: `pnpm dev`
+
+## DB Setup
+
+1. Make sure you have docker-compose available.
+2. Copy the `.env` file to a `.env.local` file.
+
+## Run locally
+
+`pnpm dev`
 
 ### Add webhook url to Slack
 
@@ -68,7 +76,7 @@ npx sst secrets set RANDOM_SLACK_CHANNEL_ID <your-test-channel>
 
 ## Run tests
 
-Copy the `.env` file to a `.env.local` file and add the secrets.
+Fill `.env.local` file with the secrets.
 
 ```bash
 pnpm test

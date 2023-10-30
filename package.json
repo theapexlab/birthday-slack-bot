@@ -18,9 +18,9 @@
     "prepare": "husky install",
     "test": "vitest watch",
     "test:unit": "vitest run unit",
-    "test:integration": "docker-compose up --no-recreate -d && vitest run integration --threads false --single-thread",
-    "migration:generate": "drizzle-kit generate:pg",
-    "migration:run": "tsx scripts/migrate.ts"
+    "test:integration": "vitest run integration --threads false --single-thread",
+    "migration:generate": "cd packages/core && pnpm migration:generate",
+    "migration:run": "aws lambda invoke --function-name MigrateDb /dev/stdout"
   },
   "dependencies": {
     "sst": "^2.28.1"
@@ -31,12 +31,12 @@
     "@theapexlab/serverless-icebreaker": "^1.1.3",
     "@tsconfig/node18": "^18.2.2",
     "@types/aws-lambda": "^8.10.124",
+    "@types/pg": "^8.10.7",
     "@typescript-eslint/eslint-plugin": "^6.7.5",
     "@typescript-eslint/parser": "^6.7.5",
     "aws-cdk-lib": "2.95.1",
     "constructs": "10.2.69",
     "dotenv": "^16.3.1",
-    "drizzle-kit": "^0.19.13",
     "drizzle-orm": "^0.28.6",
     "eslint": "^8.51.0",
     "eslint-config-prettier": "^9.0.0",
@@ -45,8 +45,8 @@
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "husky": "^8.0.0",
     "lint-staged": "^14.0.1",
+    "pg": "^8.11.3",
     "prettier": "^3.0.3",
-    "tsx": "^3.14.0",
     "typescript": "^5.2.2",
     "vite": "^4.5.0",
     "vitest": "^0.34.6"

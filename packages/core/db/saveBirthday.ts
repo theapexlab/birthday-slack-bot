@@ -11,6 +11,6 @@ export const saveBirthday = async ({ birthday, teamId, user }: Args) => {
   await db.insert(users).values({
     id: user,
     teamId,
-    birthday,
+    birthday: new Date(birthday),
   });
 };

@@ -1,8 +1,15 @@
-import { drizzle } from "drizzle-orm/node-postgres";
-import pg from "pg";
+import { RDS } from "sst/node/rds";
 
-const pool = new pg.Pool({
-  connectionString: process.env.DB_URL,
+import { dbFactory } from "./dbFactory";
+
+// export const [db, migrate] = dbFactory(process.env.IS_LOCAL ? "node" : "aws", {
+export const [db, migrate] = dbFactory("aws", {
+  node: {
+    connectionString: process.env.DB_URL ?? "",
+  },
+  aws: {
+    database: RDS.Database.defaultDatabaseName,
+    secretArn: RDS.Database.secretArn,
+    resourceArn: RDS.Database.clusterArn,
+  },
 });
-
-export const db = drizzle(pool);

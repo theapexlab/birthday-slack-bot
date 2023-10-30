@@ -1,9 +1,31 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "4c813da3-a1bc-446f-b509-5725dbc831d8",
+  "id": "43c150de-7698-45b1-9f52-8feb96883247",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
+    "testItems": {
+      "name": "testItems",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "payload": {
+          "name": "payload",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "users": {
       "name": "users",
       "schema": "",

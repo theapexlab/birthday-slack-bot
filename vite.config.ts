@@ -7,6 +7,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      "@/db": path.resolve(__dirname, "packages/core/db"),
       "@/events": path.resolve(__dirname, "packages/core/events"),
       "@/functions": path.resolve(__dirname, "packages/functions"),
       "@/services": path.resolve(__dirname, "packages/core/services"),
