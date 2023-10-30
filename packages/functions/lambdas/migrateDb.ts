@@ -18,7 +18,9 @@ export const handler: APIGatewayProxyHandlerV2 = async () => {
     console.error(`Error migrating db: ${error}`);
     return {
       statusCode: 500,
-      body: JSON.stringify({}),
+      body: JSON.stringify({
+        error,
+      }),
     };
   }
 };
