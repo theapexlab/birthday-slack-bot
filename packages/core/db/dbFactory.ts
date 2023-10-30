@@ -5,7 +5,7 @@ import { drizzle as drizzleNode } from "drizzle-orm/node-postgres";
 import { migrate as migrateNode } from "drizzle-orm/node-postgres/migrator";
 import pg from "pg";
 
-const migrationsFolder = "packages/core/db/migrations";
+const migrationsFolder = "./packages/core/db/migrations";
 
 type DbType = "node" | "aws";
 
