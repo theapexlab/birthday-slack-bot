@@ -45,9 +45,6 @@ importers:
       dotenv:
         specifier: ^16.3.1
         version: 16.3.1
-      drizzle-kit:
-        specifier: ^0.19.13
-        version: 0.19.13
       drizzle-orm:
         specifier: ^0.28.6
         version: 0.28.6(@aws-sdk/client-rds-data@3.438.0)(@types/pg@8.10.7)(kysely@0.25.0)(pg@8.11.3)
@@ -78,9 +75,6 @@ importers:
       prettier:
         specifier: ^3.0.3
         version: 3.0.3
-      tsx:
-        specifier: ^3.14.0
-        version: 3.14.0
       typescript:
         specifier: ^5.2.2
         version: 5.2.2
@@ -8099,17 +8093,6 @@ packages:
   /tsscmp@1.0.6:
     resolution: {integrity: sha512-LxhtAkPDTkVCMQjt2h6eBVY28KCjikZqZfMcC15YBeNjkgUpdCfBu5HoiOTDu86v6smE8yOjyEktJ8hlbANHQA==}
     engines: {node: '>=0.6.x'}
-
-  /tsx@3.14.0:
-    resolution: {integrity: sha512-xHtFaKtHxM9LOklMmJdI3BEnQq/D5F73Of2E1GDrITi9sgoVkvIsrQUTY1G8FlmGtA+awCI4EBlTRRYxkL2sRg==}
-    hasBin: true
-    dependencies:
-      esbuild: 0.18.20
-      get-tsconfig: 4.7.2
-      source-map-support: 0.5.21
-    optionalDependencies:
-      fsevents: 2.3.3
-    dev: true
 
   /type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
