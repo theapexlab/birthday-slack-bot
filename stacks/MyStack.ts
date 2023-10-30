@@ -66,10 +66,9 @@ export function MyStack({ stack }: StackContext) {
 
   api.attachPermissions([eventBus]);
 
-  new Function(stack, "MigrateDb", {
+  const migrationFn = new Function(stack, "MigrateDb", {
     handler: "packages/functions/lambdas/migrateDb.handler",
     bind: [...secrets, db],
-    functionName: "MigrateDb",
     environment: {
       DB_URL: process.env.DB_URL || "",
     },
@@ -82,5 +81,6 @@ export function MyStack({ stack }: StackContext) {
 
   stack.addOutputs({
     ApiEndpoint: api.url,
+    MigrationFunctionName: migrationFn.functionName,
   });
 }

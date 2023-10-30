@@ -81,6 +81,8 @@ jobs:
         run: |
           URL=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-MyStack"].ApiEndpoint' .sst/outputs.json)
           echo "apiEndpoint=$URL" >> "$GITHUB_OUTPUT"
+          MIGRATION_FUNCTION=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-MyStack"].MigrationFunctionName' .sst/outputs.json)
+          echo "migrationFunction=$MIGRATION_FUNCTION" >> "$GITHUB_OUTPUT"
           SECRET_ARN=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-StorageStack"].RDSSECRETARN' .sst/outputs.json)
           echo "secretArn=$SECRET_ARN" >> "$GITHUB_OUTPUT"
           CLUSTER_ARN=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-StorageStack"].RDSCLUSTERARN' .sst/outputs.json)
@@ -89,7 +91,7 @@ jobs:
           echo "database=$DATABASE" >> "$GITHUB_OUTPUT"
 
       - name: Migration
-        run: pnpm migration:run
+        run: pnpm migration:run ${{ steps.sst-output.outputs.migrationFunction }}
 
       - name: Run integration tests
         run: pnpm test:integration
