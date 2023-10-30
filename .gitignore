@@ -15,3 +15,5 @@ node_modules
 .env*.local
 
 sib-report.txt
+
+cdk.context.json
