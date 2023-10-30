@@ -51,7 +51,7 @@ describe("Slack events", () => {
         type: "member_joined_channel",
         channel: import.meta.env.VITE_CORE_SLACK_CHANNEL_ID,
         user: import.meta.env.VITE_SLACK_USER_ID,
-        team: import.meta.env.VITE_TEAM_ID,
+        team: import.meta.env.VITE_SLACK_TEAM_ID,
       },
       event_id: eventId,
     });
@@ -73,7 +73,7 @@ describe("Slack events", () => {
         type: "member_joined_channel",
         channel: import.meta.env.VITE_CORE_SLACK_CHANNEL_ID,
         user: import.meta.env.VITE_SLACK_BOT_USER_ID,
-        team: import.meta.env.VITE_TEAM_ID,
+        team: import.meta.env.VITE_SLACK_TEAM_ID,
       },
       event_id: eventId,
     });
