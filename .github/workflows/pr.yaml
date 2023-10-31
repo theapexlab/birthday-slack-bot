@@ -103,6 +103,7 @@ jobs:
           VITE_SLACK_BOT_USER_ID: ${{ secrets.SLACK_BOT_USER_ID_TEST }}
           VITE_CORE_SLACK_CHANNEL_ID: ${{ secrets.CORE_SLACK_CHANNEL_ID_TEST }}
           VITE_SLACK_DM_ID: ${{ secrets.SLACK_DM_ID_TEST }}
+          VITE_SLACK_TEAM_ID: ${{ secrets.SLACK_TEAM_ID_TEST }}
           VITE_CI: true
           VITE_DB_NAME: ${{ steps.sst-output.outputs.database }}
           VITE_DB_SECRET_ARN: ${{ steps.sst-output.outputs.secretArn }}
