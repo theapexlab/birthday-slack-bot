@@ -65,7 +65,6 @@ export function MyStack({ stack }: StackContext) {
   const migrationFn = new Function(stack, "MigrateDb", {
     handler: "packages/functions/lambdas/migrateDb.handler",
     bind,
-    functionName: "MigrateDb",
     environment: {
       DB_URL: process.env.DB_URL || "",
     },
