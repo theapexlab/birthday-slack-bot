@@ -30,7 +30,7 @@ export const waitForTestItem = async (id: string) =>
       return items[0];
     },
     {
-      timeout: 60_000,
+      timeout: 20_000,
       interval: 1_000,
     },
   );

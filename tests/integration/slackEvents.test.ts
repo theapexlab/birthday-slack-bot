@@ -62,7 +62,7 @@ describe("Slack events", () => {
     expect(chat.messages![0].text).toEqual(
       "Please share your birthday with us! :birthday:",
     );
-  }, 60_000);
+  }, 20_000);
 
   it("Should send DM to all users when bot joins the channel", async () => {
     const eventId = "E2_" + Date.now().toString();
@@ -84,7 +84,7 @@ describe("Slack events", () => {
     expect(chat.messages![0].text).toEqual(
       "Please share your birthday with us! :birthday:",
     );
-  }, 60_000);
+  }, 20_000);
 
   it("Should delete user from db when user leaves channel", async () => {
     const eventId = "E3_" + Date.now().toString();
@@ -125,11 +125,11 @@ describe("Slack events", () => {
         return Promise.reject();
       },
       {
-        timeout: 60_000,
+        timeout: 20_000,
         interval: 1_000,
       },
     );
 
     expect(items.length).toEqual(0);
-  }, 60_000);
+  }, 20_000);
 });

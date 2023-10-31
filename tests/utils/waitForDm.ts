@@ -30,7 +30,7 @@ export const waitForDm = async (app: App, eventId: string) =>
       return chat;
     },
     {
-      timeout: 60_000,
+      timeout: 20_000,
       interval: 1_000,
     },
   );
