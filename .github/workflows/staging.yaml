@@ -58,3 +58,12 @@ jobs:
 
       - name: Deploy stack
         run: pnpm run deploy --stage "${{ env.stage }}"
+
+      - name: Extract stack outputs
+        id: sst-output
+        run: |
+          MIGRATION_FUNCTION=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-MyStack"].MigrationFunctionName' .sst/outputs.json)
+          echo "migrationFunction=$MIGRATION_FUNCTION" >> "$GITHUB_OUTPUT"
+
+      - name: Migration
+        run: pnpm migration:ci ${{ steps.sst-output.outputs.migrationFunction }}

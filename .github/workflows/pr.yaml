@@ -76,11 +76,22 @@ jobs:
       - name: Deploy stack
         run: pnpm run deploy --stage ${{ env.STAGE }}
 
-      - name: Extract api endpoint
+      - name: Extract stack outputs
         id: sst-output
         run: |
           URL=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-MyStack"].ApiEndpoint' .sst/outputs.json)
           echo "apiEndpoint=$URL" >> "$GITHUB_OUTPUT"
+          MIGRATION_FUNCTION=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-MyStack"].MigrationFunctionName' .sst/outputs.json)
+          echo "migrationFunction=$MIGRATION_FUNCTION" >> "$GITHUB_OUTPUT"
+          SECRET_ARN=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-StorageStack"].RDSSECRETARN' .sst/outputs.json)
+          echo "secretArn=$SECRET_ARN" >> "$GITHUB_OUTPUT"
+          CLUSTER_ARN=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-StorageStack"].RDSCLUSTERARN' .sst/outputs.json)
+          echo "clusterArn=$CLUSTER_ARN" >> "$GITHUB_OUTPUT"
+          DATABASE=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-StorageStack"].RDSDATABASE' .sst/outputs.json)
+          echo "database=$DATABASE" >> "$GITHUB_OUTPUT"
+
+      - name: Migration
+        run: pnpm migration:ci ${{ steps.sst-output.outputs.migrationFunction }}
 
       - name: Run integration tests
         run: pnpm test:integration
@@ -92,3 +103,7 @@ jobs:
           VITE_SLACK_BOT_USER_ID: ${{ secrets.SLACK_BOT_USER_ID_TEST }}
           VITE_CORE_SLACK_CHANNEL_ID: ${{ secrets.CORE_SLACK_CHANNEL_ID_TEST }}
           VITE_SLACK_DM_ID: ${{ secrets.SLACK_DM_ID_TEST }}
+          VITE_CI: true
+          VITE_DB_NAME: ${{ steps.sst-output.outputs.database }}
+          VITE_DB_SECRET_ARN: ${{ steps.sst-output.outputs.secretArn }}
+          VITE_DB_CLUSTER_ARN: ${{ steps.sst-output.outputs.clusterArn }}
