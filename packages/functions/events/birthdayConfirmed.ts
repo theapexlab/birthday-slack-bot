@@ -14,8 +14,6 @@ export const handler = handleEvent(
         body: JSON.stringify(constructBirthdayConfirmedMessage()),
       });
 
-      console.log(birthday);
-
       await saveBirthday({ user, teamId: team, birthday });
     } catch (error) {
       console.error("Error sending birthday confirmed message: ", error);
