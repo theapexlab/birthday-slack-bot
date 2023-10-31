@@ -79,6 +79,7 @@ export function MyStack({ stack }: StackContext) {
         from: "packages/core/db/migrations",
       },
     ],
+    timeout: "60 seconds",
   });
 
   stack.addOutputs({
