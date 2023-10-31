@@ -95,6 +95,16 @@ describe("Slack events", () => {
       birthday: constants.birthday,
     });
 
+    const insertedUser = await testDb
+      .select()
+      .from(users)
+      .where(
+        and(eq(users.id, constants.userId), eq(users.teamId, constants.teamId)),
+      )
+      .limit(1);
+
+    expect(insertedUser.length).toEqual(1);
+
     await sendMockSlackEvent({
       type: "event_callback",
       event: {

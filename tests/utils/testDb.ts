@@ -4,6 +4,8 @@ import { vi } from "vitest";
 import { dbFactory } from "@/db/dbFactory";
 import { testItems } from "@/db/schema";
 
+console.log(import.meta.env);
+
 export const [testDb] = dbFactory(import.meta.env.VITE_CI ? "aws" : "node", {
   node: {
     connectionString: import.meta.env.VITE_DB_URL!,
