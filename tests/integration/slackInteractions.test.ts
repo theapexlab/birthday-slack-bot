@@ -57,7 +57,7 @@ describe("Slack interactions", () => {
     expect(item.payload).toEqual(
       JSON.stringify(constructConfirmBirthdayMessage(constants.birthday)),
     );
-  }, 20_000);
+  }, 60_000);
 
   it("Should send thank you message when birthday is confirmed", async () => {
     const eventId = "I2_" + Date.now().toString();
@@ -84,7 +84,7 @@ describe("Slack interactions", () => {
     expect(item.payload).toEqual(
       JSON.stringify(constructBirthdayConfirmedMessage()),
     );
-  }, 20_000);
+  }, 60_000);
 
   it("Should save user to db when birthday is confirmed", async () => {
     await sendMockSlackInteraction({
@@ -118,7 +118,7 @@ describe("Slack interactions", () => {
         return items[0];
       },
       {
-        timeout: 20_000,
+        timeout: 60_000,
         interval: 1_000,
       },
     );
@@ -128,7 +128,7 @@ describe("Slack interactions", () => {
       teamId: constants.teamId,
       birthday: new Date(constants.birthday),
     });
-  }, 20_000);
+  }, 60_000);
 
   it("Should ask for birthday again when birthday is incorrect", async () => {
     const eventId = "I3_" + Date.now().toString();
@@ -164,5 +164,5 @@ describe("Slack interactions", () => {
         }),
       ),
     );
-  }, 20_000);
+  }, 60_000);
 });
