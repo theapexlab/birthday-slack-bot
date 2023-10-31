@@ -32,6 +32,7 @@ export function MyStack({ stack }: StackContext) {
                     DB_URL: process.env.DB_URL || "",
                   },
                   bind,
+                  runtime: "nodejs18.x",
                 },
               },
             }),
@@ -50,6 +51,7 @@ export function MyStack({ stack }: StackContext) {
           EVENT_BUS_NAME: eventBus.eventBusName,
           DB_URL: process.env.DB_URL || "",
         },
+        runtime: "nodejs18.x",
       },
     },
     routes: {
@@ -82,6 +84,7 @@ export function MyStack({ stack }: StackContext) {
       },
     ],
     timeout: "60 seconds",
+    runtime: "nodejs18.x",
   });
 
   stack.addOutputs({

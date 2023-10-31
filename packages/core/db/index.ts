@@ -3,9 +3,6 @@ import { RDS } from "sst/node/rds";
 
 import { dbFactory } from "./dbFactory";
 
-//@ts-ignore
-console.log(RDS.Database);
-
 export const [db, migrate] = dbFactory(
   process.env.IS_LOCAL || process.env.NODE_ENV === "development"
     ? "node"

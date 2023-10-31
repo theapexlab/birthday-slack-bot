@@ -42,8 +42,6 @@ export const dbFactory = (type: DbType, payload: FactoryPayload) => {
     ...payload.aws,
   });
 
-  console.log("Db initilized", db);
-
   return [
     db,
     async () => {
