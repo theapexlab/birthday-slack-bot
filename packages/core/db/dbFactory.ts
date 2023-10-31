@@ -7,23 +7,22 @@ import pg from "pg";
 
 const migrationsFolder = "./packages/core/db/migrations";
 
-type DbType = "node" | "aws";
+type FactoryPayload =
+  | {
+      type: "node";
+      connectionString: string;
+    }
+  | {
+      type: "aws";
+      database: string;
+      secretArn: string;
+      resourceArn: string;
+    };
 
-type FactoryPayload = {
-  node: {
-    connectionString: string;
-  };
-  aws: {
-    database: string;
-    secretArn: string;
-    resourceArn: string;
-  };
-};
-
-export const dbFactory = (type: DbType, payload: FactoryPayload) => {
-  if (type === "node") {
+export const dbFactory = (payload: FactoryPayload) => {
+  if (payload.type === "node") {
     const pool = new pg.Pool({
-      ...payload.node,
+      ...payload,
     });
 
     const db = drizzleNode(pool);
@@ -39,7 +38,7 @@ export const dbFactory = (type: DbType, payload: FactoryPayload) => {
   }
 
   const db = drizzleRds(new RDSDataClient({}), {
-    ...payload.aws,
+    ...payload,
   });
 
   return [

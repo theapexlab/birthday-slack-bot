@@ -6,15 +6,9 @@ dotenv.config({
   path: ".env.local",
 });
 
-const [, migrate] = dbFactory("node", {
-  node: {
-    connectionString: process.env.DB_URL ?? "",
-  },
-  aws: {
-    database: "",
-    secretArn: "",
-    resourceArn: "",
-  },
+const [, migrate] = dbFactory({
+  type: "node",
+  connectionString: process.env.DB_URL ?? "",
 });
 
 await migrate();
