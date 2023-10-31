@@ -56,7 +56,7 @@ export function MyStack({ stack }: StackContext) {
       "POST /slack/event": "packages/functions/lambdas/slack-event.handler",
       "POST /slack/interaction":
         "packages/functions/lambdas/slack-interaction.handler",
-      "POST /slack/test-payload":
+      "POST /slack/test-payload2":
         "packages/functions/lambdas/listen-for-test-payloads.handler",
     },
   });

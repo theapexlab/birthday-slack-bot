@@ -10,7 +10,7 @@ import { sendMockSlackInteraction } from "@/testUtils/sendMockSlackInteraction";
 import { testDb, waitForTestItem } from "@/testUtils/testDb";
 
 const constants = vi.hoisted(() => ({
-  responseUrl: import.meta.env.VITE_API_URL + "/slack/test-payload",
+  responseUrl: import.meta.env.VITE_API_URL + "/slack/test-payload2",
   birthday: "2000-02-15",
   teamId: "T1",
   userId: "U1",
