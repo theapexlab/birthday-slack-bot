@@ -1,7 +1,9 @@
 import type { APIGatewayProxyEventV2, EventBridgeEvent } from "aws-lambda";
 import { Config } from "sst/node/config";
 
+import { db } from "@/db/index";
 import { getBirthdaysBetween } from "@/db/queries/getBirthdays";
+import { iceBreakerThreads } from "@/db/schema";
 import { getIceBreakerWindow } from "@/services/birthday/getIcebreakerWindow";
 import { constructIceBreakerQuestion } from "@/services/slack/constructIceBreakerQuestion";
 import { createSlackApp } from "@/services/slack/createSlackApp";
@@ -24,11 +26,25 @@ export const handler = async (request: Event) => {
     ? request.queryStringParameters?.eventId
     : undefined;
 
-  await app.client.chat.postMessage(
+  const message = await app.client.chat.postMessage(
     constructIceBreakerQuestion({
       channel: Config.RANDOM_SLACK_CHANNEL_ID,
       eventId,
       users: users.map((user) => user.id),
     }),
+  );
+
+  if (!message.ok || !message.ts) {
+    throw new Error("Failed to send ice breaker question");
+  }
+
+  await Promise.all(
+    users.map((user) =>
+      db.insert(iceBreakerThreads).values({
+        userId: user.id,
+        teamId: user.teamId,
+        threadId: message.ts!,
+      }),
+    ),
   );
 };
