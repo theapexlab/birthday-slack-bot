@@ -1,5 +1,5 @@
-import { users } from "../schema";
-import { db } from "..";
+import { db } from "@/db/index";
+import { users } from "@/db/schema";
 
 type Args = {
   user: string;
