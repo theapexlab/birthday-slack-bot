@@ -1,4 +1,10 @@
+import { eq } from "drizzle-orm";
+import { vi } from "vitest";
+
 import { dbFactory } from "@/db/dbFactory";
+import { testItems } from "@/db/schema";
+
+import { timeout } from "./constants";
 
 export const [testDb] = dbFactory(
   import.meta.env.VITE_CI
@@ -13,3 +19,23 @@ export const [testDb] = dbFactory(
         connectionString: import.meta.env.VITE_DB_URL!,
       },
 );
+
+export const waitForTestItem = async (id: string) =>
+  vi.waitFor(
+    async () => {
+      const items = await testDb
+        .select()
+        .from(testItems)
+        .where(eq(testItems.id, id))
+        .limit(1);
+
+      if (items.length === 0) {
+        return Promise.reject();
+      }
+      return items[0];
+    },
+    {
+      timeout,
+      interval: 1_000,
+    },
+  );

@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Events } from "@/events";
 import { handler } from "@/functions/events/askBirthday";
+import { constructAskBirthdayMessage } from "@/services/slack/constructAskBirthdayMessage";
 import { createSlackApp } from "@/services/slack/createSlackApp";
 import { getUserInfo } from "@/services/slack/getUserInfo";
 import { sendMockSqsMessage } from "@/testUtils/sendMockSqsMessage";
@@ -79,41 +80,12 @@ describe("Member joined channel", () => {
     await sendMockSqsMessage("askBirthday", event, handler);
 
     expect(sendDMMock).toHaveBeenCalledOnce();
-    expect(sendDMMock).toHaveBeenCalledWith({
-      channel: constants.userId,
-      text: "Please share your birthday with us! :birthday:",
-      blocks: [
-        {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text: `Hey ${constants.userName}! :wave:`,
-          },
-        },
-        {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text: "Please share your birthday with us! :birthday:",
-          },
-          accessory: {
-            type: "datepicker",
-            initial_date: "1995-01-01",
-            placeholder: {
-              type: "plain_text",
-              text: "Select a date",
-              emoji: true,
-            },
-            action_id: "birthday",
-          },
-        },
-      ],
-      metadata: {
-        event_type: "askBirthday",
-        event_payload: {
-          originalEventId: constants.eventId,
-        },
-      },
-    });
+    expect(sendDMMock).toHaveBeenCalledWith(
+      constructAskBirthdayMessage({
+        eventId: constants.eventId,
+        name: constants.userName,
+        user: constants.userId,
+      }),
+    );
   });
 });

@@ -55,10 +55,18 @@ export function MyStack({ stack }: StackContext) {
       },
     },
     routes: {
-      "POST /slack/callback":
-        "packages/functions/lambdas/slack-callback.handler",
+      "POST /slack/event": "packages/functions/lambdas/slack-event.handler",
+      "POST /slack/interaction":
+        "packages/functions/lambdas/slack-interaction.handler",
     },
   });
+
+  if (stack.stage !== "staging" && stack.stage !== "production") {
+    api.addRoutes(stack, {
+      "POST /slack/test-payload":
+        "packages/functions/lambdas/listen-for-test-payloads.handler",
+    });
+  }
 
   api.attachPermissions([eventBus]);
 

@@ -17,6 +17,7 @@
   "dependencies": {
     "@aws-sdk/client-rds-data": "^3.438.0",
     "@slack/bolt": "^3.14.0",
+    "@slack/web-api": "^6.9.0",
     "drizzle-orm": "^0.28.6",
     "pg": "^8.11.3",
     "zod": "^3.22.4"

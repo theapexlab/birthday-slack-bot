@@ -1,6 +1,8 @@
 import type { App } from "@slack/bolt";
 import { vi } from "vitest";
 
+import { timeout } from "./constants";
+
 export const waitForDm = async (app: App, eventId: string) =>
   vi.waitFor(
     async () => {
@@ -30,7 +32,7 @@ export const waitForDm = async (app: App, eventId: string) =>
       return chat;
     },
     {
-      timeout: 20_000,
+      timeout,
       interval: 1_000,
     },
   );

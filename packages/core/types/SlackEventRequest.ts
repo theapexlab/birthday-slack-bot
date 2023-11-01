@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "zod";
 
 export const SlackChallengeRequestSchema = z.object({
   challenge: z.string(),
@@ -13,6 +13,7 @@ export const SlackEventSchema = z.object({
     z.literal("member_left_channel"),
   ]),
   user: z.string(),
+  team: z.string(),
   channel: z.string(),
 });
 
