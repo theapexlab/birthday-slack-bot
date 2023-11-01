@@ -29,7 +29,7 @@ export const waitForDm = async (app: App, eventId: string) =>
         return Promise.reject();
       }
 
-      return chat;
+      return chat.messages[0];
     },
     {
       timeout,

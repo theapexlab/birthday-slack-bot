@@ -30,9 +30,7 @@ describe("Slack events", () => {
       `${import.meta.env.VITE_API_URL}/icebreaker?eventId=${eventId}`,
     );
 
-    const chat = await waitForPostInRandom(app, eventId);
-
-    expect(chat.messages?.length).toEqual(1);
+    const message = await waitForPostInRandom(app, eventId);
 
     const expectedMessage = constructIceBreakerQuestion({
       channel: import.meta.env.VITE_RANDOM_SLACK_CHANNEL_ID,
@@ -43,6 +41,6 @@ describe("Slack events", () => {
     const expectedText = (expectedMessage.blocks?.[1] as SectionBlock).text
       ?.text;
 
-    expect(chat.messages![0].blocks?.[1]?.text?.text).toEqual(expectedText);
+    expect(message.blocks?.[1]?.text?.text).toEqual(expectedText);
   }, 20_000);
 });
