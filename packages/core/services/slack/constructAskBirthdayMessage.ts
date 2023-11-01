@@ -13,20 +13,20 @@ const constructBaseAskBirthdayMessage = ({
   name,
   eventId,
 }: Arguments): Omit<ChatPostMessageArguments, "channel"> => ({
-  text: "Please share your birthday with us! :birthday:",
+  text: "Please share your birthday with us! 🥳",
   blocks: [
     {
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `Hey ${name}! :wave:`,
+        text: `Hey ${name}! 👋`,
       },
     },
     {
       type: "section",
       text: {
         type: "mrkdwn",
-        text: "Please share your birthday with us! :birthday:",
+        text: "Please share your birthday with us! 🥳",
       },
       accessory: {
         type: "datepicker",

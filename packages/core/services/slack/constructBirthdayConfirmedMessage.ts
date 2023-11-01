@@ -3,13 +3,13 @@ import type { ChatReplaceMessageArguments } from "@/types/ChatReplaceMessageArgu
 export const constructBirthdayConfirmedMessage =
   (): ChatReplaceMessageArguments => ({
     replace_original: true,
-    text: "Thanks for submitting your birthday! :tada:",
+    text: "Thanks for submitting your birthday! 🎉",
     blocks: [
       {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `Thanks for submitting your birthday! :tada:`,
+          text: `Thanks for submitting your birthday! 🎉`,
         },
       },
     ],
