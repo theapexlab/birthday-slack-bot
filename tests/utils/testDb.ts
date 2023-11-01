@@ -4,6 +4,8 @@ import { vi } from "vitest";
 import { dbFactory } from "@/db/dbFactory";
 import { testItems } from "@/db/schema";
 
+import { timeout } from "./constants";
+
 export const [testDb] = dbFactory(
   import.meta.env.VITE_CI
     ? {
@@ -33,7 +35,7 @@ export const waitForTestItem = async (id: string) =>
       return items[0];
     },
     {
-      timeout: 20_000,
+      timeout,
       interval: 1_000,
     },
   );
