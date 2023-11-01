@@ -1,6 +1,7 @@
 import type { APIGatewayProxyEventV2, EventBridgeEvent } from "aws-lambda";
 import { Config } from "sst/node/config";
 
+import { constructIceBreakerQuestion } from "@/services/slack/constructIceBreakerQuestion";
 import { createSlackApp } from "@/services/slack/createSlackApp";
 
 type Event =
@@ -14,16 +15,15 @@ const isApiGatewayProxyEventV2 = (
 export const handler = async (request: Event) => {
   const app = createSlackApp();
 
-  await app.client.chat.postMessage({
-    channel: Config.RANDOM_SLACK_CHANNEL_ID,
-    text: "Random ice breaker question: What is your favorite color?",
-    metadata: isApiGatewayProxyEventV2(request)
-      ? {
-          event_type: "iceBreakerQuestion",
-          event_payload: {
-            eventId: request.queryStringParameters?.eventId || "",
-          },
-        }
-      : undefined,
-  });
+  const eventId = isApiGatewayProxyEventV2(request)
+    ? request.queryStringParameters?.eventId
+    : undefined;
+
+  await app.client.chat.postMessage(
+    constructIceBreakerQuestion({
+      channel: Config.RANDOM_SLACK_CHANNEL_ID,
+      eventId,
+      users: ["U1", "U2"],
+    }),
+  );
 };

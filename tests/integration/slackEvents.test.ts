@@ -1,10 +1,10 @@
 import { App } from "@slack/bolt";
 import { and, eq } from "drizzle-orm";
-import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { users } from "@/db/schema";
 import { timeout } from "@/testUtils/constants";
-import { deleteDmMessages } from "@/testUtils/deleteDmMessages";
+import { deleteLastDmMessage } from "@/testUtils/deleteLastDmMessage";
 import { sendMockSlackEvent } from "@/testUtils/sendMockSlackEvent";
 import { testDb } from "@/testUtils/testDb";
 import { waitForDm } from "@/testUtils/waitForDm";
@@ -22,13 +22,12 @@ const app = new App({
 });
 
 describe("Slack events", () => {
-  beforeEach(async () => {
-    await deleteDmMessages(app);
+  beforeAll(async () => {
     await testDb.delete(users);
   }, 10_000);
 
-  afterAll(async () => {
-    await deleteDmMessages(app);
+  afterEach(async () => {
+    await deleteLastDmMessage(app);
     await testDb.delete(users);
   }, 10_000);
 

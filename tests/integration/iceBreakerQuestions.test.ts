@@ -1,8 +1,10 @@
+import type { SectionBlock } from "@slack/bolt";
 import { App } from "@slack/bolt";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterEach, beforeAll, describe, expect, it } from "vitest";
 
 import { users } from "@/db/schema";
-import { deleteDmMessages } from "@/testUtils/deleteDmMessages";
+import { constructIceBreakerQuestion } from "@/services/slack/constructIceBreakerQuestion";
+import { deleteLastRandomChannelPost } from "@/testUtils/deleteLastRandomChannelPost";
 import { testDb } from "@/testUtils/testDb";
 import { waitForPostInRandom } from "@/testUtils/waitForPostInRandomChannel";
 
@@ -13,12 +15,11 @@ const app = new App({
 
 describe("Slack events", () => {
   beforeAll(async () => {
-    await deleteDmMessages(app);
     await testDb.delete(users);
   }, 10_000);
 
-  afterAll(async () => {
-    await deleteDmMessages(app);
+  afterEach(async () => {
+    await deleteLastRandomChannelPost(app);
     await testDb.delete(users);
   }, 10_000);
 
@@ -32,8 +33,16 @@ describe("Slack events", () => {
     const chat = await waitForPostInRandom(app, eventId);
 
     expect(chat.messages?.length).toEqual(1);
-    expect(chat.messages![0].text).toEqual(
-      "Random ice breaker question: What is your favorite color?",
-    );
+
+    const expectedMessage = constructIceBreakerQuestion({
+      channel: import.meta.env.VITE_RANDOM_SLACK_CHANNEL_ID,
+      eventId,
+      users: ["U1", "U2"],
+    });
+
+    const expectedText = (expectedMessage.blocks?.[1] as SectionBlock).text
+      ?.text;
+
+    expect(chat.messages![0].blocks?.[1]?.text?.text).toEqual(expectedText);
   }, 20_000);
 });

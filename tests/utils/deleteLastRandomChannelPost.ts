@@ -1,8 +1,8 @@
 import type { App } from "@slack/bolt";
 
-export const deleteDmMessages = async (app: App) => {
+export const deleteLastRandomChannelPost = async (app: App) => {
   const chat = await app.client.conversations.history({
-    channel: import.meta.env.VITE_SLACK_DM_ID,
+    channel: import.meta.env.VITE_RANDOM_SLACK_CHANNEL_ID,
     limit: 1,
   });
 
@@ -13,7 +13,7 @@ export const deleteDmMessages = async (app: App) => {
       }
 
       await app.client.chat.delete({
-        channel: import.meta.env.VITE_SLACK_DM_ID,
+        channel: import.meta.env.VITE_RANDOM_SLACK_CHANNEL_ID,
         ts: message.ts,
       });
     }) ?? [],
