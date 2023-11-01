@@ -21,7 +21,7 @@ export const constructIceBreakerQuestion = (
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `${randomIceBreakerQuestion} Post your picks in the thread! :point_down:`,
+        text: `${randomIceBreakerQuestion} Post your picks in the thread! 👇`,
       },
     },
   ];
