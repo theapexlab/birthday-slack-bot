@@ -99,6 +99,7 @@ jobs:
           VITE_SLACK_USER_ID: ${{ secrets.SLACK_USER_ID_TEST }}
           VITE_SLACK_BOT_USER_ID: ${{ secrets.SLACK_BOT_USER_ID_TEST }}
           VITE_CORE_SLACK_CHANNEL_ID: ${{ secrets.CORE_SLACK_CHANNEL_ID_TEST }}
+          VITE_RANDOM_SLACK_CHANNEL_ID: ${{ secrets.RANDOM_SLACK_CHANNEL_ID_TEST }}
           VITE_SLACK_DM_ID: ${{ secrets.SLACK_DM_ID_TEST }}
           VITE_SLACK_TEAM_ID: ${{ secrets.SLACK_TEAM_ID_TEST }}
           VITE_CI: true
