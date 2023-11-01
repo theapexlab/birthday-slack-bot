@@ -1,4 +1,5 @@
-import { Config, type StackContext } from "sst/constructs";
+import type { StackContext } from "sst/constructs";
+import { Config } from "sst/constructs";
 
 export function ConfigStack({ stack }: StackContext) {
   const SLACK_LOG_LEVEL = new Config.Secret(stack, "SLACK_LOG_LEVEL");

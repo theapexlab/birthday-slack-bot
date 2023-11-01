@@ -1,6 +1,7 @@
 import type { SSTConfig } from "sst";
 
 import { ConfigStack } from "./stacks/ConfigStack";
+import { CronStack } from "./stacks/CronStack";
 import { MyStack } from "./stacks/MyStack";
 import { StorageStack } from "./stacks/StorageStack";
 
@@ -12,6 +13,6 @@ export default {
     };
   },
   stacks(app) {
-    app.stack(ConfigStack).stack(StorageStack).stack(MyStack);
+    app.stack(ConfigStack).stack(StorageStack).stack(CronStack).stack(MyStack);
   },
 } satisfies SSTConfig;
