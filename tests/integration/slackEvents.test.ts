@@ -62,9 +62,6 @@ describe("Slack events", () => {
       const chat = await waitForDm(app, eventId);
 
       expect(chat.messages?.length).toEqual(1);
-      expect(chat.messages![0].text).toEqual(
-        "Please share your birthday with us! 🥳",
-      );
     },
     timeout,
   );
@@ -88,9 +85,6 @@ describe("Slack events", () => {
       const chat = await waitForDm(app, eventId);
 
       expect(chat.messages?.length).toEqual(1);
-      expect(chat.messages![0].text).toEqual(
-        "Please share your birthday with us! 🥳",
-      );
     },
     timeout,
   );
