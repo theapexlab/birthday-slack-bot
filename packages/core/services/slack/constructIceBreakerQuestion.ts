@@ -1,4 +1,4 @@
-import type { ChatPostMessageArguments } from "@slack/web-api";
+import type { ChatPostMessageArguments, KnownBlock } from "@slack/web-api";
 
 type Arguments = {
   users: string[];
@@ -16,6 +16,28 @@ export const constructIceBreakerQuestion = (
   const randomIceBreakerQuestion =
     iceBreakerQuestions[Math.floor(Math.random() * iceBreakerQuestions.length)];
 
+  const blocks: KnownBlock[] = [
+    {
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: `${randomIceBreakerQuestion} Post your picks in the thread! :point_down:`,
+      },
+    },
+  ];
+
+  if (args.users.length) {
+    blocks.push({
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: `Let's see your ones ${args.users
+          .map((user) => `<@${user}>`)
+          .join(", ")}!`,
+      },
+    });
+  }
+
   return {
     channel: args.channel,
     metadata: args.eventId
@@ -27,23 +49,6 @@ export const constructIceBreakerQuestion = (
         }
       : undefined,
     text: randomIceBreakerQuestion,
-    blocks: [
-      {
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: `${randomIceBreakerQuestion} Post your picks in the thread! :point_down:`,
-        },
-      },
-      {
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: `Let's see your ones ${args.users
-            .map((user) => `<@${user}>`)
-            .join(", ")}!`,
-        },
-      },
-    ],
+    blocks,
   } satisfies ChatPostMessageArguments;
 };
