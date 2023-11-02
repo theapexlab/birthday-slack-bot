@@ -1,10 +1,20 @@
+import MockDate from "mockdate";
+
 import { users } from "@/db/schema";
 import { getIceBreakerWindow } from "@/services/birthday/getIcebreakerWindow";
 
 import { testDb } from "./testDb";
 
-export const generateIceBreakerTestUsers = async () => {
+export const generateIceBreakerTestUsers = async (today?: string) => {
+  if (today) {
+    MockDate.set(today);
+  }
+
   let { start, end } = getIceBreakerWindow();
+
+  if (today) {
+    MockDate.reset();
+  }
 
   start = start.set("year", 1986);
   end = end.set("year", 1997);

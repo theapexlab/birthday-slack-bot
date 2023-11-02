@@ -1,5 +1,4 @@
 import dayjs from "dayjs";
-import MockDate from "mockdate";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { getBirthdaysBetween } from "@/db/queries/getBirthdays";
@@ -23,14 +22,11 @@ describe("Get birthdays between", () => {
 
   afterEach(async () => {
     await testDb.delete(users);
-    MockDate.reset();
   });
 
   testCases.forEach(async (testCase) => {
     it(`Should return users with birthdays between ${testCase.start} and ${testCase.end} when today is ${testCase.today}`, async () => {
-      MockDate.set(testCase.today);
-
-      await generateIceBreakerTestUsers();
+      await generateIceBreakerTestUsers(testCase.today);
 
       const filteredUsers = await getBirthdaysBetween(
         dayjs.utc(testCase.start),

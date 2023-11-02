@@ -1,10 +1,14 @@
 import MockDate from "mockdate";
-import { describe, expect, it } from "vitest";
+import { afterAll, describe, expect, it } from "vitest";
 
 import { getIceBreakerWindow } from "@/services/birthday/getIcebreakerWindow";
 import { testCases } from "@/testUtils/iceBreakerTestCases";
 
 describe("getIceBreakerWindow", () => {
+  afterAll(() => {
+    MockDate.reset();
+  });
+
   it("Should return correct window", () => {
     testCases.forEach((testCase) => {
       MockDate.set(testCase.today);
