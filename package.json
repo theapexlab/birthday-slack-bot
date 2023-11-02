@@ -19,6 +19,7 @@
     "test": "vitest watch",
     "test:unit": "vitest run unit",
     "test:integration": "vitest run integration --threads false --single-thread",
+    "test:ci": "vitest run --threads false --single-thread ",
     "migration:generate": "cd packages/core && pnpm migration:generate",
     "migration:local": "tsx scripts/migrateLocal.ts",
     "migration:ci": "tsx scripts/migrateCi.ts"

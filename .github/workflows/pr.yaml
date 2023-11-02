@@ -87,11 +87,8 @@ jobs:
       - name: Migration
         run: pnpm migration:ci ${{ steps.sst-output.outputs.migrationFunction }}
 
-      - name: Run unit tests
-        run: pnpm test:unit
-
-      - name: Run integration tests
-        run: pnpm test:integration
+      - name: Run tests
+        run: pnpm test:ci
         env:
           VITE_API_URL: ${{ steps.sst-output.outputs.apiEndpoint }}
           VITE_SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN_TEST }}
