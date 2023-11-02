@@ -59,9 +59,6 @@ jobs:
       - name: SIB
         run: pnpm sib --pipeline
 
-      - name: Run unit tests
-        run: pnpm test:unit
-
       - name: Set secrets
         run: |
           npx sst secrets set SLACK_LOG_LEVEL "${{ secrets.SLACK_LOG_LEVEL_TEST }}" --stage ${{ env.STAGE }}
@@ -89,6 +86,9 @@ jobs:
 
       - name: Migration
         run: pnpm migration:ci ${{ steps.sst-output.outputs.migrationFunction }}
+
+      - name: Run unit tests
+        run: pnpm test:unit
 
       - name: Run integration tests
         run: pnpm test:integration

@@ -1,4 +1,7 @@
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
 
 // Icebreaker questions are sent to the random channel on the first Tuesday of every month.
 // The window includes people whose birthday is between the next question and the third next question.
@@ -7,7 +10,7 @@ import dayjs from "dayjs";
 // E.g if today is 2023-11-01, the window is between 2023-12-05 and 2024-02-06.
 
 export const getIceBreakerWindow = () => {
-  const today = dayjs().startOf("day");
+  const today = dayjs().utc().startOf("day");
 
   const startOfStartMonth = today.add(1, "month").startOf("month");
   let windowStart = startOfStartMonth.set("day", 2);

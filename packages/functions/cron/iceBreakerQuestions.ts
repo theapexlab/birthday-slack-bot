@@ -18,7 +18,7 @@ const isApiGatewayProxyEventV2 = (
 
 export const handler = async (request: Event) => {
   const { start, end } = getIceBreakerWindow();
-  const users = await getBirthdaysBetween(start.toDate(), end.toDate());
+  const users = await getBirthdaysBetween(start, end);
 
   const app = createSlackApp();
 

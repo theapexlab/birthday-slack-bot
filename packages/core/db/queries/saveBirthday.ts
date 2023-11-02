@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 import { db } from "@/db/index";
 import { users } from "@/db/schema";
 
@@ -13,12 +15,12 @@ export const saveBirthday = async ({ birthday, teamId, user }: Args) => {
     .values({
       id: user,
       teamId,
-      birthday: new Date(birthday),
+      birthday: dayjs.utc(birthday).toDate(),
     })
     .onConflictDoUpdate({
       target: [users.id, users.teamId],
       set: {
-        birthday: new Date(birthday),
+        birthday: dayjs.utc(birthday).toDate(),
       },
     });
 };

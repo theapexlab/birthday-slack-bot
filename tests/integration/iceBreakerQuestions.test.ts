@@ -3,9 +3,13 @@ import { eq } from "drizzle-orm";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { iceBreakerThreads, users } from "@/db/schema";
-import { getIceBreakerWindow } from "@/services/birthday/getIcebreakerWindow";
 import { timeout } from "@/testUtils/constants";
 import { deleteLastRandomChannelPost } from "@/testUtils/deleteLastRandomChannelPost";
+import {
+  generateIceBreakerTestUsers,
+  usersInWindow,
+  usersOutsideWindow,
+} from "@/testUtils/generateIceBreakerTestUsers";
 import { testDb } from "@/testUtils/testDb";
 import { waitForPostInRandom } from "@/testUtils/waitForPostInRandomChannel";
 
@@ -13,34 +17,6 @@ const app = new App({
   signingSecret: import.meta.env.VITE_SLACK_SIGNING_SECRET,
   token: import.meta.env.VITE_SLACK_BOT_TOKEN,
 });
-
-const generateUsers = async () => {
-  const { start, end } = getIceBreakerWindow();
-
-  const birthdays = [
-    start.subtract(1, "day"), // 1 day before
-    start, // start
-    start.add(1, "day"), // 1 day after
-    end.subtract(1, "day"), // 1 day before end
-    end, // end
-    end.add(1, "day"), // 1 day after end
-    start.add(30, "day"), // random day in the window
-    start.add(6, "months"), // random day outside the window
-  ];
-
-  await Promise.all(
-    birthdays.map((birthday, i) =>
-      testDb.insert(users).values({
-        id: `U${i + 1}`,
-        teamId: "T1",
-        birthday: birthday.toDate(),
-      }),
-    ),
-  );
-};
-
-const usersInWindow = ["U2", "U3", "U4", "U7"];
-const usersOutsideWindow = ["U1", "U5", "U6", "U8"];
 
 describe("Icebreaker questions", () => {
   beforeAll(async () => {
@@ -73,7 +49,7 @@ describe("Icebreaker questions", () => {
   it(
     "Should mention users whose birthday is in the ice breaker question window",
     async () => {
-      await generateUsers();
+      await generateIceBreakerTestUsers();
 
       const eventId = "IB2_" + Date.now().toString();
 
@@ -101,7 +77,7 @@ describe("Icebreaker questions", () => {
   it(
     "Should save thread ts in database",
     async () => {
-      await generateUsers();
+      await generateIceBreakerTestUsers();
 
       const eventId = "IB3_" + Date.now().toString();
 
