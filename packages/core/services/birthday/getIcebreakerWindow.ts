@@ -4,20 +4,20 @@ import dayjs from "dayjs";
 // The window includes people whose birthday is between the next question and the third next question.
 // The start is inclusive, the end is exclusive.
 // This ensures that everyone gets exactly two questions per year and responses are not too close to the birthday.
-// E.g if today is 2023-11-01, the window is between 2023-12-06 and 2024-02-07.
+// E.g if today is 2023-11-01, the window is between 2023-12-05 and 2024-02-06.
 
 export const getIceBreakerWindow = () => {
   const today = dayjs().startOf("day");
 
   const startOfStartMonth = today.add(1, "month").startOf("month");
-  let windowStart = startOfStartMonth.set("day", 3);
+  let windowStart = startOfStartMonth.set("day", 2);
 
   if (windowStart.month() !== startOfStartMonth.month()) {
     windowStart = windowStart.add(7, "day");
   }
 
   const startOfEndMonth = today.add(3, "month").startOf("month");
-  let windowEnd = startOfEndMonth.set("day", 3);
+  let windowEnd = startOfEndMonth.set("day", 2);
 
   if (windowEnd.month() !== startOfEndMonth.month()) {
     windowEnd = windowEnd.add(7, "day");
