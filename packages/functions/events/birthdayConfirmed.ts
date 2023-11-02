@@ -6,6 +6,8 @@ export const handler = handleEvent(
   "birthdayConfirmed",
   async ({ user, team, birthday, responseUrl }) => {
     try {
+      await saveBirthday({ user, teamId: team, birthday });
+
       await fetch(responseUrl, {
         method: "POST",
         headers: {
@@ -13,8 +15,6 @@ export const handler = handleEvent(
         },
         body: JSON.stringify(constructBirthdayConfirmedMessage()),
       });
-
-      await saveBirthday({ user, teamId: team, birthday });
     } catch (error) {
       console.error("Error sending birthday confirmed message: ", error);
     }
