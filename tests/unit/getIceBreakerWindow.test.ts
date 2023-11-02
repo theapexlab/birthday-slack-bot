@@ -9,8 +9,8 @@ describe("getIceBreakerWindow", () => {
     MockDate.reset();
   });
 
-  it("Should return correct window", () => {
-    testCases.forEach((testCase) => {
+  testCases.forEach((testCase) => {
+    it("Should return correct window", () => {
       MockDate.set(testCase.today);
 
       const window = getIceBreakerWindow();
