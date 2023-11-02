@@ -5,23 +5,19 @@ import { db } from "@/db/index";
 import { users } from "@/db/schema";
 
 export const getBirthdaysBetween = async (startDate: Dayjs, endDate: Dayjs) => {
-  const filterStart = and(
-    or(
-      sql`EXTRACT('MONTH' FROM ${users.birthday}) > ${startDate.month() + 1}`,
-      and(
-        sql`EXTRACT('MONTH' FROM ${users.birthday}) = ${startDate.month() + 1}`,
-        sql`EXTRACT('DAY' FROM ${users.birthday}) >= ${startDate.date()}`,
-      ),
+  const filterStart = or(
+    sql`EXTRACT('MONTH' FROM ${users.birthday}) > ${startDate.month() + 1}`,
+    and(
+      sql`EXTRACT('MONTH' FROM ${users.birthday}) = ${startDate.month() + 1}`,
+      sql`EXTRACT('DAY' FROM ${users.birthday}) >= ${startDate.date()}`,
     ),
   );
 
-  const filterEnd = and(
-    or(
-      sql`EXTRACT('MONTH' FROM ${users.birthday}) < ${endDate.month() + 1}`,
-      and(
-        sql`EXTRACT('MONTH' FROM ${users.birthday}) = ${endDate.month() + 1}`,
-        sql`EXTRACT('DAY' FROM ${users.birthday}) < ${endDate.date()}`,
-      ),
+  const filterEnd = or(
+    sql`EXTRACT('MONTH' FROM ${users.birthday}) < ${endDate.month() + 1}`,
+    and(
+      sql`EXTRACT('MONTH' FROM ${users.birthday}) = ${endDate.month() + 1}`,
+      sql`EXTRACT('DAY' FROM ${users.birthday}) < ${endDate.date()}`,
     ),
   );
 
