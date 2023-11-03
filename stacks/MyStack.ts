@@ -59,6 +59,7 @@ export function MyStack({ stack }: StackContext) {
       "POST /slack/interaction":
         "packages/functions/lambdas/slack-interaction.handler",
       "GET /icebreaker": "packages/functions/cron/iceBreakerQuestions.handler",
+      "GET /daily": "packages/functions/cron/daily.handler",
     },
   });
 

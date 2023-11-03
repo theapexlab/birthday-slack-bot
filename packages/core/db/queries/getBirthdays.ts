@@ -31,3 +31,11 @@ export const getBirthdaysBetween = async (startDate: Dayjs, endDate: Dayjs) => {
     where: and(filterStart, filterEnd),
   });
 };
+
+export const getBirthdays = async (date: Dayjs) =>
+  db.query.users.findMany({
+    where: and(
+      sql`EXTRACT('MONTH' FROM ${users.birthday}) = ${date.month() + 1}`,
+      sql`EXTRACT('DAY' FROM ${users.birthday}) = ${date.date()}`,
+    ),
+  });

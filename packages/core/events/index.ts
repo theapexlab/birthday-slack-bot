@@ -30,6 +30,10 @@ const Events = z.object({
     birthday: z.string(),
     responseUrl: z.string(),
   }),
+  askPresentIdeas: BaseEvent.extend({
+    user: z.string(),
+    team: z.string(),
+  }),
 });
 
 export type Events = z.infer<typeof Events>;
