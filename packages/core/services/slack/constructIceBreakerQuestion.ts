@@ -10,9 +10,11 @@ const iceBreakerQuestions = [
   "Hey Guys! What was the last item that you were window shopping for?",
 ];
 
-export const constructIceBreakerQuestion = (
-  args: Arguments,
-): ChatPostMessageArguments => {
+export const constructIceBreakerQuestion = ({
+  users,
+  channel,
+  eventId,
+}: Arguments): ChatPostMessageArguments => {
   const randomIceBreakerQuestion =
     iceBreakerQuestions[Math.floor(Math.random() * iceBreakerQuestions.length)];
 
@@ -26,12 +28,12 @@ export const constructIceBreakerQuestion = (
     },
   ];
 
-  if (args.users.length) {
+  if (users.length) {
     blocks.push({
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `Let's see your ones ${args.users
+        text: `Let's see your ones ${users
           .map((user) => `<@${user}>`)
           .join(", ")}!`,
       },
@@ -39,12 +41,12 @@ export const constructIceBreakerQuestion = (
   }
 
   return {
-    channel: args.channel,
-    metadata: args.eventId
+    channel: channel,
+    metadata: eventId
       ? {
           event_type: "iceBreakerQuestion",
           event_payload: {
-            eventId: args.eventId,
+            eventId: eventId,
           },
         }
       : undefined,

@@ -1,7 +1,7 @@
 import "@/testUtils/mocks/mockDb";
 
 import dayjs from "dayjs";
-import { afterEach, beforeAll, describe, expect, it } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { getBirthdaysBetween } from "@/db/queries/getBirthdays";
 import { users } from "@/db/schema";
@@ -12,6 +12,10 @@ import {
 } from "@/testUtils/generateIceBreakerTestUsers";
 import { testCases } from "@/testUtils/iceBreakerTestCases";
 import { testDb } from "@/testUtils/testDb";
+
+const constants = vi.hoisted(() => ({
+  teamId: "T1",
+}));
 
 describe("Get birthdays between", () => {
   beforeAll(async () => {
@@ -34,7 +38,7 @@ describe("Get birthdays between", () => {
       for (const user of usersInWindow) {
         expect(filteredUsers).toContainEqual({
           id: user,
-          teamId: "T1",
+          teamId: constants.teamId,
           birthday: expect.any(Date),
         });
       }
@@ -42,7 +46,7 @@ describe("Get birthdays between", () => {
       for (const user of usersOutsideWindow) {
         expect(filteredUsers).not.toContainEqual({
           id: user,
-          teamId: "T1",
+          teamId: constants.teamId,
           birthday: expect.any(Date),
         });
       }

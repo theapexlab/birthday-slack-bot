@@ -43,7 +43,7 @@ const constructBaseAskBirthdayMessage = ({
   metadata: {
     event_type: "askBirthday",
     event_payload: {
-      originalEventId: eventId,
+      eventId,
     },
   },
 });
