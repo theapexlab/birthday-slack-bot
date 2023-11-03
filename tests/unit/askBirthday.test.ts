@@ -1,3 +1,5 @@
+import "@/testUtils/mocks/mockSlackApp";
+
 import type { Mock } from "vitest";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -13,16 +15,6 @@ const constants = vi.hoisted(() => ({
   userId: "U001",
   userName: "Foo",
   eventId: "E001",
-}));
-
-vi.mock("@/services/slack/createSlackApp", () => ({
-  createSlackApp: vi.fn().mockReturnValue({
-    client: {
-      chat: {
-        postMessage: vi.fn(),
-      },
-    },
-  }),
 }));
 
 vi.mock("@/services/slack/getUserInfo", async () => ({

@@ -1,12 +1,21 @@
+import "@/testUtils/mocks/mockEventBridge";
+
 import {
   EventBridgeClient,
   PutEventsCommand,
 } from "@aws-sdk/client-eventbridge";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { callWithMockSlackEvent } from "@/testUtils/callWithMockSlackEvent";
-import { mockEventBridgePayload } from "@/testUtils/mockEventBridgePayload";
-import type { SlackEvent } from "@/types/SlackEventRequest";
+import { handler } from "@/functions/lambdas/slack-event";
+import { mockEventBridgePayload } from "@/testUtils/mocks/mockEventBridgePayload";
+import {
+  mockLambdaContext,
+  mockLambdaEvent,
+} from "@/testUtils/mocks/mockLambdaPayload";
+import type {
+  SlackCallbackRequest,
+  SlackEvent,
+} from "@/types/SlackEventRequest";
 
 const constants = vi.hoisted(() => ({
   challenge: "challenge",
@@ -16,17 +25,15 @@ const constants = vi.hoisted(() => ({
   teamId: "T001",
 }));
 
-vi.mock("@aws-sdk/client-eventbridge", async () => {
-  const EventBridgeClient = vi.fn();
-  EventBridgeClient.prototype.send = vi.fn();
-
-  const PutEventsCommand = vi.fn();
-
-  return {
-    EventBridgeClient,
-    PutEventsCommand,
-  };
-});
+export const callWithMockSlackEvent = async (body: SlackCallbackRequest) =>
+  handler(
+    {
+      ...mockLambdaEvent,
+      body: JSON.stringify(body),
+    },
+    mockLambdaContext,
+    () => {},
+  );
 
 describe("Handle slack events", () => {
   let eventBridge: EventBridgeClient;

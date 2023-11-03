@@ -1,4 +1,3 @@
-import { App } from "@slack/bolt";
 import { eq } from "drizzle-orm";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
@@ -13,11 +12,6 @@ import {
 import { testDb } from "@/testUtils/testDb";
 import { waitForPostInRandom } from "@/testUtils/waitForPostInRandomChannel";
 
-const app = new App({
-  signingSecret: import.meta.env.VITE_SLACK_SIGNING_SECRET,
-  token: import.meta.env.VITE_SLACK_BOT_TOKEN,
-});
-
 describe("Icebreaker questions", () => {
   beforeAll(async () => {
     await testDb.delete(users);
@@ -25,7 +19,7 @@ describe("Icebreaker questions", () => {
   }, 10_000);
 
   afterEach(async () => {
-    await deleteLastRandomChannelPost(app);
+    await deleteLastRandomChannelPost();
     await testDb.delete(users);
     await testDb.delete(iceBreakerThreads);
   }, 10_000);
@@ -39,7 +33,7 @@ describe("Icebreaker questions", () => {
         `${import.meta.env.VITE_API_URL}/icebreaker?eventId=${eventId}`,
       );
 
-      const message = await waitForPostInRandom(app, eventId);
+      const message = await waitForPostInRandom(eventId);
 
       expect(message.blocks?.length).toBe(1);
     },
@@ -57,7 +51,7 @@ describe("Icebreaker questions", () => {
         `${import.meta.env.VITE_API_URL}/icebreaker?eventId=${eventId}`,
       );
 
-      const message = await waitForPostInRandom(app, eventId);
+      const message = await waitForPostInRandom(eventId);
 
       expect(message.blocks?.length).toBe(2);
 

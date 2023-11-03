@@ -1,13 +1,12 @@
-import { App } from "@slack/bolt";
 import { and, eq } from "drizzle-orm";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { users } from "@/db/schema";
 import { timeout } from "@/testUtils/constants";
 import { deleteLastDmMessage } from "@/testUtils/deleteLastDmMessage";
-import { sendMockSlackEvent } from "@/testUtils/sendMockSlackEvent";
 import { testDb } from "@/testUtils/testDb";
 import { waitForDm } from "@/testUtils/waitForDm";
+import type { SlackCallbackRequest } from "@/types/SlackEventRequest";
 
 const constants = vi.hoisted(() => ({
   challenge: "challenge",
@@ -16,10 +15,16 @@ const constants = vi.hoisted(() => ({
   userId: "U1",
 }));
 
-const app = new App({
-  signingSecret: import.meta.env.VITE_SLACK_SIGNING_SECRET,
-  token: import.meta.env.VITE_SLACK_BOT_TOKEN,
-});
+export const sendMockSlackEvent = async (body: SlackCallbackRequest) =>
+  fetch(`${import.meta.env.VITE_API_URL}/slack/event`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  })
+    .then((res) => res.json())
+    .catch((error) => console.error(error.stack));
 
 describe("Slack events", () => {
   beforeAll(async () => {
@@ -27,7 +32,7 @@ describe("Slack events", () => {
   }, 10_000);
 
   afterEach(async () => {
-    await deleteLastDmMessage(app);
+    await deleteLastDmMessage();
     await testDb.delete(users);
   }, 10_000);
 
@@ -58,7 +63,7 @@ describe("Slack events", () => {
         event_id: eventId,
       });
 
-      await waitForDm(app, eventId);
+      await waitForDm(eventId);
     },
     timeout,
   );
@@ -79,7 +84,7 @@ describe("Slack events", () => {
         event_id: eventId,
       });
 
-      await waitForDm(app, eventId);
+      await waitForDm(eventId);
     },
     timeout,
   );

@@ -1,6 +1,6 @@
-import type { App } from "@slack/bolt";
+import { app } from "./testSlackApp";
 
-export const deleteLastDmMessage = async (app: App) => {
+export const deleteLastDmMessage = async () => {
   const chat = await app.client.conversations.history({
     channel: import.meta.env.VITE_SLACK_DM_ID,
     limit: 1,
