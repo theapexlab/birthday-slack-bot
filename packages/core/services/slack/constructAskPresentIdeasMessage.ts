@@ -1,5 +1,7 @@
 import type { ChatPostMessageArguments } from "@slack/web-api";
 
+import { makeTextBlock } from "./messageItems";
+
 type Arguments = {
   birthdayPerson: string;
   user: string;
@@ -24,19 +26,9 @@ export const constructAskPresentIdeasMessage = ({
     },
     text: `Hey, <@${user}>! <@${birthdayPerson}>'s birthday is in 2 months. Do you have any present ideas?`,
     blocks: [
-      {
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: `Hey ${name}! 👋`,
-        },
-      },
-      {
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: `It's <@${birthdayPerson}>'s birthday is in 2 months. Do you have any present ideas?`,
-        },
-      },
+      makeTextBlock(`Hey ${name}! 👋`),
+      makeTextBlock(
+        `It's <@${birthdayPerson}>'s birthday is in 2 months. Do you have any present ideas?`,
+      ),
     ],
   }) satisfies ChatPostMessageArguments;

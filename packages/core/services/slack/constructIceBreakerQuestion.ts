@@ -1,5 +1,7 @@
 import type { ChatPostMessageArguments, KnownBlock } from "@slack/web-api";
 
+import { makeTextBlock } from "./messageItems";
+
 type Arguments = {
   users: string[];
   channel: string;
@@ -19,25 +21,17 @@ export const constructIceBreakerQuestion = ({
     iceBreakerQuestions[Math.floor(Math.random() * iceBreakerQuestions.length)];
 
   const blocks: KnownBlock[] = [
-    {
-      type: "section",
-      text: {
-        type: "mrkdwn",
-        text: `${randomIceBreakerQuestion} Post your picks in the thread! 👇`,
-      },
-    },
+    makeTextBlock(
+      `${randomIceBreakerQuestion} Post your picks in the thread! 👇`,
+    ),
   ];
 
   if (users.length) {
-    blocks.push({
-      type: "section",
-      text: {
-        type: "mrkdwn",
-        text: `Let's see your ones ${users
-          .map((user) => `<@${user}>`)
-          .join(", ")}!`,
-      },
-    });
+    blocks.push(
+      makeTextBlock(
+        `Let's see your ones ${users.map((user) => `<@${user}>`).join(", ")}!`,
+      ),
+    );
   }
 
   return {
