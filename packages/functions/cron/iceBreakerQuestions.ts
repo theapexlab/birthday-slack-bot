@@ -35,4 +35,8 @@ export const handler = cronHandler(async (eventId?: string) => {
       }),
     ),
   );
+
+  return {
+    message: "Ice breaker question sent",
+  };
 });

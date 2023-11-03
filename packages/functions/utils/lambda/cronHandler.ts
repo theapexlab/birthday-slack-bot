@@ -9,7 +9,8 @@ const isApiGatewayProxyEventV2 = (
 ): event is APIGatewayProxyEventV2 => "queryStringParameters" in event;
 
 export const cronHandler =
-  (handler: (eventId?: string) => Promise<void>) => async (request: Event) => {
+  (handler: (eventId?: string) => Promise<unknown>) =>
+  async (request: Event) => {
     try {
       const eventId = isApiGatewayProxyEventV2(request)
         ? request.queryStringParameters?.eventId
