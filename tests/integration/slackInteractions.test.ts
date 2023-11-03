@@ -6,9 +6,9 @@ import { constructAskBirthdayMessageReplacement } from "@/services/slack/constru
 import { constructBirthdayConfirmedMessage } from "@/services/slack/constructBirthdayConfirmedMessage";
 import { constructConfirmBirthdayMessage } from "@/services/slack/constructConfirmBirthdayMessage";
 import { timeout } from "@/testUtils/constants";
-import { sendMockSlackInteraction } from "@/testUtils/sendMockSlackInteraction";
 import { testDb, waitForTestItem } from "@/testUtils/testDb";
 import { app } from "@/testUtils/testSlackApp";
+import type { SlackInteractionRequest } from "@/types/SlackInteractionRequest";
 
 const constants = vi.hoisted(() => ({
   responseUrl: import.meta.env.VITE_API_URL + "/slack/test-payload",
@@ -16,6 +16,26 @@ const constants = vi.hoisted(() => ({
   teamId: "T1",
   userId: "U1",
 }));
+
+export const sendMockSlackInteraction = async (
+  body: SlackInteractionRequest,
+) => {
+  const urlEncodedBody = new URLSearchParams({
+    payload: JSON.stringify(body),
+  });
+
+  const encodedBody = urlEncodedBody.toString();
+
+  return fetch(`${import.meta.env.VITE_API_URL}/slack/interaction`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: encodedBody,
+  })
+    .then((res) => res.json())
+    .catch((error) => console.error(error.stack));
+};
 
 describe("Slack interactions", () => {
   beforeEach(async () => {

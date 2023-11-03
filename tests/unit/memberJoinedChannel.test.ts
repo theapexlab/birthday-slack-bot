@@ -1,3 +1,5 @@
+import "@/testUtils/mocks/mockEventBridge";
+
 import {
   EventBridgeClient,
   PutEventsCommand,
@@ -8,7 +10,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Events } from "@/events";
 import { handler } from "@/functions/events/memberJoinedChannel";
 import { getUserInfo } from "@/services/slack/getUserInfo";
-import { mockEventBridgePayload } from "@/testUtils/mockEventBridgePayload";
+import { mockEventBridgePayload } from "@/testUtils/mocks/mockEventBridgePayload";
 import { sendMockSqsMessage } from "@/testUtils/sendMockSqsMessage";
 
 const constants = vi.hoisted(() => ({
@@ -19,18 +21,6 @@ const constants = vi.hoisted(() => ({
   userId: "U001",
   eventId: "E001",
 }));
-
-vi.mock("@aws-sdk/client-eventbridge", async () => {
-  const EventBridgeClient = vi.fn();
-  EventBridgeClient.prototype.send = vi.fn();
-
-  const PutEventsCommand = vi.fn();
-
-  return {
-    EventBridgeClient,
-    PutEventsCommand,
-  };
-});
 
 vi.mock("@/services/slack/getBotUserId", () => ({
   getBotUserId: vi.fn().mockResolvedValue(constants.birthdayBotUserId),

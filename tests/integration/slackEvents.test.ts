@@ -4,9 +4,9 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { users } from "@/db/schema";
 import { timeout } from "@/testUtils/constants";
 import { deleteLastDmMessage } from "@/testUtils/deleteLastDmMessage";
-import { sendMockSlackEvent } from "@/testUtils/sendMockSlackEvent";
 import { testDb } from "@/testUtils/testDb";
 import { waitForDm } from "@/testUtils/waitForDm";
+import type { SlackCallbackRequest } from "@/types/SlackEventRequest";
 
 const constants = vi.hoisted(() => ({
   challenge: "challenge",
@@ -14,6 +14,17 @@ const constants = vi.hoisted(() => ({
   teamId: "T1",
   userId: "U1",
 }));
+
+export const sendMockSlackEvent = async (body: SlackCallbackRequest) =>
+  fetch(`${import.meta.env.VITE_API_URL}/slack/event`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  })
+    .then((res) => res.json())
+    .catch((error) => console.error(error.stack));
 
 describe("Slack events", () => {
   beforeAll(async () => {

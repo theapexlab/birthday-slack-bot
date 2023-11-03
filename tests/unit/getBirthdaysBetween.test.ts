@@ -1,5 +1,7 @@
+import "@/testUtils/mocks/mockDb";
+
 import dayjs from "dayjs";
-import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, describe, expect, it } from "vitest";
 
 import { getBirthdaysBetween } from "@/db/queries/getBirthdays";
 import { users } from "@/db/schema";
@@ -10,10 +12,6 @@ import {
 } from "@/testUtils/generateIceBreakerTestUsers";
 import { testCases } from "@/testUtils/iceBreakerTestCases";
 import { testDb } from "@/testUtils/testDb";
-
-vi.mock("@/db/index", async () => ({
-  db: await import("@/testUtils/testDb").then(({ testDb }) => testDb),
-}));
 
 describe("Get birthdays between", () => {
   beforeAll(async () => {

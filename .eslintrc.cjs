@@ -61,4 +61,23 @@ module.exports = defineConfig({
     "import/order": "off",
     "import/prefer-default-export": "off",
   },
+  overrides: [
+    {
+      files: ["*.test.ts"],
+      rules: {
+        "simple-import-sort/imports": [
+          "error",
+          {
+            groups: [
+              ["^\\u0000"],
+              ["^@?\\w"],
+              ["^@\\/"],
+              ["^\\.\\.(?!/?$)", "^\\.\\./?$"],
+              ["^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$"],
+            ],
+          },
+        ],
+      },
+    },
+  ],
 });
