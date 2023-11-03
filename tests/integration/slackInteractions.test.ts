@@ -1,4 +1,3 @@
-import { App } from "@slack/bolt";
 import { eq } from "drizzle-orm";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -9,6 +8,7 @@ import { constructConfirmBirthdayMessage } from "@/services/slack/constructConfi
 import { timeout } from "@/testUtils/constants";
 import { sendMockSlackInteraction } from "@/testUtils/sendMockSlackInteraction";
 import { testDb, waitForTestItem } from "@/testUtils/testDb";
+import { app } from "@/testUtils/testSlackApp";
 
 const constants = vi.hoisted(() => ({
   responseUrl: import.meta.env.VITE_API_URL + "/slack/test-payload",
@@ -16,11 +16,6 @@ const constants = vi.hoisted(() => ({
   teamId: "T1",
   userId: "U1",
 }));
-
-const app = new App({
-  signingSecret: import.meta.env.VITE_SLACK_SIGNING_SECRET,
-  token: import.meta.env.VITE_SLACK_BOT_TOKEN,
-});
 
 describe("Slack interactions", () => {
   beforeEach(async () => {

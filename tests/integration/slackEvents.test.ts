@@ -1,4 +1,3 @@
-import { App } from "@slack/bolt";
 import { and, eq } from "drizzle-orm";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
@@ -16,18 +15,13 @@ const constants = vi.hoisted(() => ({
   userId: "U1",
 }));
 
-const app = new App({
-  signingSecret: import.meta.env.VITE_SLACK_SIGNING_SECRET,
-  token: import.meta.env.VITE_SLACK_BOT_TOKEN,
-});
-
 describe("Slack events", () => {
   beforeAll(async () => {
     await testDb.delete(users);
   }, 10_000);
 
   afterEach(async () => {
-    await deleteLastDmMessage(app);
+    await deleteLastDmMessage();
     await testDb.delete(users);
   }, 10_000);
 
@@ -58,7 +52,7 @@ describe("Slack events", () => {
         event_id: eventId,
       });
 
-      await waitForDm(app, eventId);
+      await waitForDm(eventId);
     },
     timeout,
   );
@@ -79,7 +73,7 @@ describe("Slack events", () => {
         event_id: eventId,
       });
 
-      await waitForDm(app, eventId);
+      await waitForDm(eventId);
     },
     timeout,
   );

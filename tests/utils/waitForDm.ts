@@ -1,9 +1,9 @@
-import type { App } from "@slack/bolt";
 import { vi } from "vitest";
 
 import { timeout } from "./constants";
+import { app } from "./testSlackApp";
 
-export const waitForDm = async (app: App, eventId: string) =>
+export const waitForDm = async (eventId: string) =>
   vi.waitFor(
     async () => {
       const chat = await app.client.conversations.history({
