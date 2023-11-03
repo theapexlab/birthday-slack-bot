@@ -19,8 +19,9 @@
     "test": "vitest watch",
     "test:unit": "vitest run unit",
     "test:integration": "vitest run integration --threads false --single-thread",
+    "test:ci": "vitest run --threads false --single-thread ",
     "migration:generate": "cd packages/core && pnpm migration:generate",
-    "migration:local": "NODE_ENV=development tsx scripts/migrateLocal.ts",
+    "migration:local": "tsx scripts/migrateLocal.ts",
     "migration:ci": "tsx scripts/migrateCi.ts"
   },
   "dependencies": {
@@ -38,6 +39,7 @@
     "@typescript-eslint/parser": "^6.7.5",
     "aws-cdk-lib": "2.95.1",
     "constructs": "10.2.69",
+    "dayjs": "^1.11.10",
     "dotenv": "^16.3.1",
     "drizzle-orm": "^0.28.6",
     "eslint": "^8.51.0",
@@ -47,6 +49,7 @@
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "husky": "^8.0.0",
     "lint-staged": "^14.0.1",
+    "mockdate": "^3.0.5",
     "pg": "^8.11.3",
     "prettier": "^3.0.3",
     "tsx": "^3.14.0",

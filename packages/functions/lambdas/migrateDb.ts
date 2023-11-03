@@ -1,8 +1,6 @@
-import type { APIGatewayProxyHandlerV2 } from "aws-lambda";
-
 import { migrate } from "@/db/index";
 
-export const handler: APIGatewayProxyHandlerV2 = async () => {
+export const handler = async () => {
   try {
     console.log("Migrating db...");
 

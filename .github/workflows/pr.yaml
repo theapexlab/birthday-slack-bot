@@ -59,9 +59,6 @@ jobs:
       - name: SIB
         run: pnpm sib --pipeline
 
-      - name: Run unit tests
-        run: pnpm test:unit
-
       - name: Set secrets
         run: |
           npx sst secrets set SLACK_LOG_LEVEL "${{ secrets.SLACK_LOG_LEVEL_TEST }}" --stage ${{ env.STAGE }}
@@ -90,8 +87,8 @@ jobs:
       - name: Migration
         run: pnpm migration:ci ${{ steps.sst-output.outputs.migrationFunction }}
 
-      - name: Run integration tests
-        run: pnpm test:integration
+      - name: Run tests
+        run: pnpm test:ci
         env:
           VITE_API_URL: ${{ steps.sst-output.outputs.apiEndpoint }}
           VITE_SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN_TEST }}
@@ -99,6 +96,7 @@ jobs:
           VITE_SLACK_USER_ID: ${{ secrets.SLACK_USER_ID_TEST }}
           VITE_SLACK_BOT_USER_ID: ${{ secrets.SLACK_BOT_USER_ID_TEST }}
           VITE_CORE_SLACK_CHANNEL_ID: ${{ secrets.CORE_SLACK_CHANNEL_ID_TEST }}
+          VITE_RANDOM_SLACK_CHANNEL_ID: ${{ secrets.RANDOM_SLACK_CHANNEL_ID_TEST }}
           VITE_SLACK_DM_ID: ${{ secrets.SLACK_DM_ID_TEST }}
           VITE_SLACK_TEAM_ID: ${{ secrets.SLACK_TEAM_ID_TEST }}
           VITE_CI: true

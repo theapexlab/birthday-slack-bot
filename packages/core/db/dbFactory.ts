@@ -5,6 +5,8 @@ import { drizzle as drizzleNode } from "drizzle-orm/node-postgres";
 import { migrate as migrateNode } from "drizzle-orm/node-postgres/migrator";
 import pg from "pg";
 
+import * as schema from "./schema";
+
 const migrationsFolder = "./packages/core/db/migrations";
 
 type FactoryPayload =
@@ -25,7 +27,9 @@ export const dbFactory = (payload: FactoryPayload) => {
       ...payload,
     });
 
-    const db = drizzleNode(pool);
+    const db = drizzleNode(pool, {
+      schema,
+    });
 
     return [
       db,
@@ -39,6 +43,7 @@ export const dbFactory = (payload: FactoryPayload) => {
 
   const db = drizzleRds(new RDSDataClient({}), {
     ...payload,
+    schema,
   });
 
   return [

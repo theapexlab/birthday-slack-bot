@@ -5,6 +5,7 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
+      "@/db/*": ["db/*"],
       "@/types/*": ["types/*"]
     }
   }

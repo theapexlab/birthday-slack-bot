@@ -3,11 +3,11 @@ import { vi } from "vitest";
 
 import { timeout } from "./constants";
 
-export const waitForDm = async (app: App, eventId: string) =>
+export const waitForPostInRandom = async (app: App, eventId: string) =>
   vi.waitFor(
     async () => {
       const chat = await app.client.conversations.history({
-        channel: import.meta.env.VITE_SLACK_DM_ID,
+        channel: import.meta.env.VITE_RANDOM_SLACK_CHANNEL_ID,
         limit: 1,
         include_all_metadata: true,
       });
@@ -21,7 +21,7 @@ export const waitForDm = async (app: App, eventId: string) =>
           (message) =>
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            (message.metadata?.event_payload?.["originalEventId"] as
+            (message.metadata?.event_payload?.["eventId"] as
               | string
               | undefined) === eventId,
         )
