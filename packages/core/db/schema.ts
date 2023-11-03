@@ -19,8 +19,6 @@ export const users = pgTable(
   }),
 );
 
-export type SelectUser = typeof users.$inferSelect;
-
 export const iceBreakerThreads = pgTable(
   "iceBreakerThreads",
   {

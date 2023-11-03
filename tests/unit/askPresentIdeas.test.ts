@@ -8,7 +8,6 @@ import {
 } from "@aws-sdk/client-eventbridge";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import type { Mock } from "vitest";
 import {
   afterEach,
   beforeAll,
@@ -19,12 +18,9 @@ import {
   vi,
 } from "vitest";
 
-import { getBirthdays } from "@/db/queries/getBirthdays";
-import { type SelectUser, users } from "@/db/schema";
+import { users } from "@/db/schema";
 import type { Events } from "@/events";
-import { handler } from "@/functions/events/askPresentIdeas";
-import { constructAskPresentIdeasMessage } from "@/services/slack/constructAskPresentIdeasMessage";
-import { createSlackApp } from "@/services/slack/createSlackApp";
+import { handler as askPresentIdeasFromTeam } from "@/functions/events/askPresentIdeasFromTeam";
 import { callWithMockCronEvent } from "@/testUtils/callWithMockCronEvent";
 import { mockEventBridgePayload } from "@/testUtils/mocks/mockEventBridgePayload";
 import { sendMockSqsMessage } from "@/testUtils/sendMockSqsMessage";
@@ -40,10 +36,6 @@ const constants = vi.hoisted(() => ({
   namePostfix: "Name",
 }));
 
-vi.mock("@/db/queries/getBirthdays", () => ({
-  getBirthdays: vi.fn().mockResolvedValue([]),
-}));
-
 vi.mock("@/services/slack/getUserInfo", async () => ({
   getUserInfo: vi.fn().mockImplementation((userId: string) =>
     Promise.resolve({
@@ -57,10 +49,8 @@ vi.mock("@/services/slack/getUserInfo", async () => ({
   ),
 }));
 
-describe("Present ideas", () => {
+describe("Daily cron", () => {
   let eventBridge: EventBridgeClient;
-  let getBirthdaysMock: Mock;
-  let createSlackAppMock: Mock;
 
   beforeAll(async () => {
     await testDb.delete(users);
@@ -68,8 +58,6 @@ describe("Present ideas", () => {
 
   beforeEach(() => {
     eventBridge = new EventBridgeClient();
-    getBirthdaysMock = getBirthdays as Mock;
-    createSlackAppMock = createSlackApp as Mock;
   });
 
   afterEach(async () => {
@@ -77,29 +65,27 @@ describe("Present ideas", () => {
     await testDb.delete(users);
   });
 
-  it("Should publish askPresentIdeas event if user has birthday exactly 2 months from now", async () => {
-    getBirthdaysMock.mockResolvedValueOnce([
-      {
-        id: constants.userId,
-        teamId: constants.teamId,
-        birthday: dayjs.utc().add(2, "month").toDate(),
-      },
-    ] satisfies SelectUser[]);
+  it("Should publish askPresentIdeasFromTeam event if user has birthday exactly 2 months from now", async () => {
+    await testDb.insert(users).values({
+      id: constants.userId,
+      teamId: constants.teamId,
+      birthday: dayjs.utc().add(2, "month").toDate(),
+    });
 
     await callWithMockCronEvent(constants.eventId);
 
     expect(eventBridge.send).toHaveBeenCalledOnce();
     expect(PutEventsCommand).toHaveBeenCalledWith(
-      mockEventBridgePayload("askPresentIdeas", {
+      mockEventBridgePayload("askPresentIdeasFromTeam", {
         team: constants.teamId,
-        user: constants.userId,
+        birthdayPerson: constants.userId,
         eventId: constants.eventId,
       }),
     );
   });
 
-  it("Should publish askPresentIdeas event twice if 2 users have birthday exactly 2 months from now", async () => {
-    getBirthdaysMock.mockResolvedValueOnce([
+  it("Should publish askPresentIdeasFromTeam event twice if 2 users have birthday exactly 2 months from now", async () => {
+    await testDb.insert(users).values([
       {
         id: constants.userId,
         teamId: constants.teamId,
@@ -110,82 +96,102 @@ describe("Present ideas", () => {
         teamId: constants.teamId,
         birthday: dayjs.utc().add(2, "month").toDate(),
       },
-    ] satisfies SelectUser[]);
+    ]);
 
     await callWithMockCronEvent(constants.eventId);
 
     expect(eventBridge.send).toHaveBeenCalledTimes(2);
     expect(PutEventsCommand).toHaveBeenCalledWith(
-      mockEventBridgePayload("askPresentIdeas", {
+      mockEventBridgePayload("askPresentIdeasFromTeam", {
         team: constants.teamId,
-        user: constants.userId,
+        birthdayPerson: constants.userId,
         eventId: constants.eventId,
       }),
     );
     expect(PutEventsCommand).toHaveBeenCalledWith(
-      mockEventBridgePayload("askPresentIdeas", {
+      mockEventBridgePayload("askPresentIdeasFromTeam", {
         team: constants.teamId,
-        user: constants.otherUserIds[0],
+        birthdayPerson: constants.otherUserIds[0],
         eventId: constants.eventId,
       }),
     );
   });
 
-  it("Should not publish askPresentIdeas event if no user has birthday exactly 2 months from now", async () => {
+  it("Should not publish askPresentIdeasFromTeam event if no user has birthday exactly 2 months from now", async () => {
+    await testDb.insert(users).values([
+      {
+        id: constants.userId,
+        teamId: constants.teamId,
+        birthday: dayjs.utc().add(3, "month").toDate(),
+      },
+      {
+        id: constants.otherUserIds[0],
+        teamId: constants.teamId,
+        birthday: dayjs.utc().add(4, "month").toDate(),
+      },
+    ]);
+
     await callWithMockCronEvent(constants.eventId);
 
     expect(eventBridge.send).not.toHaveBeenCalled();
   });
+});
 
-  it("Should send dm to team mates", async () => {
+describe("askPresentIdeasFromTeam", () => {
+  let eventBridge: EventBridgeClient;
+
+  beforeAll(async () => {
+    await testDb.delete(users);
+  });
+
+  beforeEach(() => {
+    eventBridge = new EventBridgeClient();
+  });
+
+  afterEach(async () => {
+    vi.clearAllMocks();
+    await testDb.delete(users);
+  });
+
+  it("Should publish askPresentIdeasFromUser event", async () => {
     const event = {
-      user: constants.userId,
+      birthdayPerson: constants.userId,
       team: constants.teamId,
       eventId: constants.eventId,
-    } satisfies Events["askPresentIdeas"];
+    } satisfies Events["askPresentIdeasFromTeam"];
 
-    const sendDMMock = vi.spyOn(
-      createSlackAppMock().client.chat,
-      "postMessage",
+    await testDb.insert(users).values(
+      constants.otherUserIds.map((userId) => ({
+        id: userId,
+        teamId: constants.teamId,
+        birthday: dayjs.utc().toDate(),
+      })),
     );
 
-    await Promise.all(
-      constants.otherUserIds.map((userId) =>
-        testDb.insert(users).values({
-          id: userId,
-          teamId: constants.teamId,
-          birthday: dayjs.utc().toDate(),
-        }),
-      ),
+    await sendMockSqsMessage(
+      "askPresentIdeasFromTeam",
+      event,
+      askPresentIdeasFromTeam,
     );
 
-    await sendMockSqsMessage("askPresentIdeas", event, handler);
-
-    expect(sendDMMock).toHaveBeenCalledTimes(constants.otherUserIds.length);
-
+    expect(eventBridge.send).toHaveBeenCalledTimes(2);
     constants.otherUserIds.forEach((userId) => {
-      expect(sendDMMock).toHaveBeenCalledWith(
-        constructAskPresentIdeasMessage({
-          birthdayPerson: constants.userId,
+      expect(PutEventsCommand).toHaveBeenCalledWith(
+        mockEventBridgePayload("askPresentIdeasFromUser", {
           user: userId,
-          name: userId + constants.namePostfix,
+          birthdayPerson: constants.userId,
           eventId: constants.eventId,
         }),
       );
     });
   });
 
-  it("Should not send dm to the one whose birthday is coming up", async () => {
+  it("Should not publish askPresentIdeasFromUser event for the one whose birthday is coming up", async () => {
     const event = {
-      user: constants.userId,
+      birthdayPerson: constants.userId,
       team: constants.teamId,
       eventId: constants.eventId,
-    } satisfies Events["askPresentIdeas"];
-
-    const sendDMMock = vi.spyOn(
-      createSlackAppMock().client.chat,
-      "postMessage",
-    );
+    } satisfies Events["askPresentIdeasFromTeam"];
 
     await testDb.insert(users).values({
       id: constants.userId,
@@ -193,8 +199,12 @@ describe("Present ideas", () => {
       birthday: dayjs.utc().toDate(),
     });
 
-    await sendMockSqsMessage("askPresentIdeas", event, handler);
+    await sendMockSqsMessage(
+      "askPresentIdeasFromTeam",
+      event,
+      askPresentIdeasFromTeam,
+    );
 
-    expect(sendDMMock).not.toHaveBeenCalled();
+    expect(eventBridge.send).not.toHaveBeenCalled();
   });
 });

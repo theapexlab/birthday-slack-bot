@@ -30,9 +30,13 @@ const Events = z.object({
     birthday: z.string(),
     responseUrl: z.string(),
   }),
-  askPresentIdeas: BaseEvent.extend({
-    user: z.string(),
+  askPresentIdeasFromTeam: BaseEvent.extend({
+    birthdayPerson: z.string(),
     team: z.string(),
+  }),
+  askPresentIdeasFromUser: BaseEvent.extend({
+    birthdayPerson: z.string(),
+    user: z.string(),
   }),
 });
 

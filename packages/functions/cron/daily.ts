@@ -14,11 +14,16 @@ export const handler = cronHandler(async (eventId?: string) => {
 
   await Promise.all(
     users.map((user) =>
-      publishEvent("askPresentIdeas", {
+      publishEvent("askPresentIdeasFromTeam", {
         team: user.teamId,
-        user: user.id,
+        birthdayPerson: user.id,
         eventId,
       }),
     ),
   );
+
+  return {
+    users,
+    message: users.length ? "Sent present ideas requests" : "No birthdays",
+  };
 });
