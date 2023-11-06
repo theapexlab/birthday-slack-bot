@@ -53,19 +53,19 @@ jobs:
 
       - name: Set secrets
         run: |
-          npx sst secrets set SLACK_LOG_LEVEL "${{ secrets.SLACK_LOG_LEVEL_PRODUCTION}}" --production "${{ env.production }}"
-          npx sst secrets set SLACK_BOT_TOKEN "${{ secrets.SLACK_BOT_TOKEN_PRODUCTION}}" --production "${{ env.production }}"
-          npx sst secrets set SLACK_SIGNING_SECRET "${{ secrets.SLACK_SIGNING_SECRET_PRODUCTION}}" --production "${{ env.production }}"
-          npx sst secrets set CORE_SLACK_CHANNEL_ID "${{ secrets.CORE_SLACK_CHANNEL_ID_PRODUCTION}}" --production "${{ env.production }}"
-          npx sst secrets set RANDOM_SLACK_CHANNEL_ID "${{ secrets.RANDOM_SLACK_CHANNEL_ID_PRODUCTION}}" --production "${{ env.production }}"
+          npx sst secrets set SLACK_LOG_LEVEL "${{ secrets.SLACK_LOG_LEVEL_PRODUCTION}}" --stage "${{ env.stage }}"
+          npx sst secrets set SLACK_BOT_TOKEN "${{ secrets.SLACK_BOT_TOKEN_PRODUCTION}}" --stage "${{ env.stage }}"
+          npx sst secrets set SLACK_SIGNING_SECRET "${{ secrets.SLACK_SIGNING_SECRET_PRODUCTION}}" --stage "${{ env.stage }}"
+          npx sst secrets set CORE_SLACK_CHANNEL_ID "${{ secrets.CORE_SLACK_CHANNEL_ID_PRODUCTION}}" --stage "${{ env.stage }}"
+          npx sst secrets set RANDOM_SLACK_CHANNEL_ID "${{ secrets.RANDOM_SLACK_CHANNEL_ID_PRODUCTION}}" --stage "${{ env.stage }}"
 
       - name: Deploy stack
-        run: pnpm run deploy --production "${{ env.production }}"
+        run: pnpm run deploy --stage "${{ env.stage }}"
 
       - name: Extract stack outputs
         id: sst-output
         run: |
-          MIGRATION_FUNCTION=$(jq -r '.["${{env.production}}-birthday-slack-bot-MyStack"].MigrationFunctionName' .sst/outputs.json)
+          MIGRATION_FUNCTION=$(jq -r '.["${{env.stage}}-birthday-slack-bot-MyStack"].MigrationFunctionName' .sst/outputs.json)
           echo "migrationFunction=$MIGRATION_FUNCTION" >> "$GITHUB_OUTPUT"
 
       - name: Migration
