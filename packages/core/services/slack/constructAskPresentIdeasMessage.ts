@@ -2,11 +2,14 @@ import type { ChatPostMessageArguments } from "@slack/web-api";
 
 import {
   presentIdeasInputActionId,
-  presentIdeasInputBlockId,
   presentIdeasSaveButtonBlockId,
 } from "@/types/SlackInteractionRequest";
 
-import { makeTextBlock } from "./messageItems";
+import {
+  makeActionsBlock,
+  makeInputBlock,
+  makeTextBlock,
+} from "./messageItems";
 
 type Arguments = {
   birthdayPerson: string;
@@ -23,47 +26,28 @@ export const constructAskPresentIdeasMessage = ({
 }: Arguments): ChatPostMessageArguments =>
   ({
     channel: user,
-    metadata: {
-      event_type: "askPresentIdeas",
-      event_payload: {
-        eventId: eventId || "",
-        birthdayPerson,
-      },
-    },
+    metadata: eventId
+      ? {
+          event_type: "askPresentIdeas",
+          event_payload: {
+            eventId,
+          },
+        }
+      : undefined,
     text: `Hey, <@${user}>! <@${birthdayPerson}>'s birthday is in 2 months. Do you have any present ideas?`,
     blocks: [
       makeTextBlock(`Hey ${name}! 👋`),
       makeTextBlock(
         `It's <@${birthdayPerson}>'s birthday is in 2 months. Do you have any present ideas?`,
       ),
-      {
-        type: "input",
-        block_id: presentIdeasInputBlockId,
-        element: {
-          type: "plain_text_input",
-          multiline: true,
-          action_id: presentIdeasInputActionId,
+      makeInputBlock("Present ideas", presentIdeasInputActionId, true),
+      makeActionsBlock([
+        {
+          actionId: presentIdeasSaveButtonBlockId,
+          text: "Save",
+          value: birthdayPerson,
+          style: "primary",
         },
-        label: {
-          type: "plain_text",
-          text: "Present ideas",
-        },
-      },
-      {
-        type: "actions",
-        elements: [
-          {
-            type: "button",
-            text: {
-              type: "plain_text",
-              emoji: true,
-              text: "Save",
-            },
-            value: birthdayPerson,
-            style: "primary",
-            action_id: presentIdeasSaveButtonBlockId,
-          },
-        ],
-      },
+      ]),
     ],
   }) satisfies ChatPostMessageArguments;

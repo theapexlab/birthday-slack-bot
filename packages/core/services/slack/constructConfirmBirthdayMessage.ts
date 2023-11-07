@@ -14,11 +14,19 @@ export const constructConfirmBirthdayMessage = (
     text: "Confirm your birthday",
     blocks: [
       makeTextBlock(`Are you sure your birthday is ${birthday}?`),
-      makeActionsBlock(
-        birthdayConfirmActionId,
-        birthdayIncorrectActionId,
-        birthday,
-        "danger",
-      ),
+      makeActionsBlock([
+        {
+          actionId: birthdayConfirmActionId,
+          text: "Yes",
+          value: birthday,
+          style: "primary",
+        },
+        {
+          actionId: birthdayIncorrectActionId,
+          text: "No",
+          value: birthday,
+          style: "danger",
+        },
+      ]),
     ],
   }) satisfies ChatReplaceMessageArguments;

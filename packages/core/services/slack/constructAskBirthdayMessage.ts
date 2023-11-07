@@ -23,12 +23,14 @@ const constructBaseAskBirthdayMessage = ({
       pickBirthdayActionId,
     ),
   ],
-  metadata: {
-    event_type: "askBirthday",
-    event_payload: {
-      eventId,
-    },
-  },
+  metadata: eventId
+    ? {
+        event_type: "askBirthday",
+        event_payload: {
+          eventId,
+        },
+      }
+    : undefined,
 });
 
 export const constructAskBirthdayMessage = (
