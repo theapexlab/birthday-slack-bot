@@ -30,14 +30,12 @@ export const generateIceBreakerTestUsers = async (today?: string) => {
     start.add(6, "months"), // random day outside the window
   ];
 
-  await Promise.all(
-    birthdays.map((birthday, i) =>
-      testDb.insert(users).values({
-        id: `U${i + 1}`,
-        teamId: "T1",
-        birthday: birthday.toDate(),
-      }),
-    ),
+  await testDb.insert(users).values(
+    birthdays.map((birthday, i) => ({
+      id: `U${i + 1}`,
+      teamId: "T1",
+      birthday: birthday.toDate(),
+    })),
   );
 };
 

@@ -21,7 +21,7 @@ export const waitForDm = async (eventId: string) =>
           (message) =>
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            (message.metadata?.event_payload?.["originalEventId"] as
+            (message.metadata?.event_payload?.["eventId"] as
               | string
               | undefined) === eventId,
         )

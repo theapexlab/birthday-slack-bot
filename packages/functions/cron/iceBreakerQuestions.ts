@@ -1,4 +1,3 @@
-import type { APIGatewayProxyEventV2, EventBridgeEvent } from "aws-lambda";
 import { Config } from "sst/node/config";
 
 import { db } from "@/db/index";
@@ -7,24 +6,13 @@ import { iceBreakerThreads } from "@/db/schema";
 import { getIceBreakerWindow } from "@/services/birthday/getIcebreakerWindow";
 import { constructIceBreakerQuestion } from "@/services/slack/constructIceBreakerQuestion";
 import { createSlackApp } from "@/services/slack/createSlackApp";
+import { cronHandler } from "@/utils/lambda/cronHandler";
 
-type Event =
-  | APIGatewayProxyEventV2
-  | EventBridgeEvent<"Scheduled Event", unknown>;
-
-const isApiGatewayProxyEventV2 = (
-  event: Event,
-): event is APIGatewayProxyEventV2 => "queryStringParameters" in event;
-
-export const handler = async (request: Event) => {
+export const handler = cronHandler(async (eventId?: string) => {
   const { start, end } = getIceBreakerWindow();
   const users = await getBirthdaysBetween(start, end);
 
   const app = createSlackApp();
-
-  const eventId = isApiGatewayProxyEventV2(request)
-    ? request.queryStringParameters?.eventId
-    : undefined;
 
   const message = await app.client.chat.postMessage(
     constructIceBreakerQuestion({
@@ -38,13 +26,15 @@ export const handler = async (request: Event) => {
     throw new Error("Failed to send ice breaker question");
   }
 
-  await Promise.all(
-    users.map((user) =>
-      db.insert(iceBreakerThreads).values({
-        userId: user.id,
-        teamId: user.teamId,
-        threadId: message.ts!,
-      }),
-    ),
+  await db.insert(iceBreakerThreads).values(
+    users.map((user) => ({
+      userId: user.id,
+      teamId: user.teamId,
+      threadId: message.ts!,
+    })),
   );
-};
+
+  return {
+    message: "Ice breaker question sent",
+  };
+});

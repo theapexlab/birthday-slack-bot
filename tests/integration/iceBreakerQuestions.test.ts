@@ -12,6 +12,10 @@ import {
 import { testDb } from "@/testUtils/testDb";
 import { waitForPostInRandom } from "@/testUtils/waitForPostInRandomChannel";
 
+const constants = vi.hoisted(() => ({
+  teamId: "T1",
+}));
+
 describe("Icebreaker questions", () => {
   beforeAll(async () => {
     await testDb.delete(users);
@@ -84,7 +88,7 @@ describe("Icebreaker questions", () => {
           const items = await testDb
             .select()
             .from(iceBreakerThreads)
-            .where(eq(iceBreakerThreads.teamId, "T1"));
+            .where(eq(iceBreakerThreads.teamId, constants.teamId));
 
           if (items.length < usersInWindow.length) {
             return Promise.reject();
@@ -100,7 +104,7 @@ describe("Icebreaker questions", () => {
       for (const user of usersInWindow) {
         expect(threads).toContainEqual({
           id: expect.any(Number),
-          teamId: "T1",
+          teamId: constants.teamId,
           userId: user,
           threadId: expect.any(String),
         });
@@ -109,7 +113,7 @@ describe("Icebreaker questions", () => {
       for (const user of usersOutsideWindow) {
         expect(threads).not.toContainEqual({
           id: expect.any(Number),
-          teamId: "T1",
+          teamId: constants.teamId,
           userId: user,
           threadId: expect.any(String),
         });

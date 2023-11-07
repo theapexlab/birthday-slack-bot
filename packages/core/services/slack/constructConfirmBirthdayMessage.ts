@@ -4,6 +4,8 @@ import {
   birthdayIncorrectActionId,
 } from "@/types/SlackInteractionRequest";
 
+import { makeActionsBlock, makeTextBlock } from "./messageItems";
+
 export const constructConfirmBirthdayMessage = (
   birthday: string,
 ): ChatReplaceMessageArguments =>
@@ -11,45 +13,12 @@ export const constructConfirmBirthdayMessage = (
     replace_original: true,
     text: "Confirm your birthday",
     blocks: [
-      {
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: `Are you sure your birthday is ${birthday}?`,
-        },
-      },
-      {
-        type: "actions",
-        elements: [
-          {
-            type: "button",
-            text: {
-              type: "plain_text",
-              emoji: true,
-              text: "Yes",
-            },
-            style: "primary",
-            action_id: birthdayConfirmActionId,
-            value: birthday,
-          },
-          {
-            type: "button",
-            text: {
-              type: "plain_text",
-              emoji: true,
-              text: "No",
-            },
-            style: "danger",
-            action_id: birthdayIncorrectActionId,
-            value: birthday,
-          },
-        ],
-      },
-    ],
-    metadata: {
-      event_type: "confirmBirthday",
-      event_payload: {
+      makeTextBlock(`Are you sure your birthday is ${birthday}?`),
+      makeActionsBlock(
+        birthdayConfirmActionId,
+        birthdayIncorrectActionId,
         birthday,
-      },
-    },
+        "",
+      ),
+    ],
   }) satisfies ChatReplaceMessageArguments;
