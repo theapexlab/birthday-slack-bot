@@ -1,62 +1,42 @@
 import { eq } from "drizzle-orm";
-import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterAll, beforeEach, describe, expect, it, test, vi } from "vitest";
 
-import { presentIdeas, testItems, users } from "@/db/schema";
+import { testItems, users } from "@/db/schema";
 import { constructAskBirthdayMessageReplacement } from "@/services/slack/constructAskBirthdayMessage";
 import { constructBirthdayConfirmedMessage } from "@/services/slack/constructBirthdayConfirmedMessage";
 import { constructConfirmBirthdayMessage } from "@/services/slack/constructConfirmBirthdayMessage";
-import { constructPresentIdeaSavedMessage } from "@/services/slack/constructPresentIdeaSavedMessage";
 import { timeout, waitTimeout } from "@/testUtils/constants";
+import { sendMockSlackInteraction } from "@/testUtils/sendMockSlackInteraction";
 import { testDb, waitForTestItem } from "@/testUtils/testDb";
 import { app } from "@/testUtils/testSlackApp";
-import type { SlackInteractionRequest } from "@/types/SlackInteractionRequest";
+import { waitForDm } from "@/testUtils/waitForDm";
+import {
+  birthdayConfirmActionId,
+  birthdayIncorrectActionId,
+} from "@/types/SlackInteractionRequest";
 
 const constants = vi.hoisted(() => ({
-  responseUrl: import.meta.env.VITE_API_URL + "/slack/test-payload",
+  responseUrl: `${import.meta.env.VITE_API_URL}/slack/test-payload`,
   birthday: "2000-02-15",
   teamId: "T1",
   userId: "U1",
-  birthdayPerson: "U2",
-  presentIdea: "Test idea",
 }));
-
-export const sendMockSlackInteraction = async (
-  body: SlackInteractionRequest,
-) => {
-  const urlEncodedBody = new URLSearchParams({
-    payload: JSON.stringify(body),
-  });
-
-  const encodedBody = urlEncodedBody.toString();
-
-  return fetch(`${import.meta.env.VITE_API_URL}/slack/interaction`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: encodedBody,
-  })
-    .then((res) => res.json())
-    .catch((error) => console.error(error.stack));
-};
 
 describe("Slack interactions", () => {
   beforeEach(async () => {
     await testDb.delete(users);
     await testDb.delete(testItems);
-    await testDb.delete(presentIdeas);
   });
 
   afterAll(async () => {
     await testDb.delete(users);
     await testDb.delete(testItems);
-    await testDb.delete(presentIdeas);
   });
 
   it(
     "Should send confirmation message when birthday is selected",
     async () => {
-      const eventId = "I1_" + Date.now().toString();
+      const eventId = "AB1_" + Date.now().toString();
 
       await sendMockSlackInteraction({
         type: "block_actions",
@@ -86,10 +66,29 @@ describe("Slack interactions", () => {
     timeout,
   );
 
+  test("Confirm message should be valid", async () => {
+    const eventId = "AB2_" + Date.now().toString();
+
+    await app.client.chat.postMessage({
+      channel: import.meta.env.VITE_SLACK_USER_ID,
+      ...constructConfirmBirthdayMessage(constants.birthday, eventId),
+    });
+
+    const message = await waitForDm(eventId);
+
+    expect(message.blocks?.[0].text?.text).toContain(constants.birthday);
+    expect(message.blocks?.[1].elements?.[0].action_id).toEqual(
+      birthdayConfirmActionId,
+    );
+    expect(message.blocks?.[1].elements?.[1].action_id).toEqual(
+      birthdayIncorrectActionId,
+    );
+  });
+
   it(
     "Should send thank you message when birthday is confirmed",
     async () => {
-      const eventId = "I2_" + Date.now().toString();
+      const eventId = "AB3_" + Date.now().toString();
 
       await sendMockSlackInteraction({
         type: "block_actions",
@@ -167,7 +166,7 @@ describe("Slack interactions", () => {
   it(
     "Should ask for birthday again when birthday is incorrect",
     async () => {
-      const eventId = "I3_" + Date.now().toString();
+      const eventId = "AB4_" + Date.now().toString();
 
       await sendMockSlackInteraction({
         type: "block_actions",
@@ -202,88 +201,6 @@ describe("Slack interactions", () => {
           }),
         ),
       );
-    },
-    timeout,
-  );
-
-  it(
-    "Should save present idea to db",
-    async () => {
-      await testDb.insert(users).values([
-        {
-          id: constants.userId,
-          teamId: constants.teamId,
-          birthday: new Date(constants.birthday),
-        },
-        {
-          id: constants.birthdayPerson,
-          teamId: constants.teamId,
-          birthday: new Date(constants.birthday),
-        },
-      ]);
-
-      const eventId = "I4_" + Date.now().toString();
-
-      await sendMockSlackInteraction({
-        type: "block_actions",
-        user: {
-          id: constants.userId,
-          team_id: constants.teamId,
-        },
-        response_url: constants.responseUrl + `?testId=${eventId}`,
-        actions: [
-          {
-            action_id: "presentIdeasSaveButton",
-            type: "button",
-            value: constants.birthdayPerson,
-          },
-        ],
-        state: {
-          values: {
-            presentIdeasInput: {
-              presentIdeas: {
-                type: "plain_text_input",
-                value: constants.presentIdea,
-              },
-            },
-          },
-        },
-      });
-
-      const presentIdea = await vi.waitFor(
-        async () => {
-          const items = await testDb
-            .select()
-            .from(presentIdeas)
-            .where(eq(presentIdeas.userId, constants.userId))
-            .limit(1);
-
-          if (items.length === 0) {
-            throw new Error("Present idea not saved");
-          }
-          return items[0];
-        },
-        {
-          timeout: waitTimeout,
-          interval: 1_000,
-        },
-      );
-
-      expect(
-        presentIdea.birthdayPerson,
-        "Incorrect user saved as birthday person",
-      ).toEqual(constants.birthdayPerson);
-
-      expect(presentIdea.presentIdea, "Incorrect present idea saved").toEqual(
-        constants.presentIdea,
-      );
-
-      const item = await waitForTestItem(eventId);
-
-      expect(
-        item.payload,
-        "Payload doesn't match present idea saved message",
-      ).toEqual(JSON.stringify(constructPresentIdeaSavedMessage()));
     },
     timeout,
   );
