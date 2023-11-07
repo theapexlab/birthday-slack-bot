@@ -29,23 +29,27 @@ export const sendMockSlackEvent = async (body: SlackCallbackRequest) =>
 describe("Slack events", () => {
   beforeAll(async () => {
     await testDb.delete(users);
-  }, 10_000);
+  });
 
   afterEach(async () => {
     await deleteLastDmMessage();
     await testDb.delete(users);
-  }, 10_000);
-
-  it("Should return challenge on slack event endpoint", async () => {
-    const res = await sendMockSlackEvent({
-      type: "url_verification",
-      challenge: constants.challenge,
-    });
-
-    expect(res).toEqual({
-      urlVerificationChallenge: constants.challenge,
-    });
   });
+
+  it(
+    "Should return challenge on slack event endpoint",
+    async () => {
+      const res = await sendMockSlackEvent({
+        type: "url_verification",
+        challenge: constants.challenge,
+      });
+
+      expect(res, "Challenge is not matched").toEqual({
+        urlVerificationChallenge: constants.challenge,
+      });
+    },
+    timeout,
+  );
 
   it(
     "Should send DM to user when they join the channel",
@@ -63,7 +67,12 @@ describe("Slack events", () => {
         event_id: eventId,
       });
 
-      await waitForDm(eventId);
+      const message = await waitForDm(eventId);
+
+      expect(
+        message.blocks?.[1].accessory?.type,
+        "Message doesn't have datepicker",
+      ).toBe("datepicker");
     },
     timeout,
   );
@@ -84,7 +93,12 @@ describe("Slack events", () => {
         event_id: eventId,
       });
 
-      await waitForDm(eventId);
+      const message = await waitForDm(eventId);
+
+      expect(
+        message.blocks?.[1].accessory?.type,
+        "Message doesn't have datepicker",
+      ).toBe("datepicker");
     },
     timeout,
   );

@@ -5,6 +5,7 @@ import { presentIdeas, testItems, users } from "@/db/schema";
 import { constructAskBirthdayMessageReplacement } from "@/services/slack/constructAskBirthdayMessage";
 import { constructBirthdayConfirmedMessage } from "@/services/slack/constructBirthdayConfirmedMessage";
 import { constructConfirmBirthdayMessage } from "@/services/slack/constructConfirmBirthdayMessage";
+import { constructPresentIdeaSavedMessage } from "@/services/slack/constructPresentIdeaSavedMessage";
 import { timeout, waitTimeout } from "@/testUtils/constants";
 import { testDb, waitForTestItem } from "@/testUtils/testDb";
 import { app } from "@/testUtils/testSlackApp";
@@ -75,7 +76,10 @@ describe("Slack interactions", () => {
 
       const item = await waitForTestItem(eventId);
 
-      expect(item.payload).toEqual(
+      expect(
+        item.payload,
+        "Payload doesn't match confirm birthday message",
+      ).toEqual(
         JSON.stringify(constructConfirmBirthdayMessage(constants.birthday)),
       );
     },
@@ -105,9 +109,10 @@ describe("Slack interactions", () => {
 
       const item = await waitForTestItem(eventId);
 
-      expect(item.payload).toEqual(
-        JSON.stringify(constructBirthdayConfirmedMessage()),
-      );
+      expect(
+        item.payload,
+        "Payload doesn't match birthday confirmed message",
+      ).toEqual(JSON.stringify(constructBirthdayConfirmedMessage()));
     },
     timeout,
   );
@@ -150,7 +155,7 @@ describe("Slack interactions", () => {
         },
       );
 
-      expect(item).toEqual({
+      expect(item, "User doesn't match expected user").toEqual({
         id: constants.userId,
         teamId: constants.teamId,
         birthday: new Date(constants.birthday),
@@ -186,7 +191,10 @@ describe("Slack interactions", () => {
 
       const item = await waitForTestItem(eventId);
 
-      expect(item.payload).toEqual(
+      expect(
+        item.payload,
+        "Payload doesn't match ask birthday message",
+      ).toEqual(
         JSON.stringify(
           constructAskBirthdayMessageReplacement({
             name: user?.profile?.first_name || user?.name || "",
@@ -242,7 +250,7 @@ describe("Slack interactions", () => {
         },
       });
 
-      const item = await vi.waitFor(
+      const presentIdea = await vi.waitFor(
         async () => {
           const items = await testDb
             .select()
@@ -261,26 +269,21 @@ describe("Slack interactions", () => {
         },
       );
 
-      expect(item.birthdayPerson).toEqual(constants.birthdayPerson);
-      expect(item.presentIdea).toEqual(constants.presentIdea);
+      expect(
+        presentIdea.birthdayPerson,
+        "Incorrect user saved as birthday person",
+      ).toEqual(constants.birthdayPerson);
 
-      await vi.waitFor(
-        async () => {
-          const items = await testDb
-            .select()
-            .from(testItems)
-            .where(eq(testItems.id, eventId))
-            .limit(1);
-
-          if (items.length === 0) {
-            throw new Error("Test item not saved");
-          }
-        },
-        {
-          timeout: waitTimeout,
-          interval: 1_000,
-        },
+      expect(presentIdea.presentIdea, "Incorrect present idea saved").toEqual(
+        constants.presentIdea,
       );
+
+      const item = await waitForTestItem(eventId);
+
+      expect(
+        item.payload,
+        "Payload doesn't match present idea saved message",
+      ).toEqual(JSON.stringify(constructPresentIdeaSavedMessage()));
     },
     timeout,
   );

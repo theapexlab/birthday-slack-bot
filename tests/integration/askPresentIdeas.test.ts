@@ -7,6 +7,10 @@ import { timeout } from "@/testUtils/constants";
 import { deleteLastDmMessage } from "@/testUtils/deleteLastDmMessage";
 import { testDb } from "@/testUtils/testDb";
 import { waitForDm } from "@/testUtils/waitForDm";
+import {
+  presentIdeasInputActionId,
+  presentIdeasSaveButtonBlockId,
+} from "@/types/SlackInteractionRequest";
 
 dayjs.extend(utc);
 
@@ -46,10 +50,22 @@ describe("Present ideas", () => {
 
       const message = await waitForDm(eventId);
 
-      expect(message.blocks?.length).toBe(4);
-      expect(message.blocks?.[1].text?.text).toContain(
-        `<@${constants.birthdayPerson}>`,
-      );
+      expect(message.blocks?.length, "Message doesn't have 4 blocks").toBe(4);
+
+      expect(
+        message.blocks?.[1].text?.text,
+        "Block doesn't mention birthday person.",
+      ).toContain(`<@${constants.birthdayPerson}>`);
+
+      expect(
+        message.blocks?.[2].element?.action_id,
+        "Block doesn't contain input element",
+      ).toBe(presentIdeasInputActionId);
+
+      expect(
+        message.blocks?.[3].elements?.[0].action_id,
+        "Block doesn't contain save button",
+      ).toBe(presentIdeasSaveButtonBlockId);
     },
     timeout,
   );
