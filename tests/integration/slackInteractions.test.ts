@@ -214,13 +214,15 @@ describe("Slack interactions", () => {
         },
       ]);
 
+      const eventId = "I4_" + Date.now().toString();
+
       await sendMockSlackInteraction({
         type: "block_actions",
         user: {
           id: constants.userId,
           team_id: constants.teamId,
         },
-        response_url: constants.responseUrl + "?testId=1",
+        response_url: constants.responseUrl + `?testId=${eventId}`,
         actions: [
           {
             action_id: "presentIdeasSaveButton",
@@ -261,6 +263,24 @@ describe("Slack interactions", () => {
 
       expect(item.birthdayPerson).toEqual(constants.birthdayPerson);
       expect(item.presentIdea).toEqual(constants.presentIdea);
+
+      await vi.waitFor(
+        async () => {
+          const items = await testDb
+            .select()
+            .from(testItems)
+            .where(eq(testItems.id, eventId))
+            .limit(1);
+
+          if (items.length === 0) {
+            throw new Error("Test item not saved");
+          }
+        },
+        {
+          timeout: waitTimeout,
+          interval: 1_000,
+        },
+      );
     },
     timeout,
   );
