@@ -1,5 +1,11 @@
 import type { ChatPostMessageArguments } from "@slack/web-api";
 
+import {
+  presentIdeasInputActionId,
+  presentIdeasInputBlockId,
+  presentIdeasSaveButtonBlockId,
+} from "@/types/SlackInteractionRequest";
+
 import { makeTextBlock } from "./messageItems";
 
 type Arguments = {
@@ -30,5 +36,34 @@ export const constructAskPresentIdeasMessage = ({
       makeTextBlock(
         `It's <@${birthdayPerson}>'s birthday is in 2 months. Do you have any present ideas?`,
       ),
+      {
+        type: "input",
+        block_id: presentIdeasInputBlockId,
+        element: {
+          type: "plain_text_input",
+          multiline: true,
+          action_id: presentIdeasInputActionId,
+        },
+        label: {
+          type: "plain_text",
+          text: "Present ideas",
+        },
+      },
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              emoji: true,
+              text: "Save",
+            },
+            value: birthdayPerson,
+            style: "primary",
+            action_id: presentIdeasSaveButtonBlockId,
+          },
+        ],
+      },
     ],
   }) satisfies ChatPostMessageArguments;

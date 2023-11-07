@@ -2,7 +2,7 @@ import { and, eq } from "drizzle-orm";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { users } from "@/db/schema";
-import { timeout } from "@/testUtils/constants";
+import { timeout, waitTimeout } from "@/testUtils/constants";
 import { deleteLastDmMessage } from "@/testUtils/deleteLastDmMessage";
 import { testDb } from "@/testUtils/testDb";
 import { waitForDm } from "@/testUtils/waitForDm";
@@ -125,12 +125,13 @@ describe("Slack events", () => {
             .limit(1);
 
           if (items.length === 0) {
-            return Promise.resolve(items);
+            return items;
           }
-          return Promise.reject();
+
+          throw new Error("User not deleted");
         },
         {
-          timeout: timeout,
+          timeout: waitTimeout,
           interval: 1_000,
         },
       );

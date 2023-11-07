@@ -1,11 +1,11 @@
 import { eq } from "drizzle-orm";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { testItems, users } from "@/db/schema";
+import { presentIdeas, testItems, users } from "@/db/schema";
 import { constructAskBirthdayMessageReplacement } from "@/services/slack/constructAskBirthdayMessage";
 import { constructBirthdayConfirmedMessage } from "@/services/slack/constructBirthdayConfirmedMessage";
 import { constructConfirmBirthdayMessage } from "@/services/slack/constructConfirmBirthdayMessage";
-import { timeout } from "@/testUtils/constants";
+import { timeout, waitTimeout } from "@/testUtils/constants";
 import { testDb, waitForTestItem } from "@/testUtils/testDb";
 import { app } from "@/testUtils/testSlackApp";
 import type { SlackInteractionRequest } from "@/types/SlackInteractionRequest";
@@ -15,6 +15,8 @@ const constants = vi.hoisted(() => ({
   birthday: "2000-02-15",
   teamId: "T1",
   userId: "U1",
+  birthdayPerson: "U2",
+  presentIdea: "Test idea",
 }));
 
 export const sendMockSlackInteraction = async (
@@ -41,11 +43,13 @@ describe("Slack interactions", () => {
   beforeEach(async () => {
     await testDb.delete(users);
     await testDb.delete(testItems);
+    await testDb.delete(presentIdeas);
   });
 
   afterAll(async () => {
     await testDb.delete(users);
     await testDb.delete(testItems);
+    await testDb.delete(presentIdeas);
   });
 
   it(
@@ -64,7 +68,6 @@ describe("Slack interactions", () => {
           {
             type: "datepicker",
             action_id: "pickBirthday",
-            action_ts: eventId,
             selected_date: constants.birthday,
           },
         ],
@@ -95,7 +98,6 @@ describe("Slack interactions", () => {
           {
             type: "button",
             action_id: "birthdayConfirm",
-            action_ts: eventId,
             value: constants.birthday,
           },
         ],
@@ -124,7 +126,6 @@ describe("Slack interactions", () => {
           {
             type: "button",
             action_id: "birthdayConfirm",
-            action_ts: "",
             value: constants.birthday,
           },
         ],
@@ -139,12 +140,12 @@ describe("Slack interactions", () => {
             .limit(1);
 
           if (items.length === 0) {
-            return Promise.reject();
+            throw new Error("User not saved");
           }
           return items[0];
         },
         {
-          timeout: timeout,
+          timeout: waitTimeout,
           interval: 1_000,
         },
       );
@@ -174,7 +175,6 @@ describe("Slack interactions", () => {
           {
             type: "button",
             action_id: "birthdayIncorrect",
-            action_ts: eventId,
             value: constants.birthday,
           },
         ],
@@ -194,6 +194,73 @@ describe("Slack interactions", () => {
           }),
         ),
       );
+    },
+    timeout,
+  );
+
+  it(
+    "Should save present idea to db",
+    async () => {
+      await testDb.insert(users).values([
+        {
+          id: constants.userId,
+          teamId: constants.teamId,
+          birthday: new Date(constants.birthday),
+        },
+        {
+          id: constants.birthdayPerson,
+          teamId: constants.teamId,
+          birthday: new Date(constants.birthday),
+        },
+      ]);
+
+      await sendMockSlackInteraction({
+        type: "block_actions",
+        user: {
+          id: constants.userId,
+          team_id: constants.teamId,
+        },
+        response_url: constants.responseUrl + "?testId=1",
+        actions: [
+          {
+            action_id: "presentIdeasSaveButton",
+            type: "button",
+            value: constants.birthdayPerson,
+          },
+        ],
+        state: {
+          values: {
+            presentIdeasInput: {
+              presentIdeas: {
+                type: "plain_text_input",
+                value: constants.presentIdea,
+              },
+            },
+          },
+        },
+      });
+
+      const item = await vi.waitFor(
+        async () => {
+          const items = await testDb
+            .select()
+            .from(presentIdeas)
+            .where(eq(presentIdeas.userId, constants.userId))
+            .limit(1);
+
+          if (items.length === 0) {
+            throw new Error("Present idea not saved");
+          }
+          return items[0];
+        },
+        {
+          timeout: waitTimeout,
+          interval: 1_000,
+        },
+      );
+
+      expect(item.birthdayPerson).toEqual(constants.birthdayPerson);
+      expect(item.presentIdea).toEqual(constants.presentIdea);
     },
     timeout,
   );

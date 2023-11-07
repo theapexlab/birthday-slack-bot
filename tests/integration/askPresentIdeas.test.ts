@@ -46,7 +46,7 @@ describe("Present ideas", () => {
 
       const message = await waitForDm(eventId);
 
-      expect(message.blocks?.length).toBe(2);
+      expect(message.blocks?.length).toBe(4);
       expect(message.blocks?.[1].text?.text).toContain(
         `<@${constants.birthdayPerson}>`,
       );

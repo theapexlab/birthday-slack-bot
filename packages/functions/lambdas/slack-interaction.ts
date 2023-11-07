@@ -31,6 +31,18 @@ export const handler: APIGatewayProxyHandlerV2 = async (request) => {
           responseUrl: parsedData.response_url,
         });
         break;
+      case "presentIdeasSaveButton":
+        console.log(
+          parsedData.state!.values.presentIdeasInput.presentIdeas.value,
+        );
+        await publishEvent("savePresentIdea", {
+          birthdayPerson: parsedData.actions[0].value,
+          user: parsedData.user.id,
+          team: parsedData.user.team_id,
+          presentIdea:
+            parsedData.state!.values.presentIdeasInput.presentIdeas.value,
+          responseUrl: parsedData.response_url,
+        });
     }
 
     return {

@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { iceBreakerThreads, users } from "@/db/schema";
-import { timeout } from "@/testUtils/constants";
+import { timeout, waitTimeout } from "@/testUtils/constants";
 import { deleteLastRandomChannelPost } from "@/testUtils/deleteLastRandomChannelPost";
 import {
   generateIceBreakerTestUsers,
@@ -91,12 +91,12 @@ describe("Icebreaker questions", () => {
             .where(eq(iceBreakerThreads.teamId, constants.teamId));
 
           if (items.length < usersInWindow.length) {
-            return Promise.reject();
+            throw new Error("Not all threads saved");
           }
           return items;
         },
         {
-          timeout,
+          timeout: waitTimeout,
           interval: 1_000,
         },
       );
