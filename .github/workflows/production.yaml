@@ -1,0 +1,68 @@
+name: Production release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    env:
+      stage: production
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_PRODUCTION}}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_PRODUCTION}}
+          aws-region: eu-central-1
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: false
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install Dependencies
+        run: pnpm i
+
+      - name: Set secrets
+        run: |
+          npx sst secrets set SLACK_LOG_LEVEL "${{ secrets.SLACK_LOG_LEVEL_PRODUCTION}}" --stage "${{ env.stage }}"
+          npx sst secrets set SLACK_BOT_TOKEN "${{ secrets.SLACK_BOT_TOKEN_PRODUCTION}}" --stage "${{ env.stage }}"
+          npx sst secrets set SLACK_SIGNING_SECRET "${{ secrets.SLACK_SIGNING_SECRET_PRODUCTION}}" --stage "${{ env.stage }}"
+          npx sst secrets set CORE_SLACK_CHANNEL_ID "${{ secrets.CORE_SLACK_CHANNEL_ID_PRODUCTION}}" --stage "${{ env.stage }}"
+          npx sst secrets set RANDOM_SLACK_CHANNEL_ID "${{ secrets.RANDOM_SLACK_CHANNEL_ID_PRODUCTION}}" --stage "${{ env.stage }}"
+
+      - name: Deploy stack
+        run: pnpm run deploy --stage "${{ env.stage }}"
+
+      - name: Extract stack outputs
+        id: sst-output
+        run: |
+          MIGRATION_FUNCTION=$(jq -r '.["${{env.stage}}-birthday-slack-bot-MyStack"].MigrationFunctionName' .sst/outputs.json)
+          echo "migrationFunction=$MIGRATION_FUNCTION" >> "$GITHUB_OUTPUT"
+
+      - name: Migration
+        run: pnpm migration:ci ${{ steps.sst-output.outputs.migrationFunction }}

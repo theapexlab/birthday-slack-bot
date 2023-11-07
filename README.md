@@ -71,10 +71,10 @@ npx sst secrets set RANDOM_SLACK_CHANNEL_ID <your-test-channel>
 
 1. Find the ApiEndpoint url of your deployed app in the console output.
 2. Open the `Event Subscriptions` sub-page.
-3. Add the url: `<ApiEndpoint>/api/slack/event` to the `Request URL` field.
+3. Add the url: `<ApiEndpoint>/slack/event` to the `Request URL` field.
 4. Slack sends a challenge request to the url to verify the endpoint. Make sure you have the app running locally for it to succeed.
 5. Open the `Interactivity & Shortcuts` sub-page.
-6. Add the url: `<ApiEndpoint>/api/slack/interaction` to the `Request URL` field.
+6. Add the url: `<ApiEndpoint>/slack/interaction` to the `Request URL` field.
 
 ## Run tests
 
