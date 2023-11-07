@@ -18,7 +18,7 @@ export const constructConfirmBirthdayMessage = (
         birthdayConfirmActionId,
         birthdayIncorrectActionId,
         birthday,
-        "",
+        "danger",
       ),
     ],
   }) satisfies ChatReplaceMessageArguments;
