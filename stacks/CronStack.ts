@@ -6,8 +6,17 @@ import { ConfigStack } from "./ConfigStack";
 export function CronStack({ stack }: StackContext) {
   const secrets = use(ConfigStack);
 
+  const environment = {
+    DB_URL: process.env.DB_URL || "",
+  };
+
   const icebreakerCron = new Cron(stack, "Cron", {
-    job: "packages/functions/cron/iceBreakerQuestions.handler",
+    job: {
+      function: {
+        environment,
+        handler: "packages/functions/cron/iceBreakerQuestions.handler",
+      },
+    },
     // Every first Tuesday of the month at 11:00 UTC
     schedule: "cron(0 11 ? * 3#1 *)",
   });
@@ -15,7 +24,12 @@ export function CronStack({ stack }: StackContext) {
   icebreakerCron.bind(secrets);
 
   const dailyCron = new Cron(stack, "DailyCron", {
-    job: "packages/functions/cron/daily.handler",
+    job: {
+      function: {
+        environment,
+        handler: "packages/functions/cron/daily.handler",
+      },
+    },
     // Every day at 11:00 UTC
     schedule: "cron(0 11 ? * * *)",
   });
