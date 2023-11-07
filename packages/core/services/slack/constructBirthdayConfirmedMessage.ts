@@ -1,7 +1,7 @@
-import type { ChatReplaceMessageArguments } from "@/types/ChatReplaceMessageArguments";
+import type { ReplaceMessageArguments } from "@/types/MessageArguments";
 
 export const constructBirthdayConfirmedMessage =
-  (): ChatReplaceMessageArguments => ({
+  (): ReplaceMessageArguments => ({
     replace_original: true,
     text: "Thanks for submitting your birthday! 🎉",
   });

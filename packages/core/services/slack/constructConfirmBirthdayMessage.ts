@@ -1,4 +1,4 @@
-import type { ChatReplaceMessageArguments } from "@/types/ChatReplaceMessageArguments";
+import type { ReplaceMessageArguments } from "@/types/MessageArguments";
 import {
   birthdayConfirmActionId,
   birthdayIncorrectActionId,
@@ -8,25 +8,33 @@ import { makeActionsBlock, makeTextBlock } from "./messageItems";
 
 export const constructConfirmBirthdayMessage = (
   birthday: string,
-): ChatReplaceMessageArguments =>
-  ({
-    replace_original: true,
-    text: "Confirm your birthday",
-    blocks: [
-      makeTextBlock(`Are you sure your birthday is ${birthday}?`),
-      makeActionsBlock([
-        {
-          actionId: birthdayConfirmActionId,
-          text: "Yes",
-          value: birthday,
-          style: "primary",
+  eventId?: string,
+): ReplaceMessageArguments => ({
+  replace_original: true,
+  text: "Confirm your birthday",
+  blocks: [
+    makeTextBlock(`Are you sure your birthday is ${birthday}?`),
+    makeActionsBlock([
+      {
+        actionId: birthdayConfirmActionId,
+        text: "Yes",
+        value: birthday,
+        style: "primary",
+      },
+      {
+        actionId: birthdayIncorrectActionId,
+        text: "No",
+        value: birthday,
+        style: "danger",
+      },
+    ]),
+  ],
+  metadata: eventId
+    ? {
+        event_type: "confirmBirthday",
+        event_payload: {
+          eventId,
         },
-        {
-          actionId: birthdayIncorrectActionId,
-          text: "No",
-          value: birthday,
-          style: "danger",
-        },
-      ]),
-    ],
-  }) satisfies ChatReplaceMessageArguments;
+      }
+    : undefined,
+});

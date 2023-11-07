@@ -1,6 +1,7 @@
-import type { ChatPostMessageArguments } from "@slack/web-api";
-
-import type { ChatReplaceMessageArguments } from "@/types/ChatReplaceMessageArguments";
+import type {
+  PostMessageArguments,
+  ReplaceMessageArguments,
+} from "@/types/MessageArguments";
 import { pickBirthdayActionId } from "@/types/SlackInteractionRequest";
 
 import { makeTextBlock, makeTextBlockWithDatepicker } from "./messageItems";
@@ -14,7 +15,7 @@ type Arguments = {
 const constructBaseAskBirthdayMessage = ({
   name,
   eventId,
-}: Arguments): Omit<ChatPostMessageArguments, "channel"> => ({
+}: Arguments): Omit<PostMessageArguments, "channel"> => ({
   text: "Please share your birthday with us! 🥳",
   blocks: [
     makeTextBlock(`Hey ${name}! 👋`),
@@ -35,14 +36,14 @@ const constructBaseAskBirthdayMessage = ({
 
 export const constructAskBirthdayMessage = (
   args: Arguments,
-): ChatPostMessageArguments => ({
+): PostMessageArguments => ({
   ...constructBaseAskBirthdayMessage(args),
   channel: args.user,
 });
 
 export const constructAskBirthdayMessageReplacement = (
   args: Arguments,
-): ChatReplaceMessageArguments => ({
+): ReplaceMessageArguments => ({
   ...constructBaseAskBirthdayMessage(args),
   replace_original: true,
 });

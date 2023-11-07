@@ -1,4 +1,6 @@
-import type { ChatPostMessageArguments, KnownBlock } from "@slack/web-api";
+import type { KnownBlock } from "@slack/web-api";
+
+import type { PostMessageArguments } from "@/types/MessageArguments";
 
 import { makeTextBlock } from "./messageItems";
 
@@ -16,7 +18,7 @@ export const constructIceBreakerQuestion = ({
   users,
   channel,
   eventId,
-}: Arguments): ChatPostMessageArguments => {
+}: Arguments): PostMessageArguments => {
   const randomIceBreakerQuestion =
     iceBreakerQuestions[Math.floor(Math.random() * iceBreakerQuestions.length)];
 
@@ -46,5 +48,5 @@ export const constructIceBreakerQuestion = ({
       : undefined,
     text: randomIceBreakerQuestion,
     blocks,
-  } satisfies ChatPostMessageArguments;
+  };
 };
