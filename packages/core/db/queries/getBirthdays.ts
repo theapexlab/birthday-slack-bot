@@ -1,5 +1,5 @@
 import type { Dayjs } from "dayjs";
-import { and, or, sql } from "drizzle-orm";
+import { and, isNull, or, sql } from "drizzle-orm";
 
 import { db } from "@/db/index";
 import { users } from "@/db/schema";
@@ -38,4 +38,9 @@ export const getBirthdays = async (date: Dayjs) =>
       sql`EXTRACT('MONTH' FROM ${users.birthday}) = ${date.month() + 1}`,
       sql`EXTRACT('DAY' FROM ${users.birthday}) = ${date.date()}`,
     ),
+  });
+
+export const getUsersWhoseBirthdayIsMissing = async () =>
+  db.query.users.findMany({
+    where: isNull(users.birthday),
   });
