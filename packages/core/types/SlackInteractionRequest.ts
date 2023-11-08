@@ -36,14 +36,20 @@ export const SlackInteractionRequestSchema = z.object({
   response_url: z.string(),
   state: z
     .object({
-      values: z.object({
-        [presentIdeasInputBlockId]: z.object({
-          [presentIdeasInputActionId]: z.object({
-            type: z.literal("plain_text_input"),
-            value: z.string(),
-          }),
-        }),
-      }),
+      values: z
+        .object({
+          [presentIdeasInputBlockId]: z
+            .object({
+              [presentIdeasInputActionId]: z
+                .object({
+                  type: z.literal("plain_text_input"),
+                  value: z.string(),
+                })
+                .optional(),
+            })
+            .optional(),
+        })
+        .optional(),
     })
     .optional(),
 });
