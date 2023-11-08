@@ -1,7 +1,7 @@
 import type { ReplaceMessageArguments } from "@/types/MessageArguments";
 
-export const constructBirthdayConfirmedMessage =
+export const constructPresentIdeaSavedMessage =
   (): ReplaceMessageArguments => ({
     replace_original: true,
-    text: "Thanks for submitting your birthday! 🎉",
+    text: "Thanks for the idea! 🙏",
   });

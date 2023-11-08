@@ -1,49 +1,37 @@
 import { eq } from "drizzle-orm";
-import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, test, vi } from "vitest";
 
 import { testItems, users } from "@/db/schema";
 import { constructAskBirthdayMessageReplacement } from "@/services/slack/constructAskBirthdayMessage";
 import { constructBirthdayConfirmedMessage } from "@/services/slack/constructBirthdayConfirmedMessage";
 import { constructConfirmBirthdayMessage } from "@/services/slack/constructConfirmBirthdayMessage";
-import { timeout } from "@/testUtils/constants";
+import { timeout, waitTimeout } from "@/testUtils/constants";
+import { deleteLastDm } from "@/testUtils/deleteLastDm";
+import { sendMockSlackInteraction } from "@/testUtils/sendMockSlackInteraction";
 import { testDb, waitForTestItem } from "@/testUtils/testDb";
 import { app } from "@/testUtils/testSlackApp";
-import type { SlackInteractionRequest } from "@/types/SlackInteractionRequest";
+import { waitForDm } from "@/testUtils/waitForDm";
+import {
+  birthdayConfirmActionId,
+  birthdayIncorrectActionId,
+} from "@/types/SlackInteractionRequest";
 
 const constants = vi.hoisted(() => ({
-  responseUrl: import.meta.env.VITE_API_URL + "/slack/test-payload",
+  responseUrl: `${import.meta.env.VITE_API_URL}/slack/test-payload`,
   birthday: "2000-02-15",
   teamId: "T1",
   userId: "U1",
 }));
 
-export const sendMockSlackInteraction = async (
-  body: SlackInteractionRequest,
-) => {
-  const urlEncodedBody = new URLSearchParams({
-    payload: JSON.stringify(body),
-  });
-
-  const encodedBody = urlEncodedBody.toString();
-
-  return fetch(`${import.meta.env.VITE_API_URL}/slack/interaction`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: encodedBody,
-  })
-    .then((res) => res.json())
-    .catch((error) => console.error(error.stack));
-};
-
 describe("Slack interactions", () => {
-  beforeEach(async () => {
+  beforeAll(async () => {
     await testDb.delete(users);
     await testDb.delete(testItems);
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
+    await deleteLastDm();
+
     await testDb.delete(users);
     await testDb.delete(testItems);
   });
@@ -51,7 +39,7 @@ describe("Slack interactions", () => {
   it(
     "Should send confirmation message when birthday is selected",
     async () => {
-      const eventId = "I1_" + Date.now().toString();
+      const eventId = "AB1_" + Date.now().toString();
 
       await sendMockSlackInteraction({
         type: "block_actions",
@@ -64,7 +52,6 @@ describe("Slack interactions", () => {
           {
             type: "datepicker",
             action_id: "pickBirthday",
-            action_ts: eventId,
             selected_date: constants.birthday,
           },
         ],
@@ -72,17 +59,39 @@ describe("Slack interactions", () => {
 
       const item = await waitForTestItem(eventId);
 
-      expect(item.payload).toEqual(
+      expect(
+        item.payload,
+        "Payload doesn't match confirm birthday message",
+      ).toEqual(
         JSON.stringify(constructConfirmBirthdayMessage(constants.birthday)),
       );
     },
     timeout,
   );
 
+  test("Confirm message should be valid", async () => {
+    const eventId = "AB2_" + Date.now().toString();
+
+    await app.client.chat.postMessage({
+      channel: import.meta.env.VITE_SLACK_USER_ID,
+      ...constructConfirmBirthdayMessage(constants.birthday, eventId),
+    });
+
+    const message = await waitForDm(eventId);
+
+    expect(message.blocks?.[0].text?.text).toContain(constants.birthday);
+    expect(message.blocks?.[1].elements?.[0].action_id).toEqual(
+      birthdayConfirmActionId,
+    );
+    expect(message.blocks?.[1].elements?.[1].action_id).toEqual(
+      birthdayIncorrectActionId,
+    );
+  });
+
   it(
     "Should send thank you message when birthday is confirmed",
     async () => {
-      const eventId = "I2_" + Date.now().toString();
+      const eventId = "AB3_" + Date.now().toString();
 
       await sendMockSlackInteraction({
         type: "block_actions",
@@ -95,7 +104,6 @@ describe("Slack interactions", () => {
           {
             type: "button",
             action_id: "birthdayConfirm",
-            action_ts: eventId,
             value: constants.birthday,
           },
         ],
@@ -103,9 +111,10 @@ describe("Slack interactions", () => {
 
       const item = await waitForTestItem(eventId);
 
-      expect(item.payload).toEqual(
-        JSON.stringify(constructBirthdayConfirmedMessage()),
-      );
+      expect(
+        item.payload,
+        "Payload doesn't match birthday confirmed message",
+      ).toEqual(JSON.stringify(constructBirthdayConfirmedMessage()));
     },
     timeout,
   );
@@ -124,7 +133,6 @@ describe("Slack interactions", () => {
           {
             type: "button",
             action_id: "birthdayConfirm",
-            action_ts: "",
             value: constants.birthday,
           },
         ],
@@ -139,17 +147,17 @@ describe("Slack interactions", () => {
             .limit(1);
 
           if (items.length === 0) {
-            return Promise.reject();
+            throw new Error("User not saved");
           }
           return items[0];
         },
         {
-          timeout: timeout,
+          timeout: waitTimeout,
           interval: 1_000,
         },
       );
 
-      expect(item).toEqual({
+      expect(item, "User doesn't match expected user").toEqual({
         id: constants.userId,
         teamId: constants.teamId,
         birthday: new Date(constants.birthday),
@@ -161,7 +169,7 @@ describe("Slack interactions", () => {
   it(
     "Should ask for birthday again when birthday is incorrect",
     async () => {
-      const eventId = "I3_" + Date.now().toString();
+      const eventId = "AB4_" + Date.now().toString();
 
       await sendMockSlackInteraction({
         type: "block_actions",
@@ -174,7 +182,6 @@ describe("Slack interactions", () => {
           {
             type: "button",
             action_id: "birthdayIncorrect",
-            action_ts: eventId,
             value: constants.birthday,
           },
         ],
@@ -186,7 +193,10 @@ describe("Slack interactions", () => {
 
       const item = await waitForTestItem(eventId);
 
-      expect(item.payload).toEqual(
+      expect(
+        item.payload,
+        "Payload doesn't match ask birthday message",
+      ).toEqual(
         JSON.stringify(
           constructAskBirthdayMessageReplacement({
             name: user?.profile?.first_name || user?.name || "",

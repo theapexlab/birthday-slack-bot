@@ -15,7 +15,10 @@ export const parseRequest = (event: APIGatewayProxyEventV2) => {
     .split("&")
     .reduce((acc: { [key: string]: string }, keyValue: string) => {
       const [key, value] = keyValue.split("=");
-      acc[decodeURIComponent(key)] = decodeURIComponent(value);
+      const decodedKey = decodeURIComponent(key);
+      // Handle replacing "+" with space in the value
+      const decodedValue = decodeURIComponent(value.replace(/\+/g, " "));
+      acc[decodedKey] = decodedValue;
       return acc;
     }, {});
 

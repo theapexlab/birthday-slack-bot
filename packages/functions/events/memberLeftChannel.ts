@@ -7,8 +7,12 @@ import { handleEvent } from "@/utils/eventBridge/handleEvent";
 export const handler = handleEvent(
   "memberLeftChannel",
   async ({ user, team }) => {
-    await db
-      .delete(users)
-      .where(and(eq(users.id, user), eq(users.teamId, team)));
+    try {
+      await db
+        .delete(users)
+        .where(and(eq(users.id, user), eq(users.teamId, team)));
+    } catch (error) {
+      console.error("Error processing memberLeftChannel event: ", error);
+    }
   },
 );

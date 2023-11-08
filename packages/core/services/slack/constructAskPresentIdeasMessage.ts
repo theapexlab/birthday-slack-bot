@@ -1,6 +1,14 @@
-import type { ChatPostMessageArguments } from "@slack/web-api";
+import type { PostMessageArguments } from "@/types/MessageArguments";
+import {
+  presentIdeasInputActionId,
+  presentIdeasSaveButtonBlockId,
+} from "@/types/SlackInteractionRequest";
 
-import { makeTextBlock } from "./messageItems";
+import {
+  makeActionsBlock,
+  makeInputBlock,
+  makeTextBlock,
+} from "./messageItems";
 
 type Arguments = {
   birthdayPerson: string;
@@ -14,21 +22,30 @@ export const constructAskPresentIdeasMessage = ({
   user,
   name,
   eventId,
-}: Arguments): ChatPostMessageArguments =>
-  ({
-    channel: user,
-    metadata: {
-      event_type: "askPresentIdeas",
-      event_payload: {
-        eventId: eventId || "",
-        birthdayPerson,
+}: Arguments): PostMessageArguments => ({
+  channel: user,
+  metadata: eventId
+    ? {
+        event_type: "askPresentIdeas",
+        event_payload: {
+          eventId,
+        },
+      }
+    : undefined,
+  text: `Hey, <@${user}>! <@${birthdayPerson}>'s birthday is in 2 months. Do you have any present ideas?`,
+  blocks: [
+    makeTextBlock(`Hey ${name}! 👋`),
+    makeTextBlock(
+      `It's <@${birthdayPerson}>'s birthday is in 2 months. Do you have any present ideas?`,
+    ),
+    makeInputBlock("Present ideas", presentIdeasInputActionId, true),
+    makeActionsBlock([
+      {
+        actionId: presentIdeasSaveButtonBlockId,
+        text: "Save",
+        value: birthdayPerson,
+        style: "primary",
       },
-    },
-    text: `Hey, <@${user}>! <@${birthdayPerson}>'s birthday is in 2 months. Do you have any present ideas?`,
-    blocks: [
-      makeTextBlock(`Hey ${name}! 👋`),
-      makeTextBlock(
-        `It's <@${birthdayPerson}>'s birthday is in 2 months. Do you have any present ideas?`,
-      ),
-    ],
-  }) satisfies ChatPostMessageArguments;
+    ]),
+  ],
+});

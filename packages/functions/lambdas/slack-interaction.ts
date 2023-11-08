@@ -1,6 +1,10 @@
 import type { APIGatewayProxyHandlerV2 } from "aws-lambda";
 
-import { SlackInteractionRequestSchema } from "@/types/SlackInteractionRequest";
+import {
+  presentIdeasInputActionId,
+  presentIdeasInputBlockId,
+  SlackInteractionRequestSchema,
+} from "@/types/SlackInteractionRequest";
 import { publishEvent } from "@/utils/eventBridge/publishEvent";
 import { parseRequest } from "@/utils/lambda/parseRequest";
 
@@ -31,6 +35,24 @@ export const handler: APIGatewayProxyHandlerV2 = async (request) => {
           responseUrl: parsedData.response_url,
         });
         break;
+      case "presentIdeasSaveButton": {
+        const presentIdea =
+          parsedData.state?.values?.[presentIdeasInputBlockId]?.[
+            presentIdeasInputActionId
+          ]?.value;
+
+        if (!presentIdea) {
+          throw new Error("Present idea is empty");
+        }
+
+        await publishEvent("savePresentIdea", {
+          birthdayPerson: parsedData.actions[0].value,
+          user: parsedData.user.id,
+          team: parsedData.user.team_id,
+          presentIdea,
+          responseUrl: parsedData.response_url,
+        });
+      }
     }
 
     return {
