@@ -3,7 +3,7 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { users } from "@/db/schema";
 import { timeout, waitTimeout } from "@/testUtils/constants";
-import { deleteLastDmMessage } from "@/testUtils/deleteLastDmMessage";
+import { deleteLastDm } from "@/testUtils/deleteLastDm";
 import { testDb } from "@/testUtils/testDb";
 import { waitForDm } from "@/testUtils/waitForDm";
 import type { SlackCallbackRequest } from "@/types/SlackEventRequest";
@@ -32,7 +32,7 @@ describe("Slack events", () => {
   });
 
   afterEach(async () => {
-    await deleteLastDmMessage();
+    await deleteLastDm();
     await testDb.delete(users);
   });
 

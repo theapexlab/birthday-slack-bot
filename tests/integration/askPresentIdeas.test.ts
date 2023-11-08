@@ -6,7 +6,7 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { presentIdeas, testItems, users } from "@/db/schema";
 import { constructPresentIdeaSavedMessage } from "@/services/slack/constructPresentIdeaSavedMessage";
 import { timeout, waitTimeout } from "@/testUtils/constants";
-import { deleteLastDmMessage } from "@/testUtils/deleteLastDmMessage";
+import { deleteLastDm } from "@/testUtils/deleteLastDm";
 import { sendMockSlackInteraction } from "@/testUtils/sendMockSlackInteraction";
 import { testDb, waitForTestItem } from "@/testUtils/testDb";
 import { waitForDm } from "@/testUtils/waitForDm";
@@ -32,7 +32,7 @@ describe("Present ideas", () => {
   });
 
   afterEach(async () => {
-    await deleteLastDmMessage();
+    await deleteLastDm();
 
     await testDb.delete(users);
     await testDb.delete(testItems);
@@ -97,7 +97,7 @@ describe("Present ideas", () => {
         },
       ]);
 
-      const eventId = "I4_" + Date.now().toString();
+      const eventId = "PI2_" + Date.now().toString();
 
       await sendMockSlackInteraction({
         type: "block_actions",

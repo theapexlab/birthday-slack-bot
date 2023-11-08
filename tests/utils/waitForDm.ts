@@ -13,7 +13,7 @@ export const waitForDm = async (eventId: string) =>
       });
 
       if (!chat.messages?.length) {
-        throw new Error("No messages");
+        throw new Error("No message sent");
       }
 
       if (
@@ -26,7 +26,7 @@ export const waitForDm = async (eventId: string) =>
               | undefined) === eventId,
         )
       ) {
-        throw new Error("No message with eventId");
+        throw new Error(`No message with eventId ${eventId}`);
       }
 
       return chat.messages[0];

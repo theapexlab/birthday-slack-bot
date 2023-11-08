@@ -1,11 +1,12 @@
 import { eq } from "drizzle-orm";
-import { afterAll, beforeEach, describe, expect, it, test, vi } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, test, vi } from "vitest";
 
 import { testItems, users } from "@/db/schema";
 import { constructAskBirthdayMessageReplacement } from "@/services/slack/constructAskBirthdayMessage";
 import { constructBirthdayConfirmedMessage } from "@/services/slack/constructBirthdayConfirmedMessage";
 import { constructConfirmBirthdayMessage } from "@/services/slack/constructConfirmBirthdayMessage";
 import { timeout, waitTimeout } from "@/testUtils/constants";
+import { deleteLastDm } from "@/testUtils/deleteLastDm";
 import { sendMockSlackInteraction } from "@/testUtils/sendMockSlackInteraction";
 import { testDb, waitForTestItem } from "@/testUtils/testDb";
 import { app } from "@/testUtils/testSlackApp";
@@ -23,12 +24,14 @@ const constants = vi.hoisted(() => ({
 }));
 
 describe("Slack interactions", () => {
-  beforeEach(async () => {
+  beforeAll(async () => {
     await testDb.delete(users);
     await testDb.delete(testItems);
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
+    await deleteLastDm();
+
     await testDb.delete(users);
     await testDb.delete(testItems);
   });
