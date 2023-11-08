@@ -1,3 +1,9 @@
+import {
+  PolicyDocument,
+  PolicyStatement,
+  Role,
+  ServicePrincipal,
+} from "aws-cdk-lib/aws-iam";
 import type { StackContext } from "sst/constructs";
 import { Api, EventBus, Function, Queue, use } from "sst/constructs";
 
@@ -9,10 +15,73 @@ import { StorageStack } from "./StorageStack";
 export function MyStack({ stack }: StackContext) {
   const secrets = use(ConfigStack);
   const { db } = use(StorageStack);
+  const { stage } = stack;
 
   const bind = [...secrets, ...(db ? [db] : [])];
 
   const eventBus = new EventBus(stack, "Bus", {});
+
+  const schedulerRole = new Role(stack, "LambdaVPCRole", {
+    assumedBy: new ServicePrincipal("lambda.amazonaws.com"),
+  });
+
+  schedulerRole.addToPolicy(
+    new PolicyStatement({
+      actions: [
+        "scheduler:CreateSchedule",
+        "scheduler:GetSchedule",
+        "scheduler:UpdateSchedule",
+        "scheduler:DeleteSchedule",
+        "iam:PassRole",
+      ],
+      resources: ["*"],
+    }),
+  );
+
+  const scheduleHandlerLambda = new Function(stack, "ScheduleHandlerLambda", {
+    handler: "packages/functions/schedule/scheduleHandlerLambda.handler",
+    bind: [...bind, eventBus],
+    role: new Role(stack, "PutEventsRole", {
+      assumedBy: new ServicePrincipal("lambda.amazonaws.com"),
+      inlinePolicies: {
+        SchedulerPolicy: new PolicyDocument({
+          statements: [
+            new PolicyStatement({
+              actions: ["events:PutEvents"],
+              resources: ["*"],
+            }),
+          ],
+        }),
+      },
+    }),
+    permissions: [eventBus],
+    environment: {
+      EVENT_BUS_NAME: eventBus.eventBusName,
+    },
+  });
+  scheduleHandlerLambda.addPermission("AllowEventBridgeInvoke", {
+    principal: new ServicePrincipal("events.amazonaws.com"),
+    action: "lambda:InvokeFunction",
+  });
+
+  const schedulerFunctionRole = new Role(
+    stack,
+    `schedulerFunctionRole-${stage}`,
+    {
+      assumedBy: new ServicePrincipal("scheduler.amazonaws.com"),
+      inlinePolicies: {
+        lambdaExecute: new PolicyDocument({
+          statements: [
+            new PolicyStatement({
+              actions: ["lambda:InvokeFunction"],
+              resources: ["*"],
+            }),
+          ],
+        }),
+      },
+      roleName: `schedulerFunctionRole-${stage}`,
+    },
+  );
 
   eventBus.addRules(
     stack,
@@ -30,8 +99,11 @@ export function MyStack({ stack }: StackContext) {
                   environment: {
                     EVENT_BUS_NAME: eventBus.eventBusName,
                     DB_URL: process.env.DB_URL || "",
+                    SCHEDULER_LAMBDA_ARN: scheduleHandlerLambda.functionArn,
+                    SCHEDULER_ROLE_ARN: schedulerFunctionRole.roleArn,
                   },
                   bind,
+                  role: schedulerRole,
                   runtime: "nodejs18.x",
                 },
               },
@@ -47,6 +119,7 @@ export function MyStack({ stack }: StackContext) {
     defaults: {
       function: {
         bind,
+        permissions: [eventBus],
         environment: {
           EVENT_BUS_NAME: eventBus.eventBusName,
           DB_URL: process.env.DB_URL || "",

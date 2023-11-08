@@ -45,6 +45,14 @@ const Events = z.object({
     presentIdea: z.string(),
     responseUrl: z.string(),
   }),
+  askPresentAndSquadJoinFromTeam: BaseEvent.extend({
+    birthdayPerson: z.string(),
+    team: z.string(),
+  }),
+  askPresentAndSquadJoinFromUser: BaseEvent.extend({
+    birthdayPerson: z.string(),
+    user: z.string(),
+  }),
 });
 
 export type Events = z.infer<typeof Events>;
