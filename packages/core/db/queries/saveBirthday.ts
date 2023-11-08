@@ -9,7 +9,7 @@ import { users } from "@/db/schema";
 type Args = {
   user: string;
   teamId: string;
-  birthday: string;
+  birthday: string | null;
 };
 
 export const saveBirthday = async ({ birthday, teamId, user }: Args) => {

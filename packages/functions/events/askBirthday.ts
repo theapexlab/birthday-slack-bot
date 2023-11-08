@@ -1,3 +1,4 @@
+import { saveBirthday } from "@/db/queries/saveBirthday";
 import {
   constructAskBirthdayMessage,
   constructAskBirthdayMessageReplacement,
@@ -10,9 +11,9 @@ export const handler = handleEvent(
   "askBirthday",
   async ({ user, eventId, responseUrl }) => {
     try {
-      const userInfo = await getUserInfo(user);
+      const { user: userInfo } = await getUserInfo(user);
 
-      if (!userInfo.user || userInfo.user.is_bot) {
+      if (!userInfo || userInfo.is_bot) {
         return;
       }
 
@@ -20,7 +21,7 @@ export const handler = handleEvent(
 
       const payload = {
         user,
-        name: userInfo.user.profile?.first_name || userInfo.user.name || "",
+        name: userInfo.profile?.first_name || userInfo.name || "",
         eventId,
       };
 
@@ -34,6 +35,12 @@ export const handler = handleEvent(
         });
         return;
       }
+
+      await saveBirthday({
+        birthday: null,
+        teamId: userInfo.team_id || "",
+        user,
+      });
 
       await app.client.chat.postMessage(constructAskBirthdayMessage(payload));
     } catch (error) {
