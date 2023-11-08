@@ -2,19 +2,39 @@ import { eq } from "drizzle-orm";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { iceBreakerThreads, users } from "@/db/schema";
-import { timeout, waitTimeout } from "@/testUtils/constants";
-import { deleteLastRandomChannelPost } from "@/testUtils/deleteLastRandomChannelPost";
+import { pollInterval, timeout, waitTimeout } from "@/testUtils/constants";
 import {
   generateIceBreakerTestUsers,
   usersInWindow,
   usersOutsideWindow,
 } from "@/testUtils/generateIceBreakerTestUsers";
+import { app } from "@/testUtils/integration/testSlackApp";
+import { waitForPostInRandom } from "@/testUtils/integration/waitForPostInRandom";
 import { testDb } from "@/testUtils/testDb";
-import { waitForPostInRandom } from "@/testUtils/waitForPostInRandomChannel";
 
 const constants = vi.hoisted(() => ({
   teamId: "T1",
 }));
+
+export const deleteLastRandomChannelPost = async () => {
+  const chat = await app.client.conversations.history({
+    channel: import.meta.env.VITE_RANDOM_SLACK_CHANNEL_ID,
+    limit: 1,
+  });
+
+  await Promise.all(
+    chat.messages?.map(async (message) => {
+      if (!message.ts) {
+        return;
+      }
+
+      await app.client.chat.delete({
+        channel: import.meta.env.VITE_RANDOM_SLACK_CHANNEL_ID,
+        ts: message.ts,
+      });
+    }) ?? [],
+  );
+};
 
 describe("Icebreaker questions", () => {
   beforeAll(async () => {
@@ -107,7 +127,7 @@ describe("Icebreaker questions", () => {
         },
         {
           timeout: waitTimeout,
-          interval: 1_000,
+          interval: pollInterval,
         },
       );
 

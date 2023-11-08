@@ -1,19 +1,20 @@
 import { vi } from "vitest";
 
-import { waitTimeout } from "./constants";
+import { pollInterval, waitTimeout } from "@/testUtils/constants";
+
 import { app } from "./testSlackApp";
 
-export const waitForDm = async (eventId: string) =>
+export const waitForPostInRandom = async (eventId: string) =>
   vi.waitFor(
     async () => {
       const chat = await app.client.conversations.history({
-        channel: import.meta.env.VITE_SLACK_DM_ID,
+        channel: import.meta.env.VITE_RANDOM_SLACK_CHANNEL_ID,
         limit: 1,
         include_all_metadata: true,
       });
 
       if (!chat.messages?.length) {
-        throw new Error("No message sent");
+        throw new Error("No messages");
       }
 
       if (
@@ -26,13 +27,13 @@ export const waitForDm = async (eventId: string) =>
               | undefined) === eventId,
         )
       ) {
-        throw new Error(`No message with eventId ${eventId}`);
+        throw new Error("No message with eventId");
       }
 
       return chat.messages[0];
     },
     {
       timeout: waitTimeout,
-      interval: 1_000,
+      interval: pollInterval,
     },
   );

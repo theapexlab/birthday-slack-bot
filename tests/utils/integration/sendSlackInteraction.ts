@@ -1,8 +1,6 @@
 import type { SlackInteractionRequest } from "@/types/SlackInteractionRequest";
 
-export const sendMockSlackInteraction = async (
-  body: SlackInteractionRequest,
-) => {
+export const sendSlackInteraction = async (body: SlackInteractionRequest) => {
   const urlEncodedBody = new URLSearchParams({
     payload: JSON.stringify(body),
   });

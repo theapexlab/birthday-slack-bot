@@ -5,11 +5,11 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { presentIdeas, testItems, users } from "@/db/schema";
 import { constructPresentIdeaSavedMessage } from "@/services/slack/constructPresentIdeaSavedMessage";
-import { timeout, waitTimeout } from "@/testUtils/constants";
-import { deleteLastDm } from "@/testUtils/deleteLastDm";
-import { sendMockSlackInteraction } from "@/testUtils/sendMockSlackInteraction";
+import { pollInterval, timeout, waitTimeout } from "@/testUtils/constants";
+import { deleteLastDm } from "@/testUtils/integration/deleteLastDm";
+import { sendSlackInteraction } from "@/testUtils/integration/sendSlackInteraction";
+import { waitForDm } from "@/testUtils/integration/waitForDm";
 import { testDb, waitForTestItem } from "@/testUtils/testDb";
-import { waitForDm } from "@/testUtils/waitForDm";
 import {
   presentIdeasInputActionId,
   presentIdeasSaveButtonBlockId,
@@ -99,7 +99,7 @@ describe("Present ideas", () => {
 
       const eventId = "PI2_" + Date.now().toString();
 
-      await sendMockSlackInteraction({
+      await sendSlackInteraction({
         type: "block_actions",
         user: {
           id: constants.userId,
@@ -142,7 +142,7 @@ describe("Present ideas", () => {
         },
         {
           timeout: waitTimeout,
-          interval: 1_000,
+          interval: pollInterval,
         },
       );
 

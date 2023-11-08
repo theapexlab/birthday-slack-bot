@@ -1,6 +1,6 @@
-import "@/testUtils/mocks/mockDb";
-import "@/testUtils/mocks/mockEventBridge";
-import "@/testUtils/mocks/mockSlackApp";
+import "@/testUtils/unit/mockDb";
+import "@/testUtils/unit/mockEventBridge";
+import "@/testUtils/unit/mockSlackApp";
 
 import {
   EventBridgeClient,
@@ -19,11 +19,20 @@ import {
 } from "vitest";
 
 import { users } from "@/db/schema";
-import { callWithMockCronEvent } from "@/testUtils/callWithMockCronEvent";
-import { mockEventBridgePayload } from "@/testUtils/mocks/mockEventBridgePayload";
+import { handler } from "@/functions/cron/daily";
 import { testDb } from "@/testUtils/testDb";
+import { mockEventBridgePayload } from "@/testUtils/unit/mockEventBridgePayload";
+import { mockLambdaEvent } from "@/testUtils/unit/mockLambdaPayload";
 
 dayjs.extend(utc);
+
+export const callWithMockCronEvent = async (eventId: string) =>
+  handler({
+    ...mockLambdaEvent,
+    queryStringParameters: {
+      eventId,
+    },
+  });
 
 const constants = vi.hoisted(() => ({
   userId: "U001",

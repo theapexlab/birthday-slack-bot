@@ -5,12 +5,12 @@ import { testItems, users } from "@/db/schema";
 import { constructAskBirthdayMessageReplacement } from "@/services/slack/constructAskBirthdayMessage";
 import { constructBirthdayConfirmedMessage } from "@/services/slack/constructBirthdayConfirmedMessage";
 import { constructConfirmBirthdayMessage } from "@/services/slack/constructConfirmBirthdayMessage";
-import { timeout, waitTimeout } from "@/testUtils/constants";
-import { deleteLastDm } from "@/testUtils/deleteLastDm";
-import { sendMockSlackInteraction } from "@/testUtils/sendMockSlackInteraction";
+import { pollInterval, timeout, waitTimeout } from "@/testUtils/constants";
+import { deleteLastDm } from "@/testUtils/integration/deleteLastDm";
+import { sendSlackInteraction } from "@/testUtils/integration/sendSlackInteraction";
+import { app } from "@/testUtils/integration/testSlackApp";
+import { waitForDm } from "@/testUtils/integration/waitForDm";
 import { testDb, waitForTestItem } from "@/testUtils/testDb";
-import { app } from "@/testUtils/testSlackApp";
-import { waitForDm } from "@/testUtils/waitForDm";
 import {
   birthdayConfirmActionId,
   birthdayIncorrectActionId,
@@ -41,7 +41,7 @@ describe("Slack interactions", () => {
     async () => {
       const eventId = "AB1_" + Date.now().toString();
 
-      await sendMockSlackInteraction({
+      await sendSlackInteraction({
         type: "block_actions",
         user: {
           id: constants.userId,
@@ -93,7 +93,7 @@ describe("Slack interactions", () => {
     async () => {
       const eventId = "AB3_" + Date.now().toString();
 
-      await sendMockSlackInteraction({
+      await sendSlackInteraction({
         type: "block_actions",
         user: {
           id: constants.userId,
@@ -122,7 +122,7 @@ describe("Slack interactions", () => {
   it(
     "Should save user to db when birthday is confirmed",
     async () => {
-      await sendMockSlackInteraction({
+      await sendSlackInteraction({
         type: "block_actions",
         user: {
           id: constants.userId,
@@ -153,7 +153,7 @@ describe("Slack interactions", () => {
         },
         {
           timeout: waitTimeout,
-          interval: 1_000,
+          interval: pollInterval,
         },
       );
 
@@ -171,7 +171,7 @@ describe("Slack interactions", () => {
     async () => {
       const eventId = "AB4_" + Date.now().toString();
 
-      await sendMockSlackInteraction({
+      await sendSlackInteraction({
         type: "block_actions",
         user: {
           id: import.meta.env.VITE_SLACK_USER_ID,
