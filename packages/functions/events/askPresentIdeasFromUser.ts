@@ -6,21 +6,25 @@ import { handleEvent } from "@/utils/eventBridge/handleEvent";
 export const handler = handleEvent(
   "askPresentIdeasFromUser",
   async ({ birthdayPerson, user, eventId }) => {
-    const userInfo = await getUserInfo(user);
+    try {
+      const userInfo = await getUserInfo(user);
 
-    if (!userInfo.user) {
-      return;
+      if (!userInfo.user) {
+        return;
+      }
+
+      const app = createSlackApp();
+
+      await app.client.chat.postMessage(
+        constructAskPresentIdeasMessage({
+          birthdayPerson,
+          user,
+          name: userInfo.user.profile?.first_name || userInfo.user.name || "",
+          eventId,
+        }),
+      );
+    } catch (error) {
+      console.error("Error processing askPresentIdeasFromUser event: ", error);
     }
-
-    const app = createSlackApp();
-
-    await app.client.chat.postMessage(
-      constructAskPresentIdeasMessage({
-        birthdayPerson,
-        user,
-        name: userInfo.user.profile?.first_name || userInfo.user.name || "",
-        eventId,
-      }),
-    );
   },
 );

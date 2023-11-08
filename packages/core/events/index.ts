@@ -38,6 +38,13 @@ const Events = z.object({
     birthdayPerson: z.string(),
     user: z.string(),
   }),
+  savePresentIdea: z.object({
+    birthdayPerson: z.string(),
+    user: z.string(),
+    team: z.string(),
+    presentIdea: z.string(),
+    responseUrl: z.string(),
+  }),
 });
 
 export type Events = z.infer<typeof Events>;

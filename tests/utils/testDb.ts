@@ -4,7 +4,7 @@ import { vi } from "vitest";
 import { dbFactory } from "@/db/dbFactory";
 import { testItems } from "@/db/schema";
 
-import { timeout } from "./constants";
+import { waitTimeout } from "./constants";
 
 export const [testDb] = dbFactory(
   import.meta.env.VITE_CI
@@ -30,12 +30,12 @@ export const waitForTestItem = async (id: string) =>
         .limit(1);
 
       if (items.length === 0) {
-        return Promise.reject();
+        throw new Error("Testitem not saved");
       }
       return items[0];
     },
     {
-      timeout,
+      timeout: waitTimeout,
       interval: 1_000,
     },
   );

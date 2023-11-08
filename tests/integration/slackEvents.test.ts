@@ -2,8 +2,8 @@ import { and, eq } from "drizzle-orm";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { users } from "@/db/schema";
-import { timeout } from "@/testUtils/constants";
-import { deleteLastDmMessage } from "@/testUtils/deleteLastDmMessage";
+import { timeout, waitTimeout } from "@/testUtils/constants";
+import { deleteLastDm } from "@/testUtils/deleteLastDm";
 import { testDb } from "@/testUtils/testDb";
 import { waitForDm } from "@/testUtils/waitForDm";
 import type { SlackCallbackRequest } from "@/types/SlackEventRequest";
@@ -29,23 +29,27 @@ export const sendMockSlackEvent = async (body: SlackCallbackRequest) =>
 describe("Slack events", () => {
   beforeAll(async () => {
     await testDb.delete(users);
-  }, 10_000);
+  });
 
   afterEach(async () => {
-    await deleteLastDmMessage();
+    await deleteLastDm();
     await testDb.delete(users);
-  }, 10_000);
-
-  it("Should return challenge on slack event endpoint", async () => {
-    const res = await sendMockSlackEvent({
-      type: "url_verification",
-      challenge: constants.challenge,
-    });
-
-    expect(res).toEqual({
-      urlVerificationChallenge: constants.challenge,
-    });
   });
+
+  it(
+    "Should return challenge on slack event endpoint",
+    async () => {
+      const res = await sendMockSlackEvent({
+        type: "url_verification",
+        challenge: constants.challenge,
+      });
+
+      expect(res, "Challenge is not matched").toEqual({
+        urlVerificationChallenge: constants.challenge,
+      });
+    },
+    timeout,
+  );
 
   it(
     "Should send DM to user when they join the channel",
@@ -63,7 +67,12 @@ describe("Slack events", () => {
         event_id: eventId,
       });
 
-      await waitForDm(eventId);
+      const message = await waitForDm(eventId);
+
+      expect(
+        message.blocks?.[1].accessory?.type,
+        "Message doesn't have datepicker",
+      ).toBe("datepicker");
     },
     timeout,
   );
@@ -84,7 +93,12 @@ describe("Slack events", () => {
         event_id: eventId,
       });
 
-      await waitForDm(eventId);
+      const message = await waitForDm(eventId);
+
+      expect(
+        message.blocks?.[1].accessory?.type,
+        "Message doesn't have datepicker",
+      ).toBe("datepicker");
     },
     timeout,
   );
@@ -125,12 +139,13 @@ describe("Slack events", () => {
             .limit(1);
 
           if (items.length === 0) {
-            return Promise.resolve(items);
+            return items;
           }
-          return Promise.reject();
+
+          throw new Error("User not deleted");
         },
         {
-          timeout: timeout,
+          timeout: waitTimeout,
           interval: 1_000,
         },
       );

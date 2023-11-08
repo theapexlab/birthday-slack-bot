@@ -1,4 +1,4 @@
-import type { ActionsBlock, SectionBlock } from "@slack/web-api";
+import type { ActionsBlock, Button, SectionBlock } from "@slack/web-api";
 
 export const makeTextBlock = (text: string): SectionBlock => ({
   type: "section",
@@ -25,35 +25,42 @@ export const makeTextBlockWithDatepicker = (
   },
 });
 
-export const makeActionsBlock = (
-  yesActionId: string,
-  noActionId: string,
-  yesValue: string,
-  noValue: string,
-): ActionsBlock => ({
+type ButtonArgs = {
+  actionId: string;
+  text: string;
+  value: string;
+  style: Button["style"];
+};
+
+export const makeActionsBlock = (buttons: ButtonArgs[]): ActionsBlock => ({
   type: "actions",
-  elements: [
-    {
-      type: "button",
-      text: {
-        type: "plain_text",
-        emoji: true,
-        text: "Yes",
-      },
-      style: "primary",
-      action_id: yesActionId,
-      value: yesValue,
+  elements: buttons.map(({ actionId, text, value, style }) => ({
+    type: "button",
+    text: {
+      type: "plain_text",
+      emoji: true,
+      text,
     },
-    {
-      type: "button",
-      text: {
-        type: "plain_text",
-        emoji: true,
-        text: "No",
-      },
-      style: "danger",
-      action_id: noActionId,
-      value: noValue,
-    },
-  ],
+    value,
+    style,
+    action_id: actionId,
+  })),
+});
+
+export const makeInputBlock = (
+  label: string,
+  actionId: string,
+  multiline = false,
+) => ({
+  type: "input",
+  block_id: actionId,
+  element: {
+    type: "plain_text_input",
+    multiline,
+    action_id: actionId,
+  },
+  label: {
+    type: "plain_text",
+    text: label,
+  },
 });

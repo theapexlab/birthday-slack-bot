@@ -1,6 +1,6 @@
 import { vi } from "vitest";
 
-import { timeout } from "./constants";
+import { waitTimeout } from "./constants";
 import { app } from "./testSlackApp";
 
 export const waitForDm = async (eventId: string) =>
@@ -13,7 +13,7 @@ export const waitForDm = async (eventId: string) =>
       });
 
       if (!chat.messages?.length) {
-        return Promise.reject();
+        throw new Error("No message sent");
       }
 
       if (
@@ -26,13 +26,13 @@ export const waitForDm = async (eventId: string) =>
               | undefined) === eventId,
         )
       ) {
-        return Promise.reject();
+        throw new Error(`No message with eventId ${eventId}`);
       }
 
       return chat.messages[0];
     },
     {
-      timeout,
+      timeout: waitTimeout,
       interval: 1_000,
     },
   );

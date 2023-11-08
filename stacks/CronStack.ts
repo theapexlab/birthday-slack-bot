@@ -15,6 +15,7 @@ export function CronStack({ stack }: StackContext) {
       function: {
         environment,
         handler: "packages/functions/cron/iceBreakerQuestions.handler",
+        runtime: "nodejs18.x",
       },
     },
     // Every first Tuesday of the month at 11:00 UTC
@@ -28,6 +29,7 @@ export function CronStack({ stack }: StackContext) {
       function: {
         environment,
         handler: "packages/functions/cron/daily.handler",
+        runtime: "nodejs18.x",
       },
     },
     // Every day at 11:00 UTC
