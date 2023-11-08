@@ -13,17 +13,19 @@ type Args = {
 };
 
 export const saveBirthday = async ({ birthday, teamId, user }: Args) => {
+  const birthdayDate = birthday ? dayjs.utc(birthday).toDate() : null;
+
   await db
     .insert(users)
     .values({
       id: user,
       teamId,
-      birthday: dayjs.utc(birthday).toDate(),
+      birthday: birthdayDate,
     })
     .onConflictDoUpdate({
       target: [users.id, users.teamId],
       set: {
-        birthday: dayjs.utc(birthday).toDate(),
+        birthday: birthdayDate,
       },
     });
 };
