@@ -3,7 +3,6 @@ import "@/testUtils/unit/mockDb";
 
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { eq } from "drizzle-orm";
 import type { Mock } from "vitest";
 import {
   afterEach,
@@ -111,23 +110,26 @@ describe("getUsersWhoseBirthdayIsMissing", () => {
     await testDb.delete(users);
   });
 
-  const mockUser = [
-    { birthday: null, id: constants.userId, teamId: constants.team_id },
-  ];
+  const mockUser = {
+    birthday: null,
+    id: constants.userId,
+    teamId: constants.team_id,
+  };
 
   it("should return with the mock user", async () => {
-    await testDb.insert(users).values(mockUser);
+    await testDb.insert(users).values([mockUser]);
     const result = await getUsersWhoseBirthdayIsMissing();
 
-    expect(result).toEqual(mockUser);
+    expect(result).toEqual([mockUser]);
   });
 
   it("shouldn't find any users", async () => {
-    await testDb
-      .update(users)
-      .set({ birthday: dayjs.utc().toDate() })
-      .where(eq(users.id, mockUser[0].id));
+    const mockUserWithBirthday = {
+      ...mockUser,
+      birthday: dayjs.utc().toDate(),
+    };
 
+    await testDb.insert(users).values([mockUserWithBirthday]);
     const result = await getUsersWhoseBirthdayIsMissing();
 
     expect(result).toEqual([]);
