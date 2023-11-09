@@ -1,24 +1,18 @@
 import type { ScheduledHandler } from "aws-lambda";
 
-import type { EventType } from "@/events";
+import type { Events, EventType } from "@/events";
 import { publishEvent } from "@/utils/eventBridge/publishEvent";
 
 type DetailType = {
-  team: string;
-  birthdayPerson: string;
-  eventId?: string;
   eventType: EventType;
+  payload: Events[EventType];
 };
 
 export const handler: ScheduledHandler<DetailType> = async ({
-  detail: { team, birthdayPerson, eventType, eventId },
+  detail: { eventType, payload },
 }) => {
   try {
-    await publishEvent(eventType, {
-      team,
-      birthdayPerson,
-      eventId,
-    });
+    await publishEvent(eventType, payload);
   } catch (error) {
     console.error("Error when processing schedule", error);
   }
