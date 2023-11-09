@@ -1,7 +1,7 @@
-import "@/testUtils/mocks/mockDb";
-import "@/testUtils/mocks/mockEventBridge";
-import "@/testUtils/mocks/mockSlackApp";
-import "@/testUtils/mocks/mockEventScheduler";
+import "@/testUtils/unit/mockDb";
+import "@/testUtils/unit/mockEventBridge";
+import "@/testUtils/unit/mockSlackApp";
+import "@/testUtils/unit/mockEventScheduler";
 
 import {
   EventBridgeClient,
@@ -22,9 +22,9 @@ import {
 import { users } from "@/db/schema";
 import type { Events } from "@/events";
 import { handler as askPresentIdeasFromTeam } from "@/functions/events/askPresentIdeasFromTeam";
-import { mockEventBridgePayload } from "@/testUtils/mocks/mockEventBridgePayload";
-import { sendMockSqsMessage } from "@/testUtils/sendMockSqsMessage";
 import { testDb } from "@/testUtils/testDb";
+import { mockEventBridgePayload } from "@/testUtils/unit/mockEventBridgePayload";
+import { sendMockSqsMessage } from "@/testUtils/unit/sendMockSqsMessage";
 
 dayjs.extend(utc);
 

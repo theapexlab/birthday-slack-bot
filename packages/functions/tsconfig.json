@@ -6,7 +6,7 @@
     "baseUrl": ".",
     "paths": {
       "@/db/*": ["../core/db/*"],
-      "@/events": ["../core/events/index.ts"],
+      "@/events": ["../core/types/events/index.ts"],
       "@/services/*": ["../core/services/*"],
       "@/utils/*": ["utils/*"],
       "@/types/*": ["../core/types/*"]

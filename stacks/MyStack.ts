@@ -5,21 +5,16 @@ import {
   ServicePrincipal,
 } from "aws-cdk-lib/aws-iam";
 import type { StackContext } from "sst/constructs";
-import { Api, EventBus, Function, Queue, use } from "sst/constructs";
+import { Api, Function, Queue, use } from "sst/constructs";
 
 import { eventTypes } from "@/events";
 
-import { ConfigStack } from "./ConfigStack";
-import { StorageStack } from "./StorageStack";
+import { EventBusStack } from "./EventBusStack";
+import { getFunctionProps } from "./getFunctionProps";
 
 export function MyStack({ stack }: StackContext) {
-  const secrets = use(ConfigStack);
-  const { db } = use(StorageStack);
-  const { stage } = stack;
-
-  const bind = [...secrets, ...(db ? [db] : [])];
-
-  const eventBus = new EventBus(stack, "Bus", {});
+  const { eventBus } = use(EventBusStack);
+  const functionProps = getFunctionProps();
 
   const schedulerRole = new Role(stack, "LambdaVPCRole", {
     assumedBy: new ServicePrincipal("lambda.amazonaws.com"),
@@ -40,7 +35,7 @@ export function MyStack({ stack }: StackContext) {
 
   const scheduleHandlerLambda = new Function(stack, "ScheduleHandlerLambda", {
     handler: "packages/functions/schedule/scheduleHandlerLambda.handler",
-    bind: [...bind, eventBus],
+    bind: [...functionProps.bind, eventBus],
     role: new Role(stack, "PutEventsRole", {
       assumedBy: new ServicePrincipal("lambda.amazonaws.com"),
       inlinePolicies: {
@@ -66,7 +61,7 @@ export function MyStack({ stack }: StackContext) {
 
   const schedulerFunctionRole = new Role(
     stack,
-    `schedulerFunctionRole-${stage}`,
+    `schedulerFunctionRole-${stack.stage}`,
     {
       assumedBy: new ServicePrincipal("scheduler.amazonaws.com"),
       inlinePolicies: {
@@ -79,7 +74,7 @@ export function MyStack({ stack }: StackContext) {
           ],
         }),
       },
-      roleName: `schedulerFunctionRole-${stage}`,
+      roleName: `schedulerFunctionRole-${stack.stage}`,
     },
   );
 
@@ -102,7 +97,7 @@ export function MyStack({ stack }: StackContext) {
                     SCHEDULER_LAMBDA_ARN: scheduleHandlerLambda.functionArn,
                     SCHEDULER_ROLE_ARN: schedulerFunctionRole.roleArn,
                   },
-                  bind,
+                  bind: functionProps.bind,
                   role: schedulerRole,
                   runtime: "nodejs18.x",
                 },
@@ -118,7 +113,7 @@ export function MyStack({ stack }: StackContext) {
   const api = new Api(stack, "Api", {
     defaults: {
       function: {
-        bind,
+        bind: functionProps.bind,
         permissions: [eventBus],
         environment: {
           EVENT_BUS_NAME: eventBus.eventBusName,
@@ -143,21 +138,15 @@ export function MyStack({ stack }: StackContext) {
     });
   }
 
-  api.attachPermissions([eventBus]);
-
   const migrationFn = new Function(stack, "MigrateDb", {
     handler: "packages/functions/lambdas/migrateDb.handler",
-    bind,
-    environment: {
-      DB_URL: process.env.DB_URL || "",
-    },
     copyFiles: [
       {
         from: "packages/core/db/migrations",
       },
     ],
     timeout: "60 seconds",
-    runtime: "nodejs18.x",
+    ...functionProps,
   });
 
   stack.addOutputs({
