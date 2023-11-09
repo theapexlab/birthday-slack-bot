@@ -7,7 +7,7 @@
     "baseUrl": ".",
     "paths": {
       "@/db/*": ["packages/core/db/*"],
-      "@/events": ["packages/core/events/index.ts"],
+      "@/events": ["packages/core/types/events/index.ts"],
       "@/functions/*": ["packages/functions/*"],
       "@/services/*": ["packages/core/services/*"],
       "@/types/*": ["packages/core/types/*"],

@@ -8,6 +8,7 @@ import {
   usersInWindow,
   usersOutsideWindow,
 } from "@/testUtils/generateIceBreakerTestUsers";
+import { sendCronEvent } from "@/testUtils/integration/sendCronEvent";
 import { app } from "@/testUtils/integration/testSlackApp";
 import { waitForPostInRandom } from "@/testUtils/integration/waitForPostInRandom";
 import { testDb } from "@/testUtils/testDb";
@@ -53,9 +54,7 @@ describe("Icebreaker questions", () => {
     async () => {
       const eventId = "IB1_" + Date.now().toString();
 
-      await fetch(
-        `${import.meta.env.VITE_API_URL}/icebreaker?eventId=${eventId}`,
-      );
+      await sendCronEvent("iceBreaker", eventId);
 
       const message = await waitForPostInRandom(eventId);
 
@@ -74,9 +73,7 @@ describe("Icebreaker questions", () => {
 
       const eventId = "IB2_" + Date.now().toString();
 
-      await fetch(
-        `${import.meta.env.VITE_API_URL}/icebreaker?eventId=${eventId}`,
-      );
+      await sendCronEvent("iceBreaker", eventId);
 
       const message = await waitForPostInRandom(eventId);
 
@@ -109,9 +106,7 @@ describe("Icebreaker questions", () => {
 
       const eventId = "IB3_" + Date.now().toString();
 
-      await fetch(
-        `${import.meta.env.VITE_API_URL}/icebreaker?eventId=${eventId}`,
-      );
+      await sendCronEvent("iceBreaker", eventId);
 
       const threads = await vi.waitFor(
         async () => {

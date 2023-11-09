@@ -1,8 +1,6 @@
 import { z } from "zod";
 
-const BaseEvent = z.object({
-  eventId: z.string().optional(),
-});
+import { BaseEvent } from "@/types/BaseEvent";
 
 const Events = z.object({
   memberJoinedChannel: BaseEvent.extend({
