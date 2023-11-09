@@ -1,4 +1,5 @@
 import "@/testUtils/mocks/mockSlackApp";
+import "@/testUtils/mocks/mockDb";
 
 import type { Mock } from "vitest";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
