@@ -1,15 +1,23 @@
 import "@/testUtils/unit/mockSlackApp";
 import "@/testUtils/unit/mockDb";
 
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import { eq } from "drizzle-orm";
 import type { Mock } from "vitest";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { getUsersWhoseBirthdayIsMissing } from "@/db/queries/getBirthdays";
+import { users } from "@/db/schema";
 import type { Events } from "@/events";
 import { handler } from "@/functions/events/askBirthday";
 import { constructAskBirthdayMessage } from "@/services/slack/constructAskBirthdayMessage";
 import { createSlackApp } from "@/services/slack/createSlackApp";
 import { getUserInfo } from "@/services/slack/getUserInfo";
+import { testDb } from "@/testUtils/testDb";
 import { sendMockSqsMessage } from "@/testUtils/unit/sendMockSqsMessage";
+
+dayjs.extend(utc);
 
 const constants = vi.hoisted(() => ({
   otherBotUserId: "B999",
@@ -81,4 +89,28 @@ describe("Member joined channel", () => {
       }),
     );
   });
+});
+
+describe("getUsersWhoseBirthdayIsMissing", async () => {
+  const mockUser = [{ id: "1", teamId: "team1", birthday: null }];
+
+  it("should return with the mock user", async () => {
+    await testDb.insert(users).values(mockUser);
+    const result = await getUsersWhoseBirthdayIsMissing();
+
+    expect(result).toEqual(mockUser);
+  });
+
+  it("shouldn't find any users", async () => {
+    await testDb
+      .update(users)
+      .set({ birthday: dayjs.utc().toDate() })
+      .where(eq(users.id, mockUser[0].id));
+
+    const result = await getUsersWhoseBirthdayIsMissing();
+
+    expect(result).toEqual([]);
+  });
+
+  await testDb.delete(users);
 });
