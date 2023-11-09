@@ -13,7 +13,7 @@ export const handler = handleEvent(
     try {
       const { user: userInfo } = await getUserInfo(user);
 
-      if (!userInfo || userInfo.is_bot) {
+      if (!userInfo || userInfo.is_bot || !userInfo.team_id) {
         return;
       }
 
@@ -38,7 +38,7 @@ export const handler = handleEvent(
 
       await saveBirthday({
         birthday: null,
-        teamId: userInfo.team_id || "",
+        teamId: userInfo.team_id,
         user,
       });
 
