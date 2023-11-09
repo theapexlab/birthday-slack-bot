@@ -113,13 +113,7 @@ export function MyStack({ stack }: StackContext) {
   const api = new Api(stack, "Api", {
     defaults: {
       function: {
-        bind: functionProps.bind,
-        permissions: [eventBus],
-        environment: {
-          EVENT_BUS_NAME: eventBus.eventBusName,
-          DB_URL: process.env.DB_URL || "",
-        },
-        runtime: "nodejs18.x",
+        ...functionProps,
       },
     },
     routes: {
