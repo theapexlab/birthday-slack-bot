@@ -1,8 +1,11 @@
 import type { APIGatewayProxyEventV2, EventBridgeEvent } from "aws-lambda";
 
+import type { BaseEvent } from "@/types/BaseEvent";
+import type { ScheduledEventType } from "@/types/cron";
+
 type Event =
   | APIGatewayProxyEventV2
-  | EventBridgeEvent<"Scheduled Event", unknown>;
+  | EventBridgeEvent<ScheduledEventType, BaseEvent>;
 
 const isApiGatewayProxyEventV2 = (
   event: Event,
@@ -14,7 +17,7 @@ export const cronHandler =
     try {
       const eventId = isApiGatewayProxyEventV2(request)
         ? request.queryStringParameters?.eventId
-        : undefined;
+        : request.detail.eventId;
 
       await handler(eventId);
     } catch (error) {
