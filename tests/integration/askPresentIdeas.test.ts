@@ -7,6 +7,7 @@ import { presentIdeas, testItems, users } from "@/db/schema";
 import { constructPresentIdeaSavedMessage } from "@/services/slack/constructPresentIdeaSavedMessage";
 import { pollInterval, timeout, waitTimeout } from "@/testUtils/constants";
 import { deleteLastDm } from "@/testUtils/integration/deleteLastDm";
+import { sendCronEvent } from "@/testUtils/integration/sendCronEvent";
 import { sendSlackInteraction } from "@/testUtils/integration/sendSlackInteraction";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
 import { testDb, waitForTestItem } from "@/testUtils/testDb";
@@ -57,7 +58,7 @@ describe("Present ideas", () => {
 
       const eventId = "PI1_" + Date.now().toString();
 
-      await fetch(`${import.meta.env.VITE_API_URL}/daily?eventId=${eventId}`);
+      await sendCronEvent("daily", eventId);
 
       const message = await waitForDm(eventId);
 
