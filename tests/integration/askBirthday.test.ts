@@ -7,6 +7,7 @@ import { constructBirthdayConfirmedMessage } from "@/services/slack/constructBir
 import { constructConfirmBirthdayMessage } from "@/services/slack/constructConfirmBirthdayMessage";
 import { pollInterval, timeout, waitTimeout } from "@/testUtils/constants";
 import { deleteLastDm } from "@/testUtils/integration/deleteLastDm";
+import { sendCronEvent } from "@/testUtils/integration/sendCronEvent";
 import { sendSlackInteraction } from "@/testUtils/integration/sendSlackInteraction";
 import { app } from "@/testUtils/integration/testSlackApp";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
@@ -221,7 +222,7 @@ describe("Slack interactions", () => {
         },
       ]);
 
-      await fetch(`${import.meta.env.VITE_API_URL}/daily?eventId=${eventId}`);
+      await sendCronEvent("daily", eventId);
 
       const message = await waitForDm(eventId);
 
