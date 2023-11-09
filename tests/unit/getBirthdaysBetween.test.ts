@@ -1,4 +1,4 @@
-import "@/testUtils/mocks/mockDb";
+import "@/testUtils/unit/mockDb";
 
 import dayjs from "dayjs";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
@@ -10,8 +10,8 @@ import {
   usersInWindow,
   usersOutsideWindow,
 } from "@/testUtils/generateIceBreakerTestUsers";
-import { testCases } from "@/testUtils/iceBreakerTestCases";
 import { testDb } from "@/testUtils/testDb";
+import { testCases } from "@/testUtils/unit/iceBreakerTestCases";
 
 const constants = vi.hoisted(() => ({
   teamId: "T1",

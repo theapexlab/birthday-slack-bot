@@ -1,4 +1,4 @@
-import "@/testUtils/mocks/mockEventBridge";
+import "@/testUtils/unit/mockEventBridge";
 
 import {
   EventBridgeClient,
@@ -8,8 +8,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Events } from "@/events";
 import { handler } from "@/functions/events/botJoined";
-import { mockEventBridgePayload } from "@/testUtils/mocks/mockEventBridgePayload";
-import { sendMockSqsMessage } from "@/testUtils/sendMockSqsMessage";
+import { mockEventBridgePayload } from "@/testUtils/unit/mockEventBridgePayload";
+import { sendMockSqsMessage } from "@/testUtils/unit/sendMockSqsMessage";
 
 const constants = vi.hoisted(() => ({
   channelMembers: ["U001", "U002", "U003", "U004"],
