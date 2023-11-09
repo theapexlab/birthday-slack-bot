@@ -5,6 +5,7 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
+      "@/config/*": ["config/*"],
       "@/db/*": ["db/*"],
       "@/types/*": ["types/*"]
     }
