@@ -1,4 +1,4 @@
-import "@/testUtils/mocks/mockEventBridge";
+import "@/testUtils/unit/mockEventBridge";
 
 import {
   EventBridgeClient,
@@ -7,11 +7,11 @@ import {
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { handler } from "@/functions/lambdas/slack-event";
-import { mockEventBridgePayload } from "@/testUtils/mocks/mockEventBridgePayload";
+import { mockEventBridgePayload } from "@/testUtils/unit/mockEventBridgePayload";
 import {
   mockLambdaContext,
   mockLambdaEvent,
-} from "@/testUtils/mocks/mockLambdaPayload";
+} from "@/testUtils/unit/mockLambdaPayload";
 import type {
   SlackCallbackRequest,
   SlackEvent,

@@ -9,7 +9,7 @@ import { handler } from "@/functions/events/askBirthday";
 import { constructAskBirthdayMessage } from "@/services/slack/constructAskBirthdayMessage";
 import { createSlackApp } from "@/services/slack/createSlackApp";
 import { getUserInfo } from "@/services/slack/getUserInfo";
-import { sendMockSqsMessage } from "@/testUtils/sendMockSqsMessage";
+import { sendMockSqsMessage } from "@/testUtils/unit/sendMockSqsMessage";
 
 const constants = vi.hoisted(() => ({
   otherBotUserId: "B999",

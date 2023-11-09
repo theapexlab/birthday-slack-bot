@@ -2,10 +2,10 @@ import { and, eq } from "drizzle-orm";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { users } from "@/db/schema";
-import { timeout, waitTimeout } from "@/testUtils/constants";
-import { deleteLastDm } from "@/testUtils/deleteLastDm";
+import { pollInterval, timeout, waitTimeout } from "@/testUtils/constants";
+import { deleteLastDm } from "@/testUtils/integration/deleteLastDm";
+import { waitForDm } from "@/testUtils/integration/waitForDm";
 import { testDb } from "@/testUtils/testDb";
-import { waitForDm } from "@/testUtils/waitForDm";
 import type { SlackCallbackRequest } from "@/types/SlackEventRequest";
 
 const constants = vi.hoisted(() => ({
@@ -15,7 +15,7 @@ const constants = vi.hoisted(() => ({
   userId: "U1",
 }));
 
-export const sendMockSlackEvent = async (body: SlackCallbackRequest) =>
+export const sendSlackEvent = async (body: SlackCallbackRequest) =>
   fetch(`${import.meta.env.VITE_API_URL}/slack/event`, {
     method: "POST",
     headers: {
@@ -39,7 +39,7 @@ describe("Slack events", () => {
   it(
     "Should return challenge on slack event endpoint",
     async () => {
-      const res = await sendMockSlackEvent({
+      const res = await sendSlackEvent({
         type: "url_verification",
         challenge: constants.challenge,
       });
@@ -56,7 +56,7 @@ describe("Slack events", () => {
     async () => {
       const eventId = "E1_" + Date.now().toString();
 
-      await sendMockSlackEvent({
+      await sendSlackEvent({
         type: "event_callback",
         event: {
           type: "member_joined_channel",
@@ -82,7 +82,7 @@ describe("Slack events", () => {
     async () => {
       const eventId = "E2_" + Date.now().toString();
 
-      await sendMockSlackEvent({
+      await sendSlackEvent({
         type: "event_callback",
         event: {
           type: "member_joined_channel",
@@ -114,7 +114,7 @@ describe("Slack events", () => {
         birthday: constants.birthday,
       });
 
-      await sendMockSlackEvent({
+      await sendSlackEvent({
         type: "event_callback",
         event: {
           type: "member_left_channel",
@@ -146,7 +146,7 @@ describe("Slack events", () => {
         },
         {
           timeout: waitTimeout,
-          interval: 1_000,
+          interval: pollInterval,
         },
       );
     },

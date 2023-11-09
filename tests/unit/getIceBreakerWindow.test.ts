@@ -2,7 +2,7 @@ import MockDate from "mockdate";
 import { afterAll, describe, expect, it } from "vitest";
 
 import { getIceBreakerWindow } from "@/services/birthday/getIcebreakerWindow";
-import { testCases } from "@/testUtils/iceBreakerTestCases";
+import { testCases } from "@/testUtils/unit/iceBreakerTestCases";
 
 describe("getIceBreakerWindow", () => {
   afterAll(() => {
