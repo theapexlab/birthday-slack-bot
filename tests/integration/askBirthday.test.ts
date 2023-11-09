@@ -7,6 +7,7 @@ import { constructBirthdayConfirmedMessage } from "@/services/slack/constructBir
 import { constructConfirmBirthdayMessage } from "@/services/slack/constructConfirmBirthdayMessage";
 import { pollInterval, timeout, waitTimeout } from "@/testUtils/constants";
 import { deleteLastDm } from "@/testUtils/integration/deleteLastDm";
+import { sendCronEvent } from "@/testUtils/integration/sendCronEvent";
 import { sendSlackInteraction } from "@/testUtils/integration/sendSlackInteraction";
 import { app } from "@/testUtils/integration/testSlackApp";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
@@ -204,6 +205,31 @@ describe("Slack interactions", () => {
           }),
         ),
       );
+    },
+    timeout,
+  );
+
+  it(
+    "Should ask for birthday again when birthday is null",
+    async () => {
+      const eventId = "AB5_" + Date.now().toString();
+
+      await testDb.insert(users).values([
+        {
+          id: import.meta.env.VITE_SLACK_USER_ID,
+          teamId: import.meta.env.VITE_SLACK_TEAM_ID,
+          birthday: null,
+        },
+      ]);
+
+      await sendCronEvent("daily", eventId);
+
+      const message = await waitForDm(eventId);
+
+      expect(
+        message.blocks?.[1].accessory?.type,
+        "Message doesn't have datepicker",
+      ).toBe("datepicker");
     },
     timeout,
   );

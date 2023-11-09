@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "3ba6727b-d01d-4de2-a788-d1cdaa365084",
-  "prevId": "0e3e6461-74a7-40d3-b391-88d430dd1bee",
+  "id": "f4d596d1-e02b-4c39-98c3-5a48f49b8c65",
+  "prevId": "3ba6727b-d01d-4de2-a788-d1cdaa365084",
   "tables": {
     "iceBreakerThreads": {
       "name": "iceBreakerThreads",
@@ -39,8 +39,14 @@
           "name": "iceBreakerThreads_user_id_team_id_users_id_team_id_fk",
           "tableFrom": "iceBreakerThreads",
           "tableTo": "users",
-          "columnsFrom": ["user_id", "team_id"],
-          "columnsTo": ["id", "team_id"],
+          "columnsFrom": [
+            "user_id",
+            "team_id"
+          ],
+          "columnsTo": [
+            "id",
+            "team_id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -89,8 +95,14 @@
           "name": "presentIdeas_user_id_team_id_users_id_team_id_fk",
           "tableFrom": "presentIdeas",
           "tableTo": "users",
-          "columnsFrom": ["user_id", "team_id"],
-          "columnsTo": ["id", "team_id"],
+          "columnsFrom": [
+            "user_id",
+            "team_id"
+          ],
+          "columnsTo": [
+            "id",
+            "team_id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -98,8 +110,14 @@
           "name": "presentIdeas_birthday_person_team_id_users_id_team_id_fk",
           "tableFrom": "presentIdeas",
           "tableTo": "users",
-          "columnsFrom": ["birthday_person", "team_id"],
-          "columnsTo": ["id", "team_id"],
+          "columnsFrom": [
+            "birthday_person",
+            "team_id"
+          ],
+          "columnsTo": [
+            "id",
+            "team_id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -149,7 +167,7 @@
           "name": "birthday",
           "type": "date",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {},
@@ -157,7 +175,10 @@
       "compositePrimaryKeys": {
         "users_id_team_id": {
           "name": "users_id_team_id",
-          "columns": ["id", "team_id"]
+          "columns": [
+            "id",
+            "team_id"
+          ]
         }
       },
       "uniqueConstraints": {}
