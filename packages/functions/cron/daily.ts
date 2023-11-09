@@ -10,14 +10,14 @@ import {
 import { publishEvent } from "@/utils/eventBridge/publishEvent";
 import { cronHandler } from "@/utils/lambda/cronHandler";
 
-const sendReminderWhoseBirthdayIsMissing = async () => {
+const sendReminderWhoseBirthdayIsMissing = async (eventId?: string) => {
   const users = await getUsersWhoseBirthdayIsMissing();
 
   await Promise.all(
     users.map((user) =>
       publishEvent("askBirthday", {
         user: user.id,
-        eventId: "askBirthday",
+        eventId,
       }),
     ),
   );
@@ -39,7 +39,7 @@ export const handler = cronHandler(async (eventId?: string) => {
       ),
     );
 
-    await sendReminderWhoseBirthdayIsMissing();
+    await sendReminderWhoseBirthdayIsMissing(eventId);
 
     return {
       users,

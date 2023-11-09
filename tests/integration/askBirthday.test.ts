@@ -207,4 +207,29 @@ describe("Slack interactions", () => {
     },
     timeout,
   );
+
+  it(
+    "Should ask for birthday again when birthday is null",
+    async () => {
+      const eventId = "AB5_" + Date.now().toString();
+
+      await testDb.insert(users).values([
+        {
+          id: import.meta.env.VITE_SLACK_USER_ID,
+          teamId: import.meta.env.VITE_SLACK_TEAM_ID,
+          birthday: null,
+        },
+      ]);
+
+      await fetch(`${import.meta.env.VITE_API_URL}/daily?eventId=${eventId}`);
+
+      const message = await waitForDm(eventId);
+
+      expect(
+        message.blocks?.[1].accessory?.type,
+        "Message doesn't have datepicker",
+      ).toBe("datepicker");
+    },
+    timeout,
+  );
 });
