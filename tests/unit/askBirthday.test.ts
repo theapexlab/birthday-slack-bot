@@ -5,7 +5,15 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { eq } from "drizzle-orm";
 import type { Mock } from "vitest";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 
 import { getUsersWhoseBirthdayIsMissing } from "@/db/queries/getBirthdays";
 import { users } from "@/db/schema";
@@ -24,12 +32,14 @@ const constants = vi.hoisted(() => ({
   userId: "U001",
   userName: "Foo",
   eventId: "E001",
+  team_id: "T001",
 }));
 
 vi.mock("@/services/slack/getUserInfo", async () => ({
   getUserInfo: vi.fn().mockResolvedValue({
     user: {
       is_bot: false,
+      team_id: constants.team_id,
       profile: {
         first_name: constants.userName,
       },
@@ -46,8 +56,9 @@ describe("Member joined channel", () => {
     createSlackAppMock = createSlackApp as Mock;
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     vi.clearAllMocks();
+    await testDb.delete(users);
   });
 
   it("Should not do anything if user is a bot", async () => {
@@ -91,8 +102,18 @@ describe("Member joined channel", () => {
   });
 });
 
-describe("getUsersWhoseBirthdayIsMissing", async () => {
-  const mockUser = [{ id: "1", teamId: "team1", birthday: null }];
+describe("getUsersWhoseBirthdayIsMissing", () => {
+  beforeAll(async () => {
+    await testDb.delete(users);
+  });
+  afterEach(async () => {
+    vi.clearAllMocks();
+    await testDb.delete(users);
+  });
+
+  const mockUser = [
+    { birthday: null, id: constants.userId, teamId: constants.team_id },
+  ];
 
   it("should return with the mock user", async () => {
     await testDb.insert(users).values(mockUser);
@@ -111,6 +132,4 @@ describe("getUsersWhoseBirthdayIsMissing", async () => {
 
     expect(result).toEqual([]);
   });
-
-  await testDb.delete(users);
 });
