@@ -1,6 +1,7 @@
 import type { PostMessageArguments } from "@/types/MessageArguments";
 import {
   presentIdeasInputActionId,
+  presentIdeasInputBlockId,
   presentIdeasSaveButtonBlockId,
 } from "@/types/SlackInteractionRequest";
 
@@ -38,7 +39,12 @@ export const constructAskPresentIdeasMessage = ({
     makeTextBlock(
       `It's <@${birthdayPerson}>'s birthday is in 2 months. Do you have any present ideas?`,
     ),
-    makeInputBlock("Present ideas", presentIdeasInputActionId, true),
+    makeInputBlock(
+      "Present ideas",
+      presentIdeasInputBlockId,
+      presentIdeasInputActionId,
+      true,
+    ),
     makeActionsBlock([
       {
         actionId: presentIdeasSaveButtonBlockId,
