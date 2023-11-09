@@ -49,11 +49,12 @@ export const makeActionsBlock = (buttons: ButtonArgs[]): ActionsBlock => ({
 
 export const makeInputBlock = (
   label: string,
+  blockId: string,
   actionId: string,
   multiline = false,
 ) => ({
   type: "input",
-  block_id: actionId,
+  block_id: blockId,
   element: {
     type: "plain_text_input",
     multiline,
