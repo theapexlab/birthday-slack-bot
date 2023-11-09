@@ -10,7 +10,6 @@ export const handler = handleEvent(
         teamId: team,
         birthdayPerson,
       });
-
     } catch (error) {
       console.error("Error processing saveSquadJoin event: ", error);
     }

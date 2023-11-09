@@ -17,7 +17,7 @@
     "format:check": "prettier --check \"**/*.ts\"",
     "prepare": "husky install",
     "test": "vitest watch",
-    "test:unit": "vitest run unit",
+    "test:unit": "vitest run unit --threads false --single-thread",
     "test:integration": "vitest run integration --threads false --single-thread",
     "test:ci": "vitest run --threads false --single-thread ",
     "migration:generate": "cd packages/core && pnpm migration:generate",

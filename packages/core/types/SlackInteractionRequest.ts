@@ -6,8 +6,10 @@ export const birthdayIncorrectActionId = "birthdayIncorrect";
 export const presentIdeasInputActionId = "presentIdeas";
 export const presentIdeasInputBlockId = "presentIdeasInput";
 export const presentIdeasSaveButtonActionId = "presentIdeasSaveButton";
-export const additionalPresentIdeasInputActionId = "additionalPresentIdeasActionId";
-export const additionalPresentIdeasInputBlockId = "additionalPresentIdeasInputBlockId";
+export const additionalPresentIdeasInputActionId =
+  "additionalPresentIdeasActionId";
+export const additionalPresentIdeasInputBlockId =
+  "additionalPresentIdeasInputBlockId";
 export const additionalPresentIdeasSaveButtonActionId =
   "additionalPresentIdeasSaveButton";
 export const squadJoinCheckboxBlockId = "squadJoinCheckboxBlockId";
@@ -74,16 +76,18 @@ export const SlackInteractionRequestSchema = z.object({
               [squadJoinCheckboxActionId]: z
                 .object({
                   type: z.literal("checkboxes"),
-                  selected_options: z.array(
-                    z.object({
-                      text: z.object({
-                        type: z.literal("plain_text"),
-                        text: z.string(),
-                        emoji: z.boolean().optional(),
+                  selected_options: z
+                    .array(
+                      z.object({
+                        text: z.object({
+                          type: z.literal("plain_text"),
+                          text: z.string(),
+                          emoji: z.boolean().optional(),
+                        }),
+                        value: z.string(),
                       }),
-                      value: z.string(),
-                    }),
-                  ).nullable(),
+                    )
+                    .nullable(),
                 })
                 .optional(),
             })

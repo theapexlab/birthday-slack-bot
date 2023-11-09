@@ -1,6 +1,7 @@
 import "@/testUtils/mocks/mockDb";
 import "@/testUtils/mocks/mockEventBridge";
 import "@/testUtils/mocks/mockSlackApp";
+import "@/testUtils/mocks/mockEventScheduler";
 
 import {
   EventBridgeClient,
