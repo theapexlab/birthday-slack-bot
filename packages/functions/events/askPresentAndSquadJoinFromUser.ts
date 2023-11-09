@@ -1,4 +1,4 @@
-import { constructReAskPresentIdeasMessage } from "@/services/slack/constructReAskPresentIdeasMessage";
+import { constructPresentAndSquadJoinMessage } from "@/services/slack/constructPresentAndSquadJoinMessage";
 import { createSlackApp } from "@/services/slack/createSlackApp";
 import { getUserInfo } from "@/services/slack/getUserInfo";
 import { handleEvent } from "@/utils/eventBridge/handleEvent";
@@ -15,7 +15,7 @@ export const handler = handleEvent(
     const app = createSlackApp();
 
     await app.client.chat.postMessage(
-      constructReAskPresentIdeasMessage({
+      constructPresentAndSquadJoinMessage({
         birthdayPerson,
         user,
         name: userInfo.user.profile?.first_name || userInfo.user.name || "",
