@@ -12,7 +12,7 @@ import { testDb, waitForTestItem } from "@/testUtils/testDb";
 import { waitForDm } from "@/testUtils/waitForDm";
 import {
   presentIdeasInputActionId,
-  presentIdeasSaveButtonBlockId,
+  presentIdeasSaveButtonActionId,
 } from "@/types/SlackInteractionRequest";
 
 dayjs.extend(utc);
@@ -76,7 +76,7 @@ describe("Present ideas", () => {
       expect(
         message.blocks?.[3].elements?.[0].action_id,
         "Block doesn't contain save button",
-      ).toBe(presentIdeasSaveButtonBlockId);
+      ).toBe(presentIdeasSaveButtonActionId);
     },
     timeout,
   );

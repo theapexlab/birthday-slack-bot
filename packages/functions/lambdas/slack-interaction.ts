@@ -76,6 +76,13 @@ export const handler: APIGatewayProxyHandlerV2 = async (request) => {
         if (!presentIdea) {
           throw new Error("Additional Present idea is empty");
         }
+        if (squadJoin) {
+          await publishEvent("saveSquadJoin", {
+            birthdayPerson: parsedData.actions[0].value,
+            user: parsedData.user.id,
+            team: parsedData.user.team_id,
+          });
+        }
         await publishEvent("savePresentIdea", {
           birthdayPerson: parsedData.actions[0].value,
           user: parsedData.user.id,

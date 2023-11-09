@@ -58,6 +58,28 @@ export const presentIdeas = pgTable(
 
 export type PresentIdea = typeof presentIdeas.$inferInsert;
 
+export const squadJoins = pgTable(
+  "squadJoins",
+  {
+    id: serial("id").primaryKey().notNull(),
+    teamId: varchar("team_id").notNull(),
+    birthdayPerson: varchar("birthday_person").notNull(),
+    userId: varchar("user_id").notNull(),
+  },
+  (t) => ({
+    userReference: foreignKey({
+      columns: [t.userId, t.teamId],
+      foreignColumns: [users.id, users.teamId],
+    }).onDelete("cascade"),
+    birthdayPersonReference: foreignKey({
+      columns: [t.birthdayPerson, t.teamId],
+      foreignColumns: [users.id, users.teamId],
+    }).onDelete("cascade"),
+  }),
+);
+
+export type SquadJoin = typeof squadJoins.$inferInsert;
+
 export const testItems = pgTable("testItems", {
   id: varchar("id").primaryKey().notNull(),
   payload: varchar("payload").notNull(),
