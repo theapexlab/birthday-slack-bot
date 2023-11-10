@@ -35,7 +35,7 @@ export function MyStack({ stack }: StackContext) {
 
   const scheduleHandlerLambda = new Function(stack, "ScheduleHandlerLambda", {
     handler: "packages/functions/schedule/scheduleHandlerLambda.handler",
-    bind: [...functionProps.bind, eventBus],
+    bind: functionProps.bind,
     role: new Role(stack, "PutEventsRole", {
       assumedBy: new ServicePrincipal("lambda.amazonaws.com"),
       inlinePolicies: {

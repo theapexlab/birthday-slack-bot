@@ -72,7 +72,6 @@ export const handler: APIGatewayProxyHandlerV2 = async (request) => {
             squadJoinCheckboxActionId
           ]?.selected_options?.length;
 
-        console.log({ presentIdea, squadJoin });
         if (!presentIdea) {
           throw new Error("Additional Present idea is empty");
         }
@@ -91,9 +90,6 @@ export const handler: APIGatewayProxyHandlerV2 = async (request) => {
           responseUrl: parsedData.response_url,
         });
         break;
-      }
-      case squadJoinCheckboxActionId: {
-        console.warn("Warning Squad join checkbox action");
       }
     }
 

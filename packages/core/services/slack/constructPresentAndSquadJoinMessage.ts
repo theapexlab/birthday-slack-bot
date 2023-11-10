@@ -38,11 +38,11 @@ export const constructPresentAndSquadJoinMessage = ({
           },
         }
       : undefined,
-    text: `Hey, <@${user}>! <@${birthdayPerson}>'s birthday is in 2 months. Do you have any additional present ideas?`,
+    text: `Hey, <@${user}>! <@${birthdayPerson}>'s birthday is less then 2 months. Do you have any additional present ideas?`,
     blocks: [
       makeTextBlock(`Hey ${name}! 👋`),
       makeTextBlock(
-        `It's <@${birthdayPerson}>'s birthday is in 2 months. Do you have any additional present ideas?`,
+        `It's <@${birthdayPerson}>'s birthday is less then 2 months. Do you have any additional present ideas?`,
       ),
       makeInputBlock(
         "Additional present ideas",

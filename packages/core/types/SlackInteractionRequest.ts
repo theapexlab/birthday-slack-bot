@@ -3,8 +3,8 @@ import { z } from "zod";
 export const pickBirthdayActionId = "pickBirthday";
 export const birthdayConfirmActionId = "birthdayConfirm";
 export const birthdayIncorrectActionId = "birthdayIncorrect";
-export const presentIdeasInputActionId = "presentIdeas";
-export const presentIdeasInputBlockId = "presentIdeasInput";
+export const presentIdeasInputActionId = "presentIdeasInputActionId";
+export const presentIdeasInputBlockId = "presentIdeasInputBlockId";
 export const presentIdeasSaveButtonActionId = "presentIdeasSaveButton";
 export const additionalPresentIdeasInputActionId =
   "additionalPresentIdeasActionId";
@@ -79,11 +79,6 @@ export const SlackInteractionRequestSchema = z.object({
                   selected_options: z
                     .array(
                       z.object({
-                        text: z.object({
-                          type: z.literal("plain_text"),
-                          text: z.string(),
-                          emoji: z.boolean().optional(),
-                        }),
                         value: z.string(),
                       }),
                     )
