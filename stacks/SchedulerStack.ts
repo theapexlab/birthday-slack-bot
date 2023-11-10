@@ -1,3 +1,5 @@
+import { Rule } from "aws-cdk-lib/aws-events";
+import { LambdaFunction } from "aws-cdk-lib/aws-events-targets";
 import {
   PolicyDocument,
   PolicyStatement,
@@ -6,6 +8,8 @@ import {
 } from "aws-cdk-lib/aws-iam";
 import { type StackContext, use } from "sst/constructs";
 import { Function } from "sst/constructs";
+
+import { scheduleEvent } from "@/types/schedule";
 
 import { ConfigStack } from "./ConfigStack";
 import { EventBusStack } from "./EventBusStack";
@@ -61,6 +65,14 @@ export function SchedulerStack({ stack }: StackContext) {
   scheduleHandlerLambda.addPermission("AllowEventBridgeInvoke", {
     principal: new ServicePrincipal("events.amazonaws.com"),
     action: "lambda:InvokeFunction",
+  });
+
+  // This rule is neccessary for testing
+  new Rule(stack, "LambdaTriggerRule", {
+    eventPattern: {
+      detailType: [scheduleEvent],
+    },
+    targets: [new LambdaFunction(scheduleHandlerLambda)],
   });
 
   return {

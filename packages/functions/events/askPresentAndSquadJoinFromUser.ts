@@ -6,21 +6,28 @@ import { handleEvent } from "@/utils/eventBridge/handleEvent";
 export const handler = handleEvent(
   "askPresentAndSquadJoinFromUser",
   async ({ birthdayPerson, user, eventId }) => {
-    const userInfo = await getUserInfo(user);
+    try {
+      const userInfo = await getUserInfo(user);
 
-    if (!userInfo.user) {
-      return;
+      if (!userInfo.user) {
+        return;
+      }
+
+      const app = createSlackApp();
+
+      await app.client.chat.postMessage(
+        constructPresentAndSquadJoinMessage({
+          birthdayPerson,
+          user,
+          name: userInfo.user.profile?.first_name || userInfo.user.name || "",
+          eventId,
+        }),
+      );
+    } catch (error) {
+      console.error(
+        "Error processing askPresentAndSquadJoinFromUser event: ",
+        error,
+      );
     }
-
-    const app = createSlackApp();
-
-    await app.client.chat.postMessage(
-      constructPresentAndSquadJoinMessage({
-        birthdayPerson,
-        user,
-        name: userInfo.user.profile?.first_name || userInfo.user.name || "",
-        eventId,
-      }),
-    );
   },
 );
