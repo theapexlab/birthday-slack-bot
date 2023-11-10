@@ -100,7 +100,7 @@ describe("Present and Squad Join", () => {
     timeout,
   );
 
-  it.skip(
+  it(
     "Should save additional present idea and squad join to db",
     async () => {
       await testDb.insert(users).values([
