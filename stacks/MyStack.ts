@@ -1,8 +1,4 @@
-import {
-  PolicyStatement,
-  Role,
-  ServicePrincipal,
-} from "aws-cdk-lib/aws-iam";
+import { PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 import type { StackContext } from "sst/constructs";
 import { Api, Function, Queue, use } from "sst/constructs";
 
@@ -21,14 +17,10 @@ export function MyStack({ stack }: StackContext) {
 
   schedulerRole.addToPolicy(
     new PolicyStatement({
-      actions: [
-        "scheduler:CreateSchedule",
-        "iam:PassRole",
-      ],
+      actions: ["scheduler:CreateSchedule", "iam:PassRole"],
       resources: ["*"],
     }),
   );
-
 
   eventBus.addRules(
     stack,

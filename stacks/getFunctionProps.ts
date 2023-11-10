@@ -9,7 +9,8 @@ export const getFunctionProps = () => {
   const secrets = use(ConfigStack);
   const { db } = use(StorageStack);
   const { eventBus } = use(EventBusStack);
-  const { scheduleHandlerLambda, schedulerFunctionInvokeRole } = use(SchedulerStack);
+  const { scheduleHandlerLambda, schedulerFunctionInvokeRole } =
+    use(SchedulerStack);
 
   const bind = [...secrets, ...(db ? [db] : [])];
 

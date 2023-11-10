@@ -18,7 +18,7 @@ export const publishScheduledEvent = async <T extends EventType>(
   dayOffset: number,
 ) => {
   const createCommand = new CreateScheduleCommand({
-    Name: `${dayjs().valueOf()}_${eventType}`,
+    Name: `${payload.eventId || dayjs().valueOf()}_${eventType}`,
     FlexibleTimeWindow: { Mode: "OFF" },
     ScheduleExpression: getScheduleWithDaysOffset(dayOffset),
     ActionAfterCompletion: "DELETE",

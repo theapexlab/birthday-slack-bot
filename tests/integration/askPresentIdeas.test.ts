@@ -118,8 +118,8 @@ describe("Present ideas", () => {
         ],
         state: {
           values: {
-            presentIdeasInput: {
-              presentIdeas: {
+            presentIdeasInputBlockId: {
+              presentIdeasInputActionId: {
                 type: "plain_text_input",
                 value: constants.presentIdea,
               },

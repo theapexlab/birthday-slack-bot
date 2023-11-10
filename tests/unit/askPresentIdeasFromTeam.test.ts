@@ -7,6 +7,10 @@ import {
   EventBridgeClient,
   PutEventsCommand,
 } from "@aws-sdk/client-eventbridge";
+import {
+  CreateScheduleCommand,
+  SchedulerClient,
+} from "@aws-sdk/client-scheduler";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import {
@@ -24,6 +28,7 @@ import type { Events } from "@/events";
 import { handler as askPresentIdeasFromTeam } from "@/functions/events/askPresentIdeasFromTeam";
 import { testDb } from "@/testUtils/testDb";
 import { mockEventBridgePayload } from "@/testUtils/unit/mockEventBridgePayload";
+import { mockEventSchedulerPayload } from "@/testUtils/unit/mockEventSchedulerPayload";
 import { sendMockSqsMessage } from "@/testUtils/unit/sendMockSqsMessage";
 
 dayjs.extend(utc);
@@ -51,6 +56,7 @@ vi.mock("@/services/slack/getUserInfo", async () => ({
 
 describe("askPresentIdeasFromTeam", () => {
   let eventBridge: EventBridgeClient;
+  let schedulerClient: SchedulerClient;
 
   beforeAll(async () => {
     await testDb.delete(users);
@@ -58,6 +64,7 @@ describe("askPresentIdeasFromTeam", () => {
 
   beforeEach(() => {
     eventBridge = new EventBridgeClient();
+    schedulerClient = new SchedulerClient();
   });
 
   afterEach(async () => {
@@ -96,6 +103,41 @@ describe("askPresentIdeasFromTeam", () => {
         }),
       );
     });
+  });
+
+  it("Should publish askPresentAndSquadJoinFromTeam event with a schedule", async () => {
+    const event = {
+      birthdayPerson: constants.userId,
+      team: constants.teamId,
+      eventId: constants.eventId,
+    } satisfies Events["askPresentIdeasFromTeam"];
+
+    await testDb.insert(users).values(
+      constants.otherUserIds.map((userId) => ({
+        id: userId,
+        teamId: constants.teamId,
+        birthday: dayjs.utc().toDate(),
+      })),
+    );
+
+    await sendMockSqsMessage(
+      "askPresentIdeasFromTeam",
+      event,
+      askPresentIdeasFromTeam,
+    );
+
+    expect(schedulerClient.send).toHaveBeenCalledTimes(1);
+    expect(CreateScheduleCommand).toHaveBeenCalledWith(
+      mockEventSchedulerPayload(
+        "askPresentAndSquadJoinFromTeam",
+        {
+          birthdayPerson: constants.userId,
+          team: constants.teamId,
+          eventId: constants.eventId,
+        },
+        4,
+      ),
+    );
   });
 
   it("Should not publish askPresentIdeasFromUser event for the one whose birthday is coming up", async () => {
