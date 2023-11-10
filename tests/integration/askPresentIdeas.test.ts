@@ -4,9 +4,14 @@ import { eq } from "drizzle-orm";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { presentIdeas, testItems, users } from "@/db/schema";
+import { getScheduleWithDaysOffset } from "@/functions/utils/scheduler/getScheduleExtension";
 import { constructPresentIdeaSavedMessage } from "@/services/slack/constructPresentIdeaSavedMessage";
 import { pollInterval, timeout, waitTimeout } from "@/testUtils/constants";
 import { deleteLastDm } from "@/testUtils/integration/deleteLastDm";
+import {
+  cleanUpSchedule,
+  getSchedule,
+} from "@/testUtils/integration/scheduler";
 import { sendCronEvent } from "@/testUtils/integration/sendCronEvent";
 import { sendSlackInteraction } from "@/testUtils/integration/sendSlackInteraction";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
@@ -78,6 +83,8 @@ describe("Present ideas", () => {
         message.blocks?.[3].elements?.[0].action_id,
         "Block doesn't contain save button",
       ).toBe(presentIdeasSaveButtonActionId);
+
+      await cleanUpSchedule(`${eventId}_askPresentAndSquadJoinFromTeam`);
     },
     timeout,
   );
@@ -162,6 +169,51 @@ describe("Present ideas", () => {
         item.payload,
         "Payload doesn't match present idea saved message",
       ).toEqual(JSON.stringify(constructPresentIdeaSavedMessage()));
+    },
+    timeout,
+  );
+  it(
+    "Should create schedule for PresentAndSquadJoin event",
+    async () => {
+      await testDb.insert(users).values([
+        {
+          id: import.meta.env.VITE_SLACK_USER_ID,
+          teamId: import.meta.env.VITE_SLACK_TEAM_ID,
+          birthday: new Date(),
+        },
+        {
+          id: constants.birthdayPerson,
+          teamId: import.meta.env.VITE_SLACK_TEAM_ID,
+          birthday: dayjs.utc().add(2, "month").toDate(),
+        },
+      ]);
+
+      const eventId = "PI3_" + Date.now().toString();
+
+      await sendCronEvent("daily", eventId);
+
+      await waitForDm(eventId);
+
+      const schedule = await getSchedule(
+        `${eventId}_askPresentAndSquadJoinFromTeam`,
+      );
+
+      expect(
+        schedule.ScheduleExpression,
+        "Incorrect schedule extension",
+      ).toEqual(getScheduleWithDaysOffset(4));
+
+      expect(
+        schedule.ScheduleExpressionTimezone,
+        "Timezone should be UTC",
+      ).toEqual("UTC");
+
+      expect(
+        schedule.ActionAfterCompletion,
+        "After completion should be DELETE",
+      ).toEqual("DELETE");
+
+      await cleanUpSchedule(`${eventId}_askPresentAndSquadJoinFromTeam`);
     },
     timeout,
   );
