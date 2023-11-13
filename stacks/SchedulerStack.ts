@@ -28,6 +28,7 @@ export function SchedulerStack({ stack }: StackContext) {
       environment: {
         EVENT_BUS_NAME: eventBus.eventBusName,
       },
+      runtime: "nodejs18.x" as const,
     },
   );
 
