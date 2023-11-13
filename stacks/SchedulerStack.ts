@@ -21,6 +21,15 @@ export function SchedulerStack({ stack }: StackContext) {
   const { db } = use(StorageStack);
   const bind = [...secrets, ...(db ? [db] : [])];
 
+  const scheduleHandlerLambda = new Function(stack, "ScheduleHandlerLambda", {
+    handler: "packages/functions/schedule/scheduleHandlerLambda.handler",
+    bind,
+    permissions: [eventBus],
+    environment: {
+      EVENT_BUS_NAME: eventBus.eventBusName,
+    },
+  });
+
   const schedulerFunctionInvokeRole = new Role(
     stack,
     `schedulerFunctionInvokeRole-${stack.stage}`,
@@ -31,7 +40,7 @@ export function SchedulerStack({ stack }: StackContext) {
           statements: [
             new PolicyStatement({
               actions: ["lambda:InvokeFunction"],
-              resources: ["*"],
+              resources: [scheduleHandlerLambda.functionArn],
             }),
           ],
         }),
@@ -40,34 +49,6 @@ export function SchedulerStack({ stack }: StackContext) {
     },
   );
 
-  const scheduleHandlerLambda = new Function(stack, "ScheduleHandlerLambda", {
-    handler: "packages/functions/schedule/scheduleHandlerLambda.handler",
-    bind,
-    role: new Role(stack, "PutEventsRole", {
-      assumedBy: new ServicePrincipal("lambda.amazonaws.com"),
-      inlinePolicies: {
-        SchedulerPolicy: new PolicyDocument({
-          statements: [
-            new PolicyStatement({
-              actions: ["events:PutEvents"],
-              resources: ["*"],
-            }),
-          ],
-        }),
-      },
-    }),
-    permissions: [eventBus],
-    environment: {
-      EVENT_BUS_NAME: eventBus.eventBusName,
-    },
-  });
-
-  scheduleHandlerLambda.addPermission("AllowEventBridgeInvoke", {
-    principal: new ServicePrincipal("events.amazonaws.com"),
-    action: "lambda:InvokeFunction",
-  });
-
-  // This rule is neccessary for testing
   new Rule(stack, "LambdaTriggerRule", {
     eventPattern: {
       detailType: [scheduleEvent],

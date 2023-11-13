@@ -22,5 +22,9 @@ export default {
       .stack(SchedulerStack)
       .stack(MyStack)
       .stack(CronStack);
+
+    app.setDefaultFunctionProps({
+      runtime: "nodejs18.x" as const,
+    });
   },
 } satisfies SSTConfig;
