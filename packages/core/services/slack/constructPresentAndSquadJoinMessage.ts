@@ -42,7 +42,7 @@ export const constructPresentAndSquadJoinMessage = ({
     blocks: [
       makeTextBlock(`Hey ${name}! 👋`),
       makeTextBlock(
-        `It's <@${birthdayPerson}>'s birthday is in less then 2 months. Do you have any additional present ideas?`,
+        `<@${birthdayPerson}>'s birthday is in less then 2 months. Do you have any additional present ideas?`,
       ),
       makeInputBlock(
         "Additional present ideas",
