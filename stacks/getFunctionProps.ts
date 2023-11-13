@@ -23,6 +23,5 @@ export const getFunctionProps = () => {
       SCHEDULER_ROLE_ARN: schedulerFunctionInvokeRole.roleArn,
     },
     bind,
-    runtime: "nodejs18.x" as const,
   };
 };

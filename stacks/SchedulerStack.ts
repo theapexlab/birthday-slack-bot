@@ -13,17 +13,14 @@ import { scheduleEvent } from "@/types/schedule";
 
 import { ConfigStack } from "./ConfigStack";
 import { EventBusStack } from "./EventBusStack";
-import { StorageStack } from "./StorageStack";
 
 export function SchedulerStack({ stack }: StackContext) {
   const { eventBus } = use(EventBusStack);
   const secrets = use(ConfigStack);
-  const { db } = use(StorageStack);
-  const bind = [...secrets, ...(db ? [db] : [])];
 
   const scheduleHandlerLambda = new Function(stack, "ScheduleHandlerLambda", {
     handler: "packages/functions/schedule/scheduleHandlerLambda.handler",
-    bind,
+    bind: [...secrets],
     permissions: [eventBus],
     environment: {
       EVENT_BUS_NAME: eventBus.eventBusName,
