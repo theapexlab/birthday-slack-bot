@@ -60,18 +60,15 @@ describe("Present and Squad Join", () => {
 
       const eventId = "PI1_" + Date.now().toString();
 
-      await sendScheduleEvent(
-        scheduleEvent,
-        JSON.stringify({
+      await sendScheduleEvent(scheduleEvent, {
+        eventId,
+        eventType: "askPresentAndSquadJoinFromTeam",
+        payload: {
+          team: import.meta.env.VITE_SLACK_TEAM_ID,
+          birthdayPerson: constants.birthdayPerson,
           eventId,
-          eventType: "askPresentAndSquadJoinFromTeam",
-          payload: {
-            team: import.meta.env.VITE_SLACK_TEAM_ID,
-            birthdayPerson: constants.birthdayPerson,
-            eventId,
-          },
-        }),
-      );
+        },
+      });
 
       const message = await waitForDm(eventId);
 

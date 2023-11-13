@@ -56,7 +56,7 @@ export const SlackInteractionRequestSchema = z.object({
               [presentIdeasInputActionId]: z
                 .object({
                   type: z.literal("plain_text_input"),
-                  value: z.string().nullable(), // assumes the value can be a string or null
+                  value: z.string().nullable(),
                 })
                 .optional(),
             })
@@ -66,7 +66,7 @@ export const SlackInteractionRequestSchema = z.object({
               [additionalPresentIdeasInputActionId]: z
                 .object({
                   type: z.literal("plain_text_input"),
-                  value: z.string().nullable(), // assumes the value can be a string or null
+                  value: z.string().nullable(),
                 })
                 .optional(),
             })
