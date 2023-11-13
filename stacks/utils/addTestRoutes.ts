@@ -8,6 +8,16 @@ export const addTestRoutes = (stack: Stack, api: Api) => {
   api.addRoutes(stack, {
     "GET /icebreaker": "packages/functions/cron/iceBreakerQuestions.handler",
     "GET /daily": "packages/functions/cron/daily.handler",
+    "GET /botJoined": "packages/functions/lambdas/manualBotJoinedEvent.handler",
+    "GET /userJoined":
+      "packages/functions/lambdas/manualUserJoinedEvent.handler",
+  });
+
+  stack.addOutputs({
+    iceBreakerTestUrl: api.url + "/icebreaker",
+    dailyTestUrl: api.url + "/daily",
+    botJoinedTestUrl: api.url + "/botJoined",
+    userJoinedTestUrl: api.url + "/userJoined?userId=",
   });
 
   if (stack.stage === "staging") {

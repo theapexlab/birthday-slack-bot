@@ -80,9 +80,40 @@ npx sst secrets set RANDOM_SLACK_CHANNEL_ID <your-test-channel>
 
 Fill `.env.local` file with the secrets.
 
+### Run all tests in watch mode
+
 ```bash
 pnpm test
 ```
+
+### Run unit tests
+
+```bash
+pnpm test:unit
+```
+
+### Run integration tests
+
+```bash
+pnpm test:integration
+```
+
+### Run all tests
+
+```bash
+pnpm test:ci
+```
+
+### Manual testing
+
+All urls are displayed in the console output.
+
+- Send out icebreaker question: open `<ApiEndpoint>/icebreaker`
+- Ask birthday from everyone: open `<ApiEndpoint>/botJoined`
+- Ask birthday from specific user: open `<ApiEndpoint>/userJoined?userId=<slack user id>`
+- Send out birthday fill reminder: open `<ApiEndpoint>/daily`
+  - Only sends it out to users who have not filled in their birthday yet.
+  - Sends it out related to users whose birthday is in exactly 2 months.
 
 ## Generate a new migration
 

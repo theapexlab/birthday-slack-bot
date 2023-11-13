@@ -9,7 +9,7 @@ type Event =
 
 const isApiGatewayProxyEventV2 = (
   event: Event,
-): event is APIGatewayProxyEventV2 => "queryStringParameters" in event;
+): event is APIGatewayProxyEventV2 => "routeKey" in event;
 
 export const cronHandler =
   (handler: (eventId?: string) => Promise<unknown>) =>
@@ -20,7 +20,23 @@ export const cronHandler =
         : request.detail.eventId;
 
       await handler(eventId);
+
+      return {
+        statusCode: 200,
+        body: "Event sent",
+      };
     } catch (error) {
       console.error(error);
+
+      return {
+        statusCode: 500,
+        body: JSON.stringify(
+          {
+            error,
+          },
+          null,
+          2,
+        ),
+      };
     }
   };
