@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "6be24b47-1741-47e6-9d8c-ed3c9e52cd63",
-  "prevId": "3ba6727b-d01d-4de2-a788-d1cdaa365084",
+  "id": "b30847cb-9309-4644-bdb9-dbae4e89caa0",
+  "prevId": "f4d596d1-e02b-4c39-98c3-5a48f49b8c65",
   "tables": {
     "iceBreakerThreads": {
       "name": "iceBreakerThreads",
@@ -232,7 +232,7 @@
           "name": "birthday",
           "type": "date",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {},
