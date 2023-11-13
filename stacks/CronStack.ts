@@ -3,7 +3,7 @@ import { Cron } from "sst/constructs";
 
 import { daily, iceBreaker } from "@/types/cron";
 
-import { getFunctionProps } from "./getFunctionProps";
+import { getFunctionProps } from "./utils/getFunctionProps";
 
 export function CronStack({ stack }: StackContext) {
   const functionProps = getFunctionProps();

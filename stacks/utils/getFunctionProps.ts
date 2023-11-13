@@ -1,9 +1,9 @@
 import { use } from "sst/constructs";
 
-import { ConfigStack } from "./ConfigStack";
-import { EventBusStack } from "./EventBusStack";
-import { SchedulerStack } from "./SchedulerStack";
-import { StorageStack } from "./StorageStack";
+import { ConfigStack } from "../ConfigStack";
+import { EventBusStack } from "../EventBusStack";
+import { SchedulerStack } from "../SchedulerStack";
+import { StorageStack } from "../StorageStack";
 
 export const getFunctionProps = () => {
   const secrets = use(ConfigStack);
