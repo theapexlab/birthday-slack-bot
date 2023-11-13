@@ -40,3 +40,18 @@ export const mockLambdaContext = {
   fail: () => {},
   succeed: () => {},
 };
+
+export const mockLambdaScheduledEvent = {
+  "detail-type": "Scheduled Event" as const,
+  id: "event-id",
+  version: "0",
+  account: "123456789012", // Example AWS account ID
+  region: "us-west-2", // Example AWS region
+  source: "aws.events",
+  time: new Date().toISOString(), // Current time in ISO format
+  resources: [
+    "arn:aws:events:us-west-2:123456789012:rule/your-scheduled-rule", // Example ARN of the rule that triggered the event
+  ],
+};
+
+export const mockLambdaScheduledCallBack = () => {};

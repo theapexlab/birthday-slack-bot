@@ -14,15 +14,15 @@ const Events = z.object({
   botJoined: BaseEvent.extend({
     channel: z.string(),
   }),
-  memberLeftChannel: z.object({
+  memberLeftChannel: BaseEvent.extend({
     user: z.string(),
     team: z.string(),
   }),
-  birthdayFilled: z.object({
+  birthdayFilled: BaseEvent.extend({
     birthday: z.string(),
     responseUrl: z.string(),
   }),
-  birthdayConfirmed: z.object({
+  birthdayConfirmed: BaseEvent.extend({
     user: z.string(),
     team: z.string(),
     birthday: z.string(),
@@ -36,12 +36,25 @@ const Events = z.object({
     birthdayPerson: z.string(),
     user: z.string(),
   }),
-  savePresentIdea: z.object({
+  savePresentIdea: BaseEvent.extend({
     birthdayPerson: z.string(),
     user: z.string(),
     team: z.string(),
     presentIdea: z.string(),
     responseUrl: z.string(),
+  }),
+  saveSquadJoin: BaseEvent.extend({
+    birthdayPerson: z.string(),
+    user: z.string(),
+    team: z.string(),
+  }),
+  askPresentAndSquadJoinFromTeam: BaseEvent.extend({
+    birthdayPerson: z.string(),
+    team: z.string(),
+  }),
+  askPresentAndSquadJoinFromUser: BaseEvent.extend({
+    birthdayPerson: z.string(),
+    user: z.string(),
   }),
 });
 

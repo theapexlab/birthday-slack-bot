@@ -2,7 +2,7 @@ import type { PostMessageArguments } from "@/types/MessageArguments";
 import {
   presentIdeasInputActionId,
   presentIdeasInputBlockId,
-  presentIdeasSaveButtonBlockId,
+  presentIdeasSaveButtonActionId,
 } from "@/types/SlackInteractionRequest";
 
 import {
@@ -47,7 +47,7 @@ export const constructAskPresentIdeasMessage = ({
     ),
     makeActionsBlock([
       {
-        actionId: presentIdeasSaveButtonBlockId,
+        actionId: presentIdeasSaveButtonActionId,
         text: "Save",
         value: birthdayPerson,
         style: "primary",

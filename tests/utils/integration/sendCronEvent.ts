@@ -3,15 +3,12 @@ import {
   PutEventsCommand,
 } from "@aws-sdk/client-eventbridge";
 
-import type { ScheduledEventType } from "@/types/cron";
+import type { CronEventType } from "@/types/cron";
 
 const eventBridge = new EventBridgeClient();
 
-export const sendCronEvent = async (
-  type: ScheduledEventType,
-  eventId: string,
-) => {
-  await eventBridge.send(
+export const sendCronEvent = async (type: CronEventType, eventId: string) =>
+  eventBridge.send(
     new PutEventsCommand({
       Entries: [
         {
@@ -24,4 +21,3 @@ export const sendCronEvent = async (
       ],
     }),
   );
-};

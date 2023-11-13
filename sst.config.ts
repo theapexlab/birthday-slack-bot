@@ -4,6 +4,7 @@ import { ConfigStack } from "./stacks/ConfigStack";
 import { CronStack } from "./stacks/CronStack";
 import { EventBusStack } from "./stacks/EventBusStack";
 import { MyStack } from "./stacks/MyStack";
+import { SchedulerStack } from "./stacks/SchedulerStack";
 import { StorageStack } from "./stacks/StorageStack";
 
 export default {
@@ -18,6 +19,7 @@ export default {
       .stack(ConfigStack)
       .stack(StorageStack)
       .stack(EventBusStack)
+      .stack(SchedulerStack)
       .stack(MyStack)
       .stack(CronStack);
   },

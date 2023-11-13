@@ -36,6 +36,13 @@
       "when": 1699455923273,
       "tag": "0004_birthday_can_be_null",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1699867144665,
+      "tag": "0005_squad_joins",
+      "breakpoints": true
     }
   ]
 }

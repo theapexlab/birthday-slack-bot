@@ -3,22 +3,19 @@ import utc from "dayjs/plugin/utc";
 import { eq } from "drizzle-orm";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
-import { presentIdeas, testItems, users } from "@/db/schema";
-import { getScheduleWithDaysOffset } from "@/functions/utils/scheduler/getScheduleExtension";
+import { presentIdeas, squadJoins, testItems, users } from "@/db/schema";
 import { constructPresentIdeaSavedMessage } from "@/services/slack/constructPresentIdeaSavedMessage";
 import { pollInterval, timeout, waitTimeout } from "@/testUtils/constants";
 import { deleteLastDm } from "@/testUtils/integration/deleteLastDm";
-import {
-  cleanUpSchedule,
-  getSchedule,
-} from "@/testUtils/integration/scheduler";
-import { sendCronEvent } from "@/testUtils/integration/sendCronEvent";
+import { sendScheduleEvent } from "@/testUtils/integration/sendScheduleEvent";
 import { sendSlackInteraction } from "@/testUtils/integration/sendSlackInteraction";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
 import { testDb, waitForTestItem } from "@/testUtils/testDb";
+import { scheduleEvent } from "@/types/schedule";
 import {
-  presentIdeasInputActionId,
-  presentIdeasSaveButtonActionId,
+  additionalPresentIdeasInputActionId,
+  additionalPresentIdeasSaveButtonActionId,
+  squadJoinCheckboxActionId,
 } from "@/types/SlackInteractionRequest";
 
 dayjs.extend(utc);
@@ -30,7 +27,7 @@ const constants = vi.hoisted(() => ({
   presentIdea: "Test idea",
 }));
 
-describe("Present ideas", () => {
+describe("Present and Squad Join", () => {
   beforeAll(async () => {
     await testDb.delete(users);
     await testDb.delete(testItems);
@@ -46,7 +43,7 @@ describe("Present ideas", () => {
   });
 
   it(
-    "Should ask for present ideas in DM",
+    "Should ask for present and squad join in DM",
     async () => {
       await testDb.insert(users).values([
         {
@@ -63,11 +60,19 @@ describe("Present ideas", () => {
 
       const eventId = "PI1_" + Date.now().toString();
 
-      await sendCronEvent("daily", eventId);
+      await sendScheduleEvent(scheduleEvent, {
+        eventId,
+        eventType: "askPresentAndSquadJoinFromTeam",
+        payload: {
+          team: import.meta.env.VITE_SLACK_TEAM_ID,
+          birthdayPerson: constants.birthdayPerson,
+          eventId,
+        },
+      });
 
       const message = await waitForDm(eventId);
 
-      expect(message.blocks?.length, "Message doesn't have 4 blocks").toBe(4);
+      expect(message.blocks?.length, "Message doesn't have 5 blocks").toBe(5);
 
       expect(
         message.blocks?.[1].text?.text,
@@ -77,20 +82,23 @@ describe("Present ideas", () => {
       expect(
         message.blocks?.[2].element?.action_id,
         "Block doesn't contain input element",
-      ).toBe(presentIdeasInputActionId);
+      ).toBe(additionalPresentIdeasInputActionId);
 
       expect(
-        message.blocks?.[3].elements?.[0].action_id,
-        "Block doesn't contain save button",
-      ).toBe(presentIdeasSaveButtonActionId);
+        message.blocks?.[3].element?.action_id,
+        "Block doesn't contain squad join checkbox",
+      ).toBe(squadJoinCheckboxActionId);
 
-      await cleanUpSchedule(`${eventId}_askPresentAndSquadJoinFromTeam`);
+      expect(
+        message.blocks?.[4].elements?.[0].action_id,
+        "Block doesn't contain save button",
+      ).toBe(additionalPresentIdeasSaveButtonActionId);
     },
     timeout,
   );
 
   it(
-    "Should save present idea to db",
+    "Should save additional present idea and squad join to db",
     async () => {
       await testDb.insert(users).values([
         {
@@ -118,17 +126,27 @@ describe("Present ideas", () => {
         }/slack/test-payload?testId=${eventId}`,
         actions: [
           {
-            action_id: "presentIdeasSaveButton",
+            action_id: additionalPresentIdeasSaveButtonActionId,
             type: "button",
             value: constants.birthdayPerson,
           },
         ],
         state: {
           values: {
-            presentIdeasInputBlockId: {
-              presentIdeasInputActionId: {
+            additionalPresentIdeasInputBlockId: {
+              additionalPresentIdeasActionId: {
                 type: "plain_text_input",
                 value: constants.presentIdea,
+              },
+            },
+            squadJoinCheckboxBlockId: {
+              squadJoinCheckboxActionId: {
+                type: "checkboxes",
+                selected_options: [
+                  {
+                    value: "Sure",
+                  },
+                ],
               },
             },
           },
@@ -153,6 +171,24 @@ describe("Present ideas", () => {
           interval: pollInterval,
         },
       );
+      const squadJoin = await vi.waitFor(
+        async () => {
+          const items = await testDb
+            .select()
+            .from(squadJoins)
+            .where(eq(squadJoins.userId, constants.userId))
+            .limit(1);
+
+          if (items.length === 0) {
+            throw new Error("Squad join not saved");
+          }
+          return items[0];
+        },
+        {
+          timeout: waitTimeout,
+          interval: pollInterval,
+        },
+      );
 
       expect(
         presentIdea.birthdayPerson,
@@ -163,57 +199,17 @@ describe("Present ideas", () => {
         constants.presentIdea,
       );
 
+      expect(
+        squadJoin.birthdayPerson,
+        "Squad join not matching with the birthday person",
+      ).toEqual(presentIdea.birthdayPerson);
+
       const item = await waitForTestItem(eventId);
 
       expect(
         item.payload,
         "Payload doesn't match present idea saved message",
       ).toEqual(JSON.stringify(constructPresentIdeaSavedMessage()));
-    },
-    timeout,
-  );
-  it(
-    "Should create schedule for PresentAndSquadJoin event",
-    async () => {
-      await testDb.insert(users).values([
-        {
-          id: import.meta.env.VITE_SLACK_USER_ID,
-          teamId: import.meta.env.VITE_SLACK_TEAM_ID,
-          birthday: new Date(),
-        },
-        {
-          id: constants.birthdayPerson,
-          teamId: import.meta.env.VITE_SLACK_TEAM_ID,
-          birthday: dayjs.utc().add(2, "month").toDate(),
-        },
-      ]);
-
-      const eventId = "PI3_" + Date.now().toString();
-
-      await sendCronEvent("daily", eventId);
-
-      await waitForDm(eventId);
-
-      const schedule = await getSchedule(
-        `${eventId}_askPresentAndSquadJoinFromTeam`,
-      );
-
-      expect(
-        schedule.ScheduleExpression,
-        "Incorrect schedule extension",
-      ).toEqual(getScheduleWithDaysOffset(4));
-
-      expect(
-        schedule.ScheduleExpressionTimezone,
-        "Timezone should be UTC",
-      ).toEqual("UTC");
-
-      expect(
-        schedule.ActionAfterCompletion,
-        "After completion should be DELETE",
-      ).toEqual("DELETE");
-
-      await cleanUpSchedule(`${eventId}_askPresentAndSquadJoinFromTeam`);
     },
     timeout,
   );

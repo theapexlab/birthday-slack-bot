@@ -65,3 +65,30 @@ export const makeInputBlock = (
     text: label,
   },
 });
+
+export const makeCheckboxInputBlock = (
+  label: string,
+  blockId: string,
+  actionId: string,
+) => ({
+  type: "input",
+  block_id: blockId,
+  element: {
+    type: "checkboxes",
+    action_id: actionId,
+    options: [
+      {
+        text: {
+          type: "plain_text",
+          text: "Sure!",
+          emoji: true,
+        },
+        value: "true",
+      },
+    ],
+  },
+  label: {
+    type: "plain_text",
+    text: label,
+  },
+});

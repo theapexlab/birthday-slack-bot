@@ -3,9 +3,17 @@ import { z } from "zod";
 export const pickBirthdayActionId = "pickBirthday";
 export const birthdayConfirmActionId = "birthdayConfirm";
 export const birthdayIncorrectActionId = "birthdayIncorrect";
-export const presentIdeasInputActionId = "presentIdeas";
-export const presentIdeasInputBlockId = "presentIdeasInput";
-export const presentIdeasSaveButtonBlockId = "presentIdeasSaveButton";
+export const presentIdeasInputActionId = "presentIdeasInputActionId";
+export const presentIdeasInputBlockId = "presentIdeasInputBlockId";
+export const presentIdeasSaveButtonActionId = "presentIdeasSaveButton";
+export const additionalPresentIdeasInputActionId =
+  "additionalPresentIdeasActionId";
+export const additionalPresentIdeasInputBlockId =
+  "additionalPresentIdeasInputBlockId";
+export const additionalPresentIdeasSaveButtonActionId =
+  "additionalPresentIdeasSaveButton";
+export const squadJoinCheckboxBlockId = "squadJoinCheckboxBlockId";
+export const squadJoinCheckboxActionId = "squadJoinCheckboxActionId";
 
 export const SlackInteractionRequestSchema = z.object({
   type: z.literal("block_actions"),
@@ -26,9 +34,14 @@ export const SlackInteractionRequestSchema = z.object({
           action_id: z.union([
             z.literal(birthdayConfirmActionId),
             z.literal(birthdayIncorrectActionId),
-            z.literal(presentIdeasSaveButtonBlockId),
+            z.literal(presentIdeasSaveButtonActionId),
+            z.literal(additionalPresentIdeasSaveButtonActionId),
           ]),
           value: z.string(),
+        }),
+        z.object({
+          type: z.literal("checkboxes"),
+          action_id: z.literal(squadJoinCheckboxActionId),
         }),
       ]),
     )
@@ -43,7 +56,33 @@ export const SlackInteractionRequestSchema = z.object({
               [presentIdeasInputActionId]: z
                 .object({
                   type: z.literal("plain_text_input"),
-                  value: z.string(),
+                  value: z.string().nullable(),
+                })
+                .optional(),
+            })
+            .optional(),
+          [additionalPresentIdeasInputBlockId]: z
+            .object({
+              [additionalPresentIdeasInputActionId]: z
+                .object({
+                  type: z.literal("plain_text_input"),
+                  value: z.string().nullable(),
+                })
+                .optional(),
+            })
+            .optional(),
+          [squadJoinCheckboxBlockId]: z
+            .object({
+              [squadJoinCheckboxActionId]: z
+                .object({
+                  type: z.literal("checkboxes"),
+                  selected_options: z
+                    .array(
+                      z.object({
+                        value: z.string(),
+                      }),
+                    )
+                    .nullable(),
                 })
                 .optional(),
             })
