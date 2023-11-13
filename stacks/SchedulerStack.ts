@@ -18,14 +18,18 @@ export function SchedulerStack({ stack }: StackContext) {
   const { eventBus } = use(EventBusStack);
   const secrets = use(ConfigStack);
 
-  const scheduleHandlerLambda = new Function(stack, "ScheduleHandlerLambda", {
-    handler: "packages/functions/schedule/scheduleHandlerLambda.handler",
-    bind: [...secrets],
-    permissions: [eventBus],
-    environment: {
-      EVENT_BUS_NAME: eventBus.eventBusName,
+  const scheduleHandlerLambda = new Function(
+    stack,
+    `ScheduleHandlerLambda-${stack.stage}`,
+    {
+      handler: "packages/functions/schedule/scheduleHandlerLambda.handler",
+      bind: [...secrets],
+      permissions: [eventBus],
+      environment: {
+        EVENT_BUS_NAME: eventBus.eventBusName,
+      },
     },
-  });
+  );
 
   const schedulerFunctionInvokeRole = new Role(
     stack,
