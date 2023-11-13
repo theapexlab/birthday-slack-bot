@@ -3,9 +3,25 @@ import utc from "dayjs/plugin/utc";
 
 dayjs.extend(utc);
 
-import { getBirthdays } from "@/db/queries/getBirthdays";
+import {
+  getBirthdays,
+  getUsersWhoseBirthdayIsMissing,
+} from "@/db/queries/getBirthdays";
 import { publishEvent } from "@/utils/eventBridge/publishEvent";
 import { cronHandler } from "@/utils/lambda/cronHandler";
+
+const sendReminderWhoseBirthdayIsMissing = async (eventId?: string) => {
+  const users = await getUsersWhoseBirthdayIsMissing();
+
+  await Promise.all(
+    users.map((user) =>
+      publishEvent("askBirthday", {
+        user: user.id,
+        eventId,
+      }),
+    ),
+  );
+};
 
 export const handler = cronHandler(async (eventId?: string) => {
   try {
@@ -22,6 +38,8 @@ export const handler = cronHandler(async (eventId?: string) => {
         }),
       ),
     );
+
+    await sendReminderWhoseBirthdayIsMissing(eventId);
 
     return {
       users,

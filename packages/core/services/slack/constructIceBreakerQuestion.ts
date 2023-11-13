@@ -1,5 +1,6 @@
 import type { KnownBlock } from "@slack/web-api";
 
+import { iceBreakerQuestions } from "@/config/icebreakerQuestions";
 import type { PostMessageArguments } from "@/types/MessageArguments";
 
 import { makeTextBlock } from "./messageItems";
@@ -9,10 +10,6 @@ type Arguments = {
   channel: string;
   eventId?: string;
 };
-
-const iceBreakerQuestions = [
-  "Hey Guys! What was the last item that you were window shopping for?",
-];
 
 export const constructIceBreakerQuestion = ({
   users,

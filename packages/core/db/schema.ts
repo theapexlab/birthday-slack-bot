@@ -12,7 +12,7 @@ export const users = pgTable(
   {
     id: varchar("id").notNull(),
     teamId: varchar("team_id").notNull(),
-    birthday: date("birthday", { mode: "date" }).notNull(),
+    birthday: date("birthday", { mode: "date" }),
   },
   (t) => ({
     pk: primaryKey(t.id, t.teamId),
