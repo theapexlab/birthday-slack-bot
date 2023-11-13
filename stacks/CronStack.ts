@@ -8,6 +8,8 @@ import { getFunctionProps } from "./utils/getFunctionProps";
 export function CronStack({ stack }: StackContext) {
   const functionProps = getFunctionProps();
 
+  const isTestable = stack.stage !== "staging" && stack.stage !== "production";
+
   new Cron(stack, "IceBreakerCron", {
     job: {
       function: {
@@ -15,13 +17,15 @@ export function CronStack({ stack }: StackContext) {
         ...functionProps,
       },
     },
-    cdk: {
-      rule: {
-        eventPattern: {
-          detailType: [iceBreaker],
-        },
-      },
-    },
+    cdk: isTestable
+      ? {
+          rule: {
+            eventPattern: {
+              detailType: [iceBreaker],
+            },
+          },
+        }
+      : undefined,
     // Every first Tuesday of the month at 11:00 UTC
     schedule: "cron(0 11 ? * 3#1 *)",
   });
@@ -33,13 +37,15 @@ export function CronStack({ stack }: StackContext) {
         ...functionProps,
       },
     },
-    cdk: {
-      rule: {
-        eventPattern: {
-          detailType: [daily],
-        },
-      },
-    },
+    cdk: isTestable
+      ? {
+          rule: {
+            eventPattern: {
+              detailType: [daily],
+            },
+          },
+        }
+      : undefined,
     // Every day at 11:00 UTC
     schedule: "cron(0 11 ? * * *)",
   });
