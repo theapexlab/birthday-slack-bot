@@ -11,7 +11,7 @@ import { Function } from "sst/constructs";
 
 import { scheduleEvent } from "@/types/schedule";
 
-import { getBaseFunctionProps } from "./utils/getFunctionProps";
+import { getEventBusFunctionProps } from "./utils/getFunctionProps";
 import { isStageTestable } from "./utils/isStageTestable";
 
 export function SchedulerStack({ stack }: StackContext) {
@@ -20,7 +20,7 @@ export function SchedulerStack({ stack }: StackContext) {
     `ScheduleHandlerLambda-${stack.stage}`,
     {
       handler: "packages/functions/schedule/scheduleHandlerLambda.handler",
-      ...getBaseFunctionProps(),
+      ...getEventBusFunctionProps(),
     },
   );
 

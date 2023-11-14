@@ -5,7 +5,7 @@ import { Api, Function, Queue, use } from "sst/constructs";
 import { eventTypes } from "@/events";
 
 import { addTestRoutes } from "./utils/addTestRoutes";
-import { getFunctionProps } from "./utils/getFunctionProps";
+import { getDbFunctionProps, getFunctionProps } from "./utils/getFunctionProps";
 import { EventBusStack } from "./EventBusStack";
 
 export function MyStack({ stack }: StackContext) {
@@ -70,7 +70,7 @@ export function MyStack({ stack }: StackContext) {
       },
     ],
     timeout: "60 seconds",
-    ...functionProps,
+    ...getDbFunctionProps(),
   });
 
   stack.addOutputs({
