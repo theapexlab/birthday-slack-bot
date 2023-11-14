@@ -12,6 +12,7 @@ import { Function } from "sst/constructs";
 import { scheduleEvent } from "@/types/schedule";
 
 import { getBaseFunctionProps } from "./utils/getFunctionProps";
+import { isStageTestable } from "./utils/isStageTestable";
 
 export function SchedulerStack({ stack }: StackContext) {
   const scheduleHandlerLambda = new Function(
@@ -42,12 +43,16 @@ export function SchedulerStack({ stack }: StackContext) {
     },
   );
 
-  new Rule(stack, "LambdaTriggerRule", {
-    eventPattern: {
-      detailType: [scheduleEvent],
-    },
-    targets: [new LambdaFunction(scheduleHandlerLambda)],
-  });
+  const isTestable = isStageTestable(stack);
+
+  if (isTestable) {
+    new Rule(stack, "LambdaTriggerRule", {
+      eventPattern: {
+        detailType: [scheduleEvent],
+      },
+      targets: [new LambdaFunction(scheduleHandlerLambda)],
+    });
+  }
 
   return {
     scheduleHandlerLambda,

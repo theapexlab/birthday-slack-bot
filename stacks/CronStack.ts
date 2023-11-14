@@ -4,11 +4,12 @@ import { Cron } from "sst/constructs";
 import { daily, iceBreaker } from "@/types/cron";
 
 import { getFunctionProps } from "./utils/getFunctionProps";
+import { isStageTestable } from "./utils/isStageTestable";
 
 export function CronStack({ stack }: StackContext) {
   const functionProps = getFunctionProps();
 
-  const isTestable = stack.stage !== "staging" && stack.stage !== "production";
+  const isTestable = isStageTestable(stack);
 
   new Cron(stack, "IceBreakerCron", {
     job: {
