@@ -5,12 +5,10 @@ import { EventBusStack } from "../EventBusStack";
 import { SchedulerStack } from "../SchedulerStack";
 import { StorageStack } from "../StorageStack";
 
-export const getFunctionProps = () => {
+export const getBaseFunctionProps = () => {
   const secrets = use(ConfigStack);
   const { db } = use(StorageStack);
   const { eventBus } = use(EventBusStack);
-  const { scheduleHandlerLambda, schedulerFunctionInvokeRole } =
-    use(SchedulerStack);
 
   const bind = [...secrets, ...(db ? [db] : [])];
 
@@ -19,10 +17,24 @@ export const getFunctionProps = () => {
     environment: {
       EVENT_BUS_NAME: eventBus.eventBusName,
       DB_URL: process.env.DB_URL || "",
-      SCHEDULER_LAMBDA_ARN: scheduleHandlerLambda.functionArn,
-      SCHEDULER_ROLE_ARN: schedulerFunctionInvokeRole.roleArn,
     },
     bind,
     runtime: "nodejs18.x" as const,
+  };
+};
+
+export const getFunctionProps = () => {
+  const { scheduleHandlerLambda, schedulerFunctionInvokeRole } =
+    use(SchedulerStack);
+
+  const baseFunctionProps = getBaseFunctionProps();
+
+  return {
+    ...baseFunctionProps,
+    environment: {
+      ...baseFunctionProps.environment,
+      SCHEDULER_LAMBDA_ARN: scheduleHandlerLambda.functionArn,
+      SCHEDULER_ROLE_ARN: schedulerFunctionInvokeRole.roleArn,
+    },
   };
 };
