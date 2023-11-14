@@ -113,7 +113,9 @@ All urls are displayed in the console output.
 - Ask birthday from specific user: open `<ApiEndpoint>/userJoined?userId=<slack user id>`
 - Send out birthday fill reminder: open `<ApiEndpoint>/daily`
   - Only sends it out to users who have not filled in their birthday yet.
+- Send out birthday present idea question: open `<ApiEndpoint>/daily`
   - Sends it out related to users whose birthday is in exactly 2 months.
+- Send out birthday present idea + squadjoin question: open `<ApiEndpoint>/squadJoin?userId=<slack user id>`
 
 ## Generate a new migration
 
