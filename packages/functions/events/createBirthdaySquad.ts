@@ -27,6 +27,10 @@ export const handler = handleEvent(
         squadMembers.push(...randomSquadMember);
       }
 
+      if (squadMembers.length < 2) {
+        throw new Error("Error need at least 2 user to open a conversation");
+      }
+
       const conversationId = await openConversation(squadMembers);
 
       publishEvent("sendSquadWelcomeMessage", {

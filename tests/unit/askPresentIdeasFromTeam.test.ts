@@ -126,7 +126,6 @@ describe("askPresentIdeasFromTeam", () => {
       askPresentIdeasFromTeam,
     );
 
-    expect(schedulerClient.send).toHaveBeenCalledTimes(1);
     expect(CreateScheduleCommand).toHaveBeenCalledWith(
       mockEventSchedulerPayload(
         "askPresentAndSquadJoinFromTeam",
@@ -138,6 +137,42 @@ describe("askPresentIdeasFromTeam", () => {
         4,
       ),
     );
+    expect(schedulerClient.send).toHaveBeenCalled();
+  });
+
+  it("Should publish createBirthdaySquad event with a schedule", async () => {
+    const event = {
+      birthdayPerson: constants.userId,
+      team: constants.teamId,
+      eventId: constants.eventId,
+    } satisfies Events["askPresentIdeasFromTeam"];
+
+    await testDb.insert(users).values(
+      constants.otherUserIds.map((userId) => ({
+        id: userId,
+        teamId: constants.teamId,
+        birthday: dayjs.utc().toDate(),
+      })),
+    );
+
+    await sendMockSqsMessage(
+      "askPresentIdeasFromTeam",
+      event,
+      askPresentIdeasFromTeam,
+    );
+
+    expect(CreateScheduleCommand).toHaveBeenCalledWith(
+      mockEventSchedulerPayload(
+        "createBirthdaySquad",
+        {
+          birthdayPerson: constants.userId,
+          team: constants.teamId,
+          eventId: constants.eventId,
+        },
+        8,
+      ),
+    );
+    expect(schedulerClient.send).toHaveBeenCalled();
   });
 
   it("Should not publish askPresentIdeasFromUser event for the one whose birthday is coming up", async () => {
