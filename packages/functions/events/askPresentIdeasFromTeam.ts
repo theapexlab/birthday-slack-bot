@@ -26,6 +26,15 @@ export const handler = handleEvent(
         },
         4,
       );
+      await publishScheduledEvent(
+        "createBirthdaySquad",
+        {
+          birthdayPerson,
+          team,
+          eventId,
+        },
+        8,
+      );
     } catch (error) {
       console.error("Error processing askPresentIdeasFromTeam event: ", error);
     }

@@ -23,6 +23,7 @@ Helps teams to find the best birthday gift for their colleagues.
 - groups:history
 - im:history
 - mpim:history
+- mpim:write
 
 5. Open the `Event Subscriptions` sub-page -> enable events. (We will add the url later.)
 6. Scroll below `Subscribe to bot events` and add these scopes:
