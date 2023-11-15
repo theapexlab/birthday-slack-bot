@@ -11,7 +11,7 @@ import type { Mock } from "vitest";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import * as getSquadMembers from "@/db/queries/getSquadMembers";
-import { users } from "@/db/schema";
+import { squadJoins, users } from "@/db/schema";
 import type { Events } from "@/events";
 import { handler } from "@/functions/events/createBirthdaySquad";
 import { BIRTHDAY_SQUAD_SIZE } from "@/functions/utils/constants";
@@ -47,6 +47,7 @@ describe("createBirthdaySquad", () => {
   afterEach(async () => {
     vi.clearAllMocks();
     await testDb.delete(users);
+    await testDb.delete(squadJoins);
   });
 
   it("Should call getSquadMembers", async () => {
