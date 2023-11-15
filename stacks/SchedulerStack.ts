@@ -6,29 +6,21 @@ import {
   Role,
   ServicePrincipal,
 } from "aws-cdk-lib/aws-iam";
-import { type StackContext, use } from "sst/constructs";
+import { type StackContext } from "sst/constructs";
 import { Function } from "sst/constructs";
 
 import { scheduleEvent } from "@/types/schedule";
 
-import { ConfigStack } from "./ConfigStack";
-import { EventBusStack } from "./EventBusStack";
+import { getEventBusFunctionProps } from "./utils/getFunctionProps";
+import { isStageTestable } from "./utils/isStageTestable";
 
 export function SchedulerStack({ stack }: StackContext) {
-  const { eventBus } = use(EventBusStack);
-  const secrets = use(ConfigStack);
-
   const scheduleHandlerLambda = new Function(
     stack,
     `ScheduleHandlerLambda-${stack.stage}`,
     {
       handler: "packages/functions/schedule/scheduleHandlerLambda.handler",
-      bind: [...secrets],
-      permissions: [eventBus],
-      environment: {
-        EVENT_BUS_NAME: eventBus.eventBusName,
-      },
-      runtime: "nodejs18.x" as const,
+      ...getEventBusFunctionProps(),
     },
   );
 
@@ -51,12 +43,16 @@ export function SchedulerStack({ stack }: StackContext) {
     },
   );
 
-  new Rule(stack, "LambdaTriggerRule", {
-    eventPattern: {
-      detailType: [scheduleEvent],
-    },
-    targets: [new LambdaFunction(scheduleHandlerLambda)],
-  });
+  const isTestable = isStageTestable(stack);
+
+  if (isTestable) {
+    new Rule(stack, "LambdaTriggerRule", {
+      eventPattern: {
+        detailType: [scheduleEvent],
+      },
+      targets: [new LambdaFunction(scheduleHandlerLambda)],
+    });
+  }
 
   return {
     scheduleHandlerLambda,

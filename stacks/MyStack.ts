@@ -4,8 +4,9 @@ import { Api, Function, Queue, use } from "sst/constructs";
 
 import { eventTypes } from "@/events";
 
+import { addTestRoutes } from "./utils/addTestRoutes";
+import { getDbFunctionProps, getFunctionProps } from "./utils/getFunctionProps";
 import { EventBusStack } from "./EventBusStack";
-import { getFunctionProps } from "./getFunctionProps";
 
 export function MyStack({ stack }: StackContext) {
   const { eventBus } = use(EventBusStack);
@@ -56,17 +57,10 @@ export function MyStack({ stack }: StackContext) {
       "POST /slack/event": "packages/functions/lambdas/slack-event.handler",
       "POST /slack/interaction":
         "packages/functions/lambdas/slack-interaction.handler",
-      "GET /icebreaker": "packages/functions/cron/iceBreakerQuestions.handler",
-      "GET /daily": "packages/functions/cron/daily.handler",
     },
   });
 
-  if (stack.stage !== "staging" && stack.stage !== "production") {
-    api.addRoutes(stack, {
-      "POST /slack/test-payload":
-        "packages/functions/lambdas/listen-for-test-payloads.handler",
-    });
-  }
+  addTestRoutes(stack, api);
 
   const migrationFn = new Function(stack, "MigrateDb", {
     handler: "packages/functions/lambdas/migrateDb.handler",
@@ -76,7 +70,7 @@ export function MyStack({ stack }: StackContext) {
       },
     ],
     timeout: "60 seconds",
-    ...functionProps,
+    ...getDbFunctionProps(),
   });
 
   stack.addOutputs({

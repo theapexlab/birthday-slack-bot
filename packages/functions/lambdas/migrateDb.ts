@@ -1,4 +1,5 @@
 import { migrate } from "@/db/index";
+import { errorResult, okResult } from "@/utils/lambda/result";
 
 export const handler = async () => {
   try {
@@ -8,17 +9,10 @@ export const handler = async () => {
 
     console.log("Migration complete!");
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({}),
-    };
+    return okResult();
   } catch (error) {
     console.error(`Error migrating db: ${error}`);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        error,
-      }),
-    };
+
+    return errorResult(error);
   }
 };
