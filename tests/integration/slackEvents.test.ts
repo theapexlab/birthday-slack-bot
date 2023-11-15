@@ -1,11 +1,10 @@
-import { and, eq } from "drizzle-orm";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { users } from "@/db/schema";
-import { pollInterval, timeout, waitTimeout } from "@/testUtils/constants";
+import { timeout } from "@/testUtils/constants";
 import { deleteLastDm } from "@/testUtils/integration/deleteLastDm";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
-import { testDb } from "@/testUtils/testDb";
+import { testDb, waitForUser } from "@/testUtils/testDb";
 import type { SlackCallbackRequest } from "@/types/SlackEventRequest";
 
 const constants = vi.hoisted(() => ({
@@ -125,30 +124,7 @@ describe("Slack events", () => {
         event_id: eventId,
       });
 
-      await vi.waitFor(
-        async () => {
-          const items = await testDb
-            .select()
-            .from(users)
-            .where(
-              and(
-                eq(users.id, constants.userId),
-                eq(users.teamId, constants.teamId),
-              ),
-            )
-            .limit(1);
-
-          if (items.length === 0) {
-            return items;
-          }
-
-          throw new Error("User not deleted");
-        },
-        {
-          timeout: waitTimeout,
-          interval: pollInterval,
-        },
-      );
+      await waitForUser(constants.userId, constants.teamId, 0);
     },
     timeout,
   );

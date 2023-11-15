@@ -1,12 +1,11 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { eq } from "drizzle-orm";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { presentIdeas, testItems, users } from "@/db/schema";
 import { getScheduleWithTimeOffset } from "@/functions/utils/scheduler/getScheduleExtension";
 import { constructPresentIdeaSavedMessage } from "@/services/slack/constructPresentIdeaSavedMessage";
-import { pollInterval, timeout, waitTimeout } from "@/testUtils/constants";
+import { timeout } from "@/testUtils/constants";
 import { deleteLastDm } from "@/testUtils/integration/deleteLastDm";
 import {
   cleanUpSchedule,
@@ -15,7 +14,11 @@ import {
 import { sendCronEvent } from "@/testUtils/integration/sendCronEvent";
 import { sendSlackInteraction } from "@/testUtils/integration/sendSlackInteraction";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
-import { testDb, waitForTestItem } from "@/testUtils/testDb";
+import {
+  testDb,
+  waitForPresentIdea,
+  waitForTestItem,
+} from "@/testUtils/testDb";
 import {
   presentIdeasInputActionId,
   presentIdeasSaveButtonActionId,
@@ -135,23 +138,9 @@ describe("Present ideas", () => {
         },
       });
 
-      const presentIdea = await vi.waitFor(
-        async () => {
-          const items = await testDb
-            .select()
-            .from(presentIdeas)
-            .where(eq(presentIdeas.userId, constants.userId))
-            .limit(1);
-
-          if (items.length === 0) {
-            throw new Error("Present idea not saved");
-          }
-          return items[0];
-        },
-        {
-          timeout: waitTimeout,
-          interval: pollInterval,
-        },
+      const presentIdea = await waitForPresentIdea(
+        constants.userId,
+        constants.teamId,
       );
 
       expect(

@@ -1,16 +1,20 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { eq } from "drizzle-orm";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
-import { presentIdeas, squadJoins, testItems, users } from "@/db/schema";
+import { presentIdeas, testItems, users } from "@/db/schema";
 import { constructPresentIdeaSavedMessage } from "@/services/slack/constructPresentIdeaSavedMessage";
-import { pollInterval, timeout, waitTimeout } from "@/testUtils/constants";
+import { timeout } from "@/testUtils/constants";
 import { deleteLastDm } from "@/testUtils/integration/deleteLastDm";
 import { sendScheduleEvent } from "@/testUtils/integration/sendScheduleEvent";
 import { sendSlackInteraction } from "@/testUtils/integration/sendSlackInteraction";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
-import { testDb, waitForTestItem } from "@/testUtils/testDb";
+import {
+  testDb,
+  waitForPresentIdea,
+  waitForSquadJoin,
+  waitForTestItem,
+} from "@/testUtils/testDb";
 import { scheduleEvent } from "@/types/schedule";
 import {
   additionalPresentIdeasInputActionId,
@@ -153,41 +157,14 @@ describe("Present and Squad Join", () => {
         },
       });
 
-      const presentIdea = await vi.waitFor(
-        async () => {
-          const items = await testDb
-            .select()
-            .from(presentIdeas)
-            .where(eq(presentIdeas.userId, constants.userId))
-            .limit(1);
-
-          if (items.length === 0) {
-            throw new Error("Present idea not saved");
-          }
-          return items[0];
-        },
-        {
-          timeout: waitTimeout,
-          interval: pollInterval,
-        },
+      const presentIdea = await waitForPresentIdea(
+        constants.userId,
+        constants.teamId,
       );
-      const squadJoin = await vi.waitFor(
-        async () => {
-          const items = await testDb
-            .select()
-            .from(squadJoins)
-            .where(eq(squadJoins.userId, constants.userId))
-            .limit(1);
 
-          if (items.length === 0) {
-            throw new Error("Squad join not saved");
-          }
-          return items[0];
-        },
-        {
-          timeout: waitTimeout,
-          interval: pollInterval,
-        },
+      const squadJoin = await waitForSquadJoin(
+        constants.userId,
+        constants.teamId,
       );
 
       expect(

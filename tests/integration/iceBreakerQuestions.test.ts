@@ -1,8 +1,7 @@
-import { eq } from "drizzle-orm";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { iceBreakerThreads, users } from "@/db/schema";
-import { pollInterval, timeout, waitTimeout } from "@/testUtils/constants";
+import { timeout } from "@/testUtils/constants";
 import {
   generateIceBreakerTestUsers,
   usersInWindow,
@@ -11,7 +10,7 @@ import {
 import { sendCronEvent } from "@/testUtils/integration/sendCronEvent";
 import { app } from "@/testUtils/integration/testSlackApp";
 import { waitForPostInRandom } from "@/testUtils/integration/waitForPostInRandom";
-import { testDb } from "@/testUtils/testDb";
+import { testDb, waitForIceBreakerThreads } from "@/testUtils/testDb";
 
 const constants = vi.hoisted(() => ({
   teamId: "T1",
@@ -108,22 +107,9 @@ describe("Icebreaker questions", () => {
 
       await sendCronEvent("iceBreaker", eventId);
 
-      const threads = await vi.waitFor(
-        async () => {
-          const items = await testDb
-            .select()
-            .from(iceBreakerThreads)
-            .where(eq(iceBreakerThreads.teamId, constants.teamId));
-
-          if (items.length < usersInWindow.length) {
-            throw new Error("Not all threads saved");
-          }
-          return items;
-        },
-        {
-          timeout: waitTimeout,
-          interval: pollInterval,
-        },
+      const threads = await waitForIceBreakerThreads(
+        constants.teamId,
+        usersInWindow.length,
       );
 
       for (const user of usersInWindow) {

@@ -1,17 +1,16 @@
-import { eq } from "drizzle-orm";
 import { afterEach, beforeAll, describe, expect, it, test, vi } from "vitest";
 
 import { testItems, users } from "@/db/schema";
 import { constructAskBirthdayMessageReplacement } from "@/services/slack/constructAskBirthdayMessage";
 import { constructBirthdayConfirmedMessage } from "@/services/slack/constructBirthdayConfirmedMessage";
 import { constructConfirmBirthdayMessage } from "@/services/slack/constructConfirmBirthdayMessage";
-import { pollInterval, timeout, waitTimeout } from "@/testUtils/constants";
+import { timeout } from "@/testUtils/constants";
 import { deleteLastDm } from "@/testUtils/integration/deleteLastDm";
 import { sendCronEvent } from "@/testUtils/integration/sendCronEvent";
 import { sendSlackInteraction } from "@/testUtils/integration/sendSlackInteraction";
 import { app } from "@/testUtils/integration/testSlackApp";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
-import { testDb, waitForTestItem } from "@/testUtils/testDb";
+import { testDb, waitForTestItem, waitForUser } from "@/testUtils/testDb";
 import {
   birthdayConfirmActionId,
   birthdayIncorrectActionId,
@@ -139,24 +138,7 @@ describe("Slack interactions", () => {
         ],
       });
 
-      const item = await vi.waitFor(
-        async () => {
-          const items = await testDb
-            .select()
-            .from(users)
-            .where(eq(users.id, constants.userId))
-            .limit(1);
-
-          if (items.length === 0) {
-            throw new Error("User not saved");
-          }
-          return items[0];
-        },
-        {
-          timeout: waitTimeout,
-          interval: pollInterval,
-        },
-      );
+      const item = (await waitForUser(constants.userId, constants.teamId))[0];
 
       expect(item, "User doesn't match expected user").toEqual({
         id: constants.userId,
