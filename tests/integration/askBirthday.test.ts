@@ -10,7 +10,7 @@ import { sendCronEvent } from "@/testUtils/integration/sendCronEvent";
 import { sendSlackInteraction } from "@/testUtils/integration/sendSlackInteraction";
 import { app } from "@/testUtils/integration/testSlackApp";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
-import { testDb, waitForTestItem, waitForUser } from "@/testUtils/testDb";
+import { testDb, waitForTestItem, waitForUsers } from "@/testUtils/testDb";
 import {
   birthdayConfirmActionId,
   birthdayIncorrectActionId,
@@ -138,7 +138,12 @@ describe("Slack interactions", () => {
         ],
       });
 
-      const item = (await waitForUser(constants.userId, constants.teamId))[0];
+      const item = (
+        await waitForUsers({
+          userId: constants.userId,
+          teamId: constants.teamId,
+        })
+      )[0];
 
       expect(item, "User doesn't match expected user").toEqual({
         id: constants.userId,

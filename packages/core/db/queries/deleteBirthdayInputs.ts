@@ -17,11 +17,19 @@ export const deleteBirthdayInputs = async (teamId: string, userId: string) => {
     await tx
       .delete(presentIdeas)
       .where(
-        and(eq(presentIdeas.teamId, teamId), eq(presentIdeas.userId, userId)),
+        and(
+          eq(presentIdeas.teamId, teamId),
+          eq(presentIdeas.birthdayPerson, userId),
+        ),
       );
 
     await tx
       .delete(squadJoins)
-      .where(and(eq(squadJoins.teamId, teamId), eq(squadJoins.userId, userId)));
+      .where(
+        and(
+          eq(squadJoins.teamId, teamId),
+          eq(squadJoins.birthdayPerson, userId),
+        ),
+      );
   });
 };

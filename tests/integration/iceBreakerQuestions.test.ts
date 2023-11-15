@@ -107,10 +107,10 @@ describe("Icebreaker questions", () => {
 
       await sendCronEvent("iceBreaker", eventId);
 
-      const threads = await waitForIceBreakerThreads(
-        constants.teamId,
-        usersInWindow.length,
-      );
+      const threads = await waitForIceBreakerThreads({
+        teamId: constants.teamId,
+        expectedCount: usersInWindow.length,
+      });
 
       for (const user of usersInWindow) {
         expect(

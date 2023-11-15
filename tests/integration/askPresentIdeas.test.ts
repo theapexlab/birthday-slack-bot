@@ -16,7 +16,7 @@ import { sendSlackInteraction } from "@/testUtils/integration/sendSlackInteracti
 import { waitForDm } from "@/testUtils/integration/waitForDm";
 import {
   testDb,
-  waitForPresentIdea,
+  waitForPresentIdeas,
   waitForTestItem,
 } from "@/testUtils/testDb";
 import {
@@ -138,10 +138,12 @@ describe("Present ideas", () => {
         },
       });
 
-      const presentIdea = await waitForPresentIdea(
-        constants.userId,
-        constants.teamId,
-      );
+      const presentIdea = (
+        await waitForPresentIdeas({
+          userId: constants.userId,
+          teamId: constants.teamId,
+        })
+      )[0];
 
       expect(
         presentIdea.birthdayPerson,

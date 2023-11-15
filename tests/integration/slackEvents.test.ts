@@ -4,7 +4,7 @@ import { users } from "@/db/schema";
 import { timeout } from "@/testUtils/constants";
 import { deleteLastDm } from "@/testUtils/integration/deleteLastDm";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
-import { testDb, waitForUser } from "@/testUtils/testDb";
+import { testDb, waitForUsers } from "@/testUtils/testDb";
 import type { SlackCallbackRequest } from "@/types/SlackEventRequest";
 
 const constants = vi.hoisted(() => ({
@@ -124,7 +124,11 @@ describe("Slack events", () => {
         event_id: eventId,
       });
 
-      await waitForUser(constants.userId, constants.teamId, 0);
+      await waitForUsers({
+        userId: constants.userId,
+        teamId: constants.teamId,
+        expectedCount: 0,
+      });
     },
     timeout,
   );

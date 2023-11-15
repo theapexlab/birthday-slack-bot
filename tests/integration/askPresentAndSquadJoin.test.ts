@@ -11,8 +11,8 @@ import { sendSlackInteraction } from "@/testUtils/integration/sendSlackInteracti
 import { waitForDm } from "@/testUtils/integration/waitForDm";
 import {
   testDb,
-  waitForPresentIdea,
-  waitForSquadJoin,
+  waitForPresentIdeas,
+  waitForSquadJoins,
   waitForTestItem,
 } from "@/testUtils/testDb";
 import { scheduleEvent } from "@/types/schedule";
@@ -157,15 +157,19 @@ describe("Present and Squad Join", () => {
         },
       });
 
-      const presentIdea = await waitForPresentIdea(
-        constants.userId,
-        constants.teamId,
-      );
+      const presentIdea = (
+        await waitForPresentIdeas({
+          teamId: constants.teamId,
+          userId: constants.userId,
+        })
+      )[0];
 
-      const squadJoin = await waitForSquadJoin(
-        constants.userId,
-        constants.teamId,
-      );
+      const squadJoin = (
+        await waitForSquadJoins({
+          teamId: constants.teamId,
+          userId: constants.userId,
+        })
+      )[0];
 
       expect(
         presentIdea.birthdayPerson,

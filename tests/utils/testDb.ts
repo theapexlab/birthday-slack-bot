@@ -46,20 +46,33 @@ export const waitForTestItem = async (id: string) =>
     },
   );
 
-export const waitForUser = async (
-  userId: string,
-  teamId: string,
-  expectedCount: number = 1,
-) =>
+type WaitForArgs = {
+  userId?: string;
+  teamId?: string;
+  expectedCount?: number;
+};
+
+export const waitForUsers = async ({
+  userId,
+  teamId,
+  expectedCount = 1,
+}: WaitForArgs) =>
   vi.waitFor(
     async () => {
       const items = await testDb
         .select()
         .from(users)
-        .where(and(eq(users.id, userId), eq(users.teamId, teamId)));
+        .where(
+          and(
+            userId ? eq(users.id, userId) : undefined,
+            teamId ? eq(users.teamId, teamId) : undefined,
+          ),
+        );
 
       if (items.length !== expectedCount) {
-        throw new Error(`Expected ${expectedCount}, but got ${items.length}`);
+        throw new Error(
+          `Expected ${expectedCount} user(s), but got ${items.length}`,
+        );
       }
       return items;
     },
@@ -69,19 +82,21 @@ export const waitForUser = async (
     },
   );
 
-export const waitForIceBreakerThreads = async (
-  teamId: string,
-  expectedCount: number,
-) =>
+export const waitForIceBreakerThreads = async ({
+  teamId,
+  expectedCount,
+}: Omit<WaitForArgs, "userId">) =>
   vi.waitFor(
     async () => {
       const items = await testDb
         .select()
         .from(iceBreakerThreads)
-        .where(and(eq(iceBreakerThreads.teamId, teamId)));
+        .where(teamId ? eq(iceBreakerThreads.teamId, teamId) : undefined);
 
       if (items.length !== expectedCount) {
-        throw new Error(`Expected ${expectedCount}, but got ${items.length}`);
+        throw new Error(
+          `Expected ${expectedCount} icebreaker thread(s), but got ${items.length}`,
+        );
       }
       return items;
     },
@@ -91,24 +106,29 @@ export const waitForIceBreakerThreads = async (
     },
   );
 
-export const waitForPresentIdea = async (
-  userId: string,
-  teamId: string,
-  expectedCount: number = 1,
-) =>
+export const waitForPresentIdeas = async ({
+  userId,
+  teamId,
+  expectedCount = 1,
+}: WaitForArgs) =>
   vi.waitFor(
     async () => {
       const items = await testDb
         .select()
         .from(presentIdeas)
         .where(
-          and(eq(presentIdeas.userId, userId), eq(presentIdeas.teamId, teamId)),
+          and(
+            userId ? eq(presentIdeas.userId, userId) : undefined,
+            teamId ? eq(presentIdeas.teamId, teamId) : undefined,
+          ),
         );
 
       if (items.length !== expectedCount) {
-        throw new Error(`Expected ${expectedCount}, but got ${items.length}`);
+        throw new Error(
+          `Expected ${expectedCount} present idea(s), but got ${items.length}`,
+        );
       }
-      return items[0];
+      return items;
     },
     {
       timeout: waitTimeout,
@@ -116,24 +136,29 @@ export const waitForPresentIdea = async (
     },
   );
 
-export const waitForSquadJoin = async (
-  userId: string,
-  teamId: string,
-  expectedCount: number = 1,
-) =>
+export const waitForSquadJoins = async ({
+  userId,
+  teamId,
+  expectedCount = 1,
+}: WaitForArgs) =>
   vi.waitFor(
     async () => {
       const items = await testDb
         .select()
         .from(squadJoins)
         .where(
-          and(eq(squadJoins.userId, userId), eq(squadJoins.teamId, teamId)),
+          and(
+            userId ? eq(squadJoins.userId, userId) : undefined,
+            teamId ? eq(squadJoins.teamId, teamId) : undefined,
+          ),
         );
 
       if (items.length !== expectedCount) {
-        throw new Error(`Expected ${expectedCount}, but got ${items.length}`);
+        throw new Error(
+          `Expected ${expectedCount} squad join(s), but got ${items.length}`,
+        );
       }
-      return items[0];
+      return items;
     },
     {
       timeout: waitTimeout,
