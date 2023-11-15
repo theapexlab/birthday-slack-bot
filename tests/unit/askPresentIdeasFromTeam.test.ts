@@ -126,6 +126,7 @@ describe("askPresentIdeasFromTeam", () => {
       askPresentIdeasFromTeam,
     );
 
+    expect(schedulerClient.send).toHaveBeenCalledTimes(1);
     expect(CreateScheduleCommand).toHaveBeenCalledWith(
       mockEventSchedulerPayload(
         "askPresentAndSquadJoinFromTeam",
@@ -137,7 +138,6 @@ describe("askPresentIdeasFromTeam", () => {
         4,
       ),
     );
-    expect(schedulerClient.send).toHaveBeenCalled();
   });
 
   it("Should publish createBirthdaySquad event with a schedule", async () => {
