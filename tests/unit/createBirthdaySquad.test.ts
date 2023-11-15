@@ -7,7 +7,6 @@ import {
 } from "@aws-sdk/client-eventbridge";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import type { Mock } from "vitest";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import * as getSquadMembers from "@/db/queries/getSquadMembers";
@@ -28,33 +27,31 @@ const constants = vi.hoisted(() => ({
   eventId: "E001",
   teamId: "T001",
   otherUserIds: ["U002", "U003", "U004", "U005", "U006"],
-  converastionId: "CH001",
+  conversationId: "CH001",
 }));
 
+const event = vi.hoisted(
+  () =>
+    ({
+      birthdayPerson: constants.birthdayPerson,
+      eventId: constants.eventId,
+      team: constants.teamId,
+    }) satisfies Events["createBirthdaySquad"],
+);
+
 vi.mock("@/services/slack/openConversation", async () => ({
-  openConversation: vi.fn().mockResolvedValue(constants.converastionId),
+  openConversation: vi.fn().mockResolvedValue(constants.conversationId),
 }));
 
 describe("CreateBirthdaySquad", () => {
-  let openConversationMock: Mock;
-
-  beforeEach(() => {
-    openConversationMock = openConversation as Mock;
-  });
+  beforeEach(() => {});
 
   afterEach(async () => {
     vi.clearAllMocks();
   });
 
   it("Should call getSquadMembers", async () => {
-    const event = {
-      birthdayPerson: constants.birthdayPerson,
-      eventId: constants.eventId,
-      team: constants.teamId,
-    } satisfies Events["createBirthdaySquad"];
     const getSquadMembersSpy = vi.spyOn(getSquadMembers, "getSquadMembers");
-
-    openConversationMock.mockResolvedValueOnce(constants.converastionId);
 
     await sendMockSqsMessage("createBirthdaySquad", event, handler);
 
@@ -66,11 +63,9 @@ describe("CreateBirthdaySquad", () => {
 });
 
 describe("Final squad size is less then 2", () => {
-  let openConversationMock: Mock;
   let eventBridge: EventBridgeClient;
 
   beforeEach(() => {
-    openConversationMock = openConversation as Mock;
     eventBridge = new EventBridgeClient();
   });
 
@@ -78,18 +73,11 @@ describe("Final squad size is less then 2", () => {
     vi.clearAllMocks();
   });
 
-  it("Should not call openConverstaion", async () => {
-    const event = {
-      birthdayPerson: constants.birthdayPerson,
-      eventId: constants.eventId,
-      team: constants.teamId,
-    } satisfies Events["createBirthdaySquad"];
+  it("Should not call openConversation", async () => {
     const getRandomSquadMembersSpy = vi.spyOn(
       getSquadMembers,
       "getRandomSquadMembers",
     );
-
-    openConversationMock.mockResolvedValueOnce(constants.converastionId);
 
     await sendMockSqsMessage("createBirthdaySquad", event, handler);
 
@@ -103,17 +91,10 @@ describe("Final squad size is less then 2", () => {
   });
 
   it("Should not call publishEvent", async () => {
-    const event = {
-      birthdayPerson: constants.birthdayPerson,
-      eventId: constants.eventId,
-      team: constants.teamId,
-    } satisfies Events["createBirthdaySquad"];
     const getRandomSquadMembersSpy = vi.spyOn(
       getSquadMembers,
       "getRandomSquadMembers",
     );
-
-    openConversationMock.mockResolvedValueOnce(constants.converastionId);
 
     await sendMockSqsMessage("createBirthdaySquad", event, handler);
 
@@ -128,29 +109,16 @@ describe("Final squad size is less then 2", () => {
   });
 });
 
-describe("Applied squad members is less the 3", () => {
-  let openConversationMock: Mock;
-
-  beforeEach(() => {
-    openConversationMock = openConversation as Mock;
-  });
-
+describe("3 or less squad members applied", () => {
   afterEach(async () => {
     vi.clearAllMocks();
   });
 
   it("Should call getRandomSquadMembers", async () => {
-    const event = {
-      birthdayPerson: constants.birthdayPerson,
-      eventId: constants.eventId,
-      team: constants.teamId,
-    } satisfies Events["createBirthdaySquad"];
     const getRandomSquadMembersSpy = vi.spyOn(
       getSquadMembers,
       "getRandomSquadMembers",
     );
-
-    openConversationMock.mockResolvedValueOnce(constants.converastionId);
 
     await sendMockSqsMessage("createBirthdaySquad", event, handler);
 
@@ -162,13 +130,10 @@ describe("Applied squad members is less the 3", () => {
   });
 });
 
-describe("Applied squad members is 3 or more", () => {
-  let openConversationMock: Mock;
+describe("3 or more squad members applied", () => {
   let insertedSquadMembers: string[];
 
   beforeEach(async () => {
-    openConversationMock = openConversation as Mock;
-
     await testDb.insert(users).values({
       id: constants.birthdayPerson,
       teamId: constants.teamId,
@@ -198,17 +163,10 @@ describe("Applied squad members is 3 or more", () => {
   });
 
   it("Should not call getRandomSquadMembers", async () => {
-    const event = {
-      birthdayPerson: constants.birthdayPerson,
-      eventId: constants.eventId,
-      team: constants.teamId,
-    } satisfies Events["createBirthdaySquad"];
     const getRandomSquadMembersSpy = vi.spyOn(
       getSquadMembers,
       "getRandomSquadMembers",
     );
-
-    openConversationMock.mockResolvedValueOnce(constants.converastionId);
 
     await sendMockSqsMessage("createBirthdaySquad", event, handler);
 
@@ -216,14 +174,6 @@ describe("Applied squad members is 3 or more", () => {
   });
 
   it("Should call openConversation", async () => {
-    const event = {
-      birthdayPerson: constants.birthdayPerson,
-      eventId: constants.eventId,
-      team: constants.teamId,
-    } satisfies Events["createBirthdaySquad"];
-
-    openConversationMock.mockResolvedValueOnce(constants.converastionId);
-
     await sendMockSqsMessage("createBirthdaySquad", event, handler);
 
     expect(openConversation).toBeCalledWith(
@@ -232,19 +182,11 @@ describe("Applied squad members is 3 or more", () => {
   });
 
   it("Should publish sendSquadWelcomeMessage", async () => {
-    const event = {
-      birthdayPerson: constants.birthdayPerson,
-      eventId: constants.eventId,
-      team: constants.teamId,
-    } satisfies Events["createBirthdaySquad"];
-
-    openConversationMock.mockResolvedValueOnce(constants.converastionId);
-
     await sendMockSqsMessage("createBirthdaySquad", event, handler);
 
     expect(PutEventsCommand).toHaveBeenCalledWith(
       mockEventBridgePayload("sendSquadWelcomeMessage", {
-        conversationId: constants.converastionId,
+        conversationId: constants.conversationId,
         birthdayPerson: constants.birthdayPerson,
         team: constants.teamId,
         eventId: constants.eventId,

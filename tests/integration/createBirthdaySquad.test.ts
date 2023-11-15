@@ -21,13 +21,12 @@ const constants = vi.hoisted(() => ({
   eventId: "E001",
   teamId: testSlackTeamId,
   otherUserIds: [testUserId, testBotUserId],
-  converastionId: "CH001",
+  conversationId: "CH001",
 }));
 
 describe("CreateBirthdaySquad", () => {
   beforeAll(async () => {
     await testDb.delete(users);
-    await testDb.delete(squadJoins);
   });
 
   afterEach(async () => {

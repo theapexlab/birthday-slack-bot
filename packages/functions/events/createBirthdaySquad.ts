@@ -19,12 +19,12 @@ export const handler = handleEvent(
       const squadMembers = [...appliedSquadMembers];
 
       if (appliedSquadMembers.length < MIN_BIRTHDAY_SQUAD_SIZE) {
-        const randomSquadMember = await getRandomSquadMembers({
+        const randomSquadMembers = await getRandomSquadMembers({
           teamId: team,
           usersToExclude: [birthdayPerson, ...appliedSquadMembers],
           limit: BIRTHDAY_SQUAD_SIZE - appliedSquadMembers.length,
         });
-        squadMembers.push(...randomSquadMember);
+        squadMembers.push(...randomSquadMembers);
       }
 
       if (squadMembers.length < 2) {
@@ -33,7 +33,7 @@ export const handler = handleEvent(
 
       const conversationId = await openConversation(squadMembers);
 
-      publishEvent("sendSquadWelcomeMessage", {
+      await publishEvent("sendSquadWelcomeMessage", {
         conversationId,
         birthdayPerson,
         team,
