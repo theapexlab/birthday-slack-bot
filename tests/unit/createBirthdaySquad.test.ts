@@ -64,6 +64,7 @@ describe("CreateBirthdaySquad", () => {
     );
   });
 });
+
 describe("Final squad size is less then 2", () => {
   let openConversationMock: Mock;
   let eventBridge: EventBridgeClient;
@@ -100,6 +101,7 @@ describe("Final squad size is less then 2", () => {
 
     expect(openConversation).not.toBeCalled();
   });
+
   it("Should not call publishEvent", async () => {
     const event = {
       birthdayPerson: constants.birthdayPerson,
@@ -125,6 +127,7 @@ describe("Final squad size is less then 2", () => {
     expect(eventBridge.send).not.toBeCalled();
   });
 });
+
 describe("Applied squad members is less the 3", () => {
   let openConversationMock: Mock;
 
@@ -158,6 +161,7 @@ describe("Applied squad members is less the 3", () => {
     });
   });
 });
+
 describe("Applied squad members is 3 or more", () => {
   let openConversationMock: Mock;
   let insertedSquadMembers: string[];
@@ -210,6 +214,7 @@ describe("Applied squad members is 3 or more", () => {
 
     expect(getRandomSquadMembersSpy).not.toHaveBeenCalled();
   });
+
   it("Should call openConversation", async () => {
     const event = {
       birthdayPerson: constants.birthdayPerson,
@@ -225,6 +230,7 @@ describe("Applied squad members is 3 or more", () => {
       expect.arrayContaining(insertedSquadMembers),
     );
   });
+
   it("Should publish sendSquadWelcomeMessage", async () => {
     const event = {
       birthdayPerson: constants.birthdayPerson,
