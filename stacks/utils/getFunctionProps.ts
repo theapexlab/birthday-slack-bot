@@ -1,3 +1,5 @@
+import { PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
+import type { Stack } from "sst/constructs";
 import { use } from "sst/constructs";
 
 import { ConfigStack } from "../ConfigStack";
@@ -42,12 +44,23 @@ export const getEventBusFunctionProps = () => {
   };
 };
 
-export const getFunctionProps = () => {
+export const getFunctionProps = (stack: Stack) => {
   const { scheduleHandlerLambda, schedulerFunctionInvokeRole } =
     use(SchedulerStack);
 
   const dbFunctionProps = getDbFunctionProps();
   const eventBusFunctionProps = getEventBusFunctionProps();
+
+  const schedulerRole = new Role(stack, "SchedulerRole", {
+    assumedBy: new ServicePrincipal("lambda.amazonaws.com"),
+  });
+
+  schedulerRole.addToPolicy(
+    new PolicyStatement({
+      actions: ["scheduler:CreateSchedule", "iam:PassRole"],
+      resources: ["*"],
+    }),
+  );
 
   return {
     ...dbFunctionProps,
@@ -59,5 +72,6 @@ export const getFunctionProps = () => {
       SCHEDULER_ROLE_ARN: schedulerFunctionInvokeRole.roleArn,
     },
     bind: [...dbFunctionProps.bind, ...eventBusFunctionProps.bind],
+    role: schedulerRole,
   };
 };

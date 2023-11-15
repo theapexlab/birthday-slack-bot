@@ -7,7 +7,7 @@ import { getFunctionProps } from "./utils/getFunctionProps";
 import { isStageTestable } from "./utils/isStageTestable";
 
 export function CronStack({ stack }: StackContext) {
-  const functionProps = getFunctionProps();
+  const functionProps = getFunctionProps(stack);
 
   const isTestable = isStageTestable(stack);
 

@@ -56,6 +56,10 @@ const Events = z.object({
     birthdayPerson: z.string(),
     user: z.string(),
   }),
+  birthdayCleanup: BaseEvent.extend({
+    birthdayPerson: z.string(),
+    team: z.string(),
+  }),
 });
 
 export type Events = z.infer<typeof Events>;

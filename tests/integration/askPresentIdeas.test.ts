@@ -217,4 +217,48 @@ describe("Present ideas", () => {
     },
     timeout,
   );
+
+  it(
+    "Should create schedule for birthdayCleanup event",
+    async () => {
+      await testDb.insert(users).values([
+        {
+          id: import.meta.env.VITE_SLACK_USER_ID,
+          teamId: import.meta.env.VITE_SLACK_TEAM_ID,
+          birthday: new Date(),
+        },
+        {
+          id: constants.birthdayPerson,
+          teamId: import.meta.env.VITE_SLACK_TEAM_ID,
+          birthday: dayjs.utc().add(2, "month").toDate(),
+        },
+      ]);
+
+      const eventId = "PI4_" + Date.now().toString();
+
+      await sendCronEvent("daily", eventId);
+
+      await waitForDm(eventId);
+
+      const schedule = await getSchedule(`${eventId}_birthdayCleanup`);
+
+      expect(
+        schedule.ScheduleExpression,
+        "Incorrect schedule extension",
+      ).toEqual(getScheduleWithTimeOffset({ months: 2 }));
+
+      expect(
+        schedule.ScheduleExpressionTimezone,
+        "Timezone should be UTC",
+      ).toEqual("UTC");
+
+      expect(
+        schedule.ActionAfterCompletion,
+        "After completion should be DELETE",
+      ).toEqual("DELETE");
+
+      await cleanUpSchedule(`${eventId}_birthdayCleanup`);
+    },
+    timeout,
+  );
 });
