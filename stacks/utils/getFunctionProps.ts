@@ -58,5 +58,6 @@ export const getFunctionProps = () => {
       SCHEDULER_LAMBDA_ARN: scheduleHandlerLambda.functionArn,
       SCHEDULER_ROLE_ARN: schedulerFunctionInvokeRole.roleArn,
     },
+    bind: [...dbFunctionProps.bind, ...eventBusFunctionProps.bind],
   };
 };
