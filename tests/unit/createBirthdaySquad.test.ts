@@ -18,6 +18,7 @@ import { BIRTHDAY_SQUAD_SIZE } from "@/functions/utils/constants";
 import { openConversation } from "@/services/slack/openConversation";
 import { seedSquadJoins } from "@/testUtils/seedSquadJoins";
 import { testDb } from "@/testUtils/testDb";
+import { mockEventBridgePayload } from "@/testUtils/unit/mockEventBridgePayload";
 import { sendMockSqsMessage } from "@/testUtils/unit/sendMockSqsMessage";
 
 dayjs.extend(utc);
@@ -48,7 +49,7 @@ describe("createBirthdaySquad", () => {
     await testDb.delete(users);
   });
 
-  it("Shoud call the getSquadMembers", async () => {
+  it("Should call getSquadMembers", async () => {
     const event = {
       birthdayPerson: constants.birthdayPerson,
       eventId: constants.eventId,
@@ -65,7 +66,28 @@ describe("createBirthdaySquad", () => {
       constants.birthdayPerson,
     );
   });
-  it("Shoud not call the openConverstaion if the final squad size is less then 2", async () => {
+  it("Should call getRandomSquadMembers if the appliedSquadMembers size less then 3", async () => {
+    const event = {
+      birthdayPerson: constants.birthdayPerson,
+      eventId: constants.eventId,
+      team: constants.teamId,
+    } satisfies Events["createBirthdaySquad"];
+    const getRandomSquadMembersSpy = vi.spyOn(
+      getSquadMembers,
+      "getRandomSquadMembers",
+    );
+
+    openConversationMock.mockResolvedValueOnce(constants.converastionId);
+
+    await sendMockSqsMessage("createBirthdaySquad", event, handler);
+
+    expect(getRandomSquadMembersSpy).toHaveBeenCalledWith({
+      teamId: constants.teamId,
+      usersToExclude: [constants.birthdayPerson],
+      limit: BIRTHDAY_SQUAD_SIZE,
+    });
+  });
+  it("Should not call openConverstaion if the final squad size is less then 2", async () => {
     const event = {
       birthdayPerson: constants.birthdayPerson,
       eventId: constants.eventId,
@@ -88,7 +110,7 @@ describe("createBirthdaySquad", () => {
 
     expect(openConversation).not.toBeCalled();
   });
-  it("Shoud not call the publishEvent if the final squad size is less then 2", async () => {
+  it("Should not call publishEvent if the final squad size is less then 2", async () => {
     const event = {
       birthdayPerson: constants.birthdayPerson,
       eventId: constants.eventId,
@@ -112,7 +134,7 @@ describe("createBirthdaySquad", () => {
     expect(PutEventsCommand).not.toBeCalled();
     expect(eventBridge.send).not.toBeCalled();
   });
-  it("Shoud call the getRandomSquadMembers if the appliedSquadMembers size less then 3", async () => {
+  it("Should not call getRandomSquadMembers if the appliedSquadMembers size 3 or more", async () => {
     const event = {
       birthdayPerson: constants.birthdayPerson,
       eventId: constants.eventId,
@@ -121,29 +143,41 @@ describe("createBirthdaySquad", () => {
     const getRandomSquadMembersSpy = vi.spyOn(
       getSquadMembers,
       "getRandomSquadMembers",
+    );
+
+    await testDb.insert(users).values({
+      id: constants.birthdayPerson,
+      teamId: constants.teamId,
+      birthday: dayjs.utc().toDate(),
+    });
+
+    await testDb.insert(users).values(
+      constants.otherUserIds.map((userId) => ({
+        id: userId,
+        teamId: constants.teamId,
+        birthday: dayjs.utc().toDate(),
+      })),
+    );
+
+    await seedSquadJoins(
+      constants.birthdayPerson,
+      constants.teamId,
+      constants.otherUserIds,
+      3,
     );
 
     openConversationMock.mockResolvedValueOnce(constants.converastionId);
 
     await sendMockSqsMessage("createBirthdaySquad", event, handler);
 
-    expect(getRandomSquadMembersSpy).toHaveBeenCalledWith({
-      teamId: constants.teamId,
-      usersToExclude: [constants.birthdayPerson],
-      limit: BIRTHDAY_SQUAD_SIZE,
-    });
+    expect(getRandomSquadMembersSpy).not.toHaveBeenCalled();
   });
-
-  it("Shoud call not the getRandomSquadMembers if the appliedSquadMembers size 3 or more", async () => {
+  it("Should call openConversation if the appliedSquadMembers size 3 or more", async () => {
     const event = {
       birthdayPerson: constants.birthdayPerson,
       eventId: constants.eventId,
       team: constants.teamId,
     } satisfies Events["createBirthdaySquad"];
-    const getRandomSquadMembersSpy = vi.spyOn(
-      getSquadMembers,
-      "getRandomSquadMembers",
-    );
 
     await testDb.insert(users).values({
       id: constants.birthdayPerson,
@@ -170,10 +204,49 @@ describe("createBirthdaySquad", () => {
 
     await sendMockSqsMessage("createBirthdaySquad", event, handler);
 
-    expect(getRandomSquadMembersSpy).not.toHaveBeenCalled();
-
     expect(openConversation).toBeCalledWith(
       expect.arrayContaining(insertedSquadMembers),
+    );
+  });
+  it("Should publish sendSquadWelcomeMessage with the conversationId after the squad creation", async () => {
+    const event = {
+      birthdayPerson: constants.birthdayPerson,
+      eventId: constants.eventId,
+      team: constants.teamId,
+    } satisfies Events["createBirthdaySquad"];
+
+    await testDb.insert(users).values({
+      id: constants.birthdayPerson,
+      teamId: constants.teamId,
+      birthday: dayjs.utc().toDate(),
+    });
+
+    await testDb.insert(users).values(
+      constants.otherUserIds.map((userId) => ({
+        id: userId,
+        teamId: constants.teamId,
+        birthday: dayjs.utc().toDate(),
+      })),
+    );
+
+    await seedSquadJoins(
+      constants.birthdayPerson,
+      constants.teamId,
+      constants.otherUserIds,
+      3,
+    );
+
+    openConversationMock.mockResolvedValueOnce(constants.converastionId);
+
+    await sendMockSqsMessage("createBirthdaySquad", event, handler);
+
+    expect(PutEventsCommand).toHaveBeenCalledWith(
+      mockEventBridgePayload("sendSquadWelcomeMessage", {
+        conversationId: constants.converastionId,
+        birthdayPerson: constants.birthdayPerson,
+        team: constants.teamId,
+        eventId: constants.eventId,
+      }),
     );
   });
 });
