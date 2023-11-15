@@ -5,6 +5,7 @@ import type {
 
 import { SlackCallbackRequestSchema } from "@/types/SlackEventRequest";
 import { publishEvent } from "@/utils/eventBridge/publishEvent";
+import { errorResult, okResult } from "@/utils/lambda/result";
 
 export const handler: APIGatewayProxyHandlerV2 = async (
   request: APIGatewayProxyEventV2,
@@ -19,12 +20,9 @@ export const handler: APIGatewayProxyHandlerV2 = async (
     );
 
     if (validatedBody.type === "url_verification") {
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          urlVerificationChallenge: validatedBody.challenge,
-        }),
-      };
+      return okResult({
+        urlVerificationChallenge: validatedBody.challenge,
+      });
     }
 
     switch (validatedBody.event.type) {
@@ -40,15 +38,10 @@ export const handler: APIGatewayProxyHandlerV2 = async (
         break;
     }
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({}),
-    };
+    return okResult();
   } catch (error) {
     console.error(`Error handling slack event: ${error}`);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({}),
-    };
+
+    return errorResult(error);
   }
 };

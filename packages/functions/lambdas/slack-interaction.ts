@@ -16,6 +16,7 @@ import {
 } from "@/types/SlackInteractionRequest";
 import { publishEvent } from "@/utils/eventBridge/publishEvent";
 import { parseRequest } from "@/utils/lambda/parseRequest";
+import { errorResult, okResult } from "@/utils/lambda/result";
 
 export const handler: APIGatewayProxyHandlerV2 = async (request) => {
   try {
@@ -93,15 +94,10 @@ export const handler: APIGatewayProxyHandlerV2 = async (request) => {
       }
     }
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({}),
-    };
+    return okResult();
   } catch (error) {
     console.error(`Error handling slack interaction: ${error}`);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({}),
-    };
+
+    return errorResult(error);
   }
 };

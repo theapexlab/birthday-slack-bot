@@ -2,6 +2,7 @@ import type { APIGatewayProxyHandlerV2 } from "aws-lambda";
 
 import { db } from "@/db/index";
 import { testItems } from "@/db/schema";
+import { errorResult, okResult } from "@/utils/lambda/result";
 
 export const handler: APIGatewayProxyHandlerV2 = async (request) => {
   try {
@@ -20,15 +21,9 @@ export const handler: APIGatewayProxyHandlerV2 = async (request) => {
       payload: request.body,
     });
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({}),
-    };
+    return okResult();
   } catch (error) {
     console.error(`Error handling slack event: ${error}`);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({}),
-    };
+    return errorResult(error);
   }
 };

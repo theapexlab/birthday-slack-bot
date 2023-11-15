@@ -7,6 +7,7 @@ import {
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { handler } from "@/functions/lambdas/slack-event";
+import { okResult } from "@/functions/utils/lambda/result";
 import { mockEventBridgePayload } from "@/testUtils/unit/mockEventBridgePayload";
 import {
   mockLambdaContext,
@@ -52,12 +53,11 @@ describe("Handle slack events", () => {
       challenge: constants.challenge,
     });
 
-    expect(res).toEqual({
-      statusCode: 200,
-      body: JSON.stringify({
+    expect(res).toEqual(
+      okResult({
         urlVerificationChallenge: constants.challenge,
       }),
-    });
+    );
   });
 
   it("Should publish memberJoinedChannel event when member_joined_channel slack event is received", async () => {

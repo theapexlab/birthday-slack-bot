@@ -2,6 +2,7 @@ import type { APIGatewayProxyHandlerV2 } from "aws-lambda";
 
 import { getUser } from "@/db/queries/getUser";
 import { publishEvent } from "@/utils/eventBridge/publishEvent";
+import { errorResult, okResult } from "@/utils/lambda/result";
 
 export const handler: APIGatewayProxyHandlerV2 = async (request) => {
   try {
@@ -20,22 +21,10 @@ export const handler: APIGatewayProxyHandlerV2 = async (request) => {
       team: user.teamId,
     });
 
-    return {
-      statusCode: 200,
-      body: "Event sent",
-    };
+    return okResult("Event sent");
   } catch (error) {
     console.error(`Error sending manual botJoined event: ${error}`);
 
-    return {
-      statusCode: 500,
-      body: JSON.stringify(
-        {
-          error,
-        },
-        null,
-        2,
-      ),
-    };
+    return errorResult(error);
   }
 };

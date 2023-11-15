@@ -3,6 +3,8 @@ import type { APIGatewayProxyEventV2, EventBridgeEvent } from "aws-lambda";
 import type { BaseEvent } from "@/types/BaseEvent";
 import type { CronEventType } from "@/types/cron";
 
+import { errorResult, okResult } from "./result";
+
 type Event =
   | APIGatewayProxyEventV2
   | EventBridgeEvent<CronEventType, BaseEvent>;
@@ -21,22 +23,10 @@ export const cronHandler =
 
       await handler(eventId);
 
-      return {
-        statusCode: 200,
-        body: "Event sent",
-      };
+      return okResult("Event sent");
     } catch (error) {
       console.error(error);
 
-      return {
-        statusCode: 500,
-        body: JSON.stringify(
-          {
-            error,
-          },
-          null,
-          2,
-        ),
-      };
+      return errorResult(error);
     }
   };
