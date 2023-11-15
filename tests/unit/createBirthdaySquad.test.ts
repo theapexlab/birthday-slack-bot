@@ -90,7 +90,7 @@ describe("Final squad size is less then 2", () => {
     expect(openConversation).not.toBeCalled();
   });
 
-  it("Should not call publishEvent", async () => {
+  it("Should not publish sendSquadWelcomeMessage event", async () => {
     const getRandomSquadMembersSpy = vi.spyOn(
       getSquadMembers,
       "getRandomSquadMembers",
@@ -181,7 +181,7 @@ describe("3 or more squad members applied", () => {
     );
   });
 
-  it("Should publish sendSquadWelcomeMessage", async () => {
+  it("Should publish sendSquadWelcomeMessage event", async () => {
     await sendMockSqsMessage("createBirthdaySquad", event, handler);
 
     expect(PutEventsCommand).toHaveBeenCalledWith(

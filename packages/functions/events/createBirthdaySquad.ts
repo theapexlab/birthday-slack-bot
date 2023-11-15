@@ -5,6 +5,8 @@ import {
 import { openConversation } from "@/services/slack/openConversation";
 import {
   BIRTHDAY_SQUAD_SIZE,
+  KRISZTA_USER_ID,
+  MATE_USER_ID,
   MIN_BIRTHDAY_SQUAD_SIZE,
 } from "@/utils/constants";
 import { handleEvent } from "@/utils/eventBridge/handleEvent";
@@ -26,6 +28,11 @@ export const handler = handleEvent(
         });
         squadMembers.push(...randomSquadMembers);
       }
+
+      // Include Kriszta in all squads except on her birthday, where Mate is added to the squad.
+      squadMembers.push(
+        birthdayPerson !== KRISZTA_USER_ID ? KRISZTA_USER_ID : MATE_USER_ID,
+      );
 
       if (squadMembers.length < 2) {
         throw new Error("Error need at least 2 user to open a conversation");
