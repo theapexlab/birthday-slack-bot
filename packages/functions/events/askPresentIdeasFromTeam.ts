@@ -24,7 +24,9 @@ export const handler = handleEvent(
           team,
           eventId,
         },
-        4,
+        {
+          days: 4,
+        },
       );
     } catch (error) {
       console.error("Error processing askPresentIdeasFromTeam event: ", error);

@@ -1,16 +1,17 @@
 import dayjs from "dayjs";
 
 import type { Events, EventType } from "@/events";
-import { getScheduleWithDaysOffset } from "@/functions/utils/scheduler/getScheduleExtension";
+import type { TimeOffset } from "@/functions/utils/scheduler/getScheduleExtension";
+import { getScheduleWithTimeOffset } from "@/functions/utils/scheduler/getScheduleExtension";
 
 export const mockEventSchedulerPayload = <T extends EventType>(
   eventType: T,
   payload: Events[T],
-  dayOffset: number,
+  timeOffset: TimeOffset,
 ) => ({
   Name: `${payload.eventId || dayjs().valueOf()}_${eventType}`,
   FlexibleTimeWindow: { Mode: "OFF" },
-  ScheduleExpression: getScheduleWithDaysOffset(dayOffset),
+  ScheduleExpression: getScheduleWithTimeOffset(timeOffset),
   ActionAfterCompletion: "DELETE",
   Target: {
     Arn: "",

@@ -3,13 +3,19 @@ import utc from "dayjs/plugin/utc";
 
 dayjs.extend(utc);
 
-export const getScheduleWithDaysOffset = (daysToAdd: number): string => {
+export type TimeOffset = {
+  days?: number;
+  months?: number;
+};
+
+export const getScheduleWithTimeOffset = (offset: TimeOffset): string => {
   let scheduleTime = dayjs()
     .utc()
     .hour(11)
     .minute(0)
     .second(0)
-    .add(daysToAdd, "days");
+    .add(offset.months ?? 0, "months")
+    .add(offset.days ?? 0, "days");
 
   // Check if the day is Saturday (6) or Sunday (0)
   if (scheduleTime.day() === 6) {

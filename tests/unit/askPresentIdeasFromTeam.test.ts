@@ -135,7 +135,9 @@ describe("askPresentIdeasFromTeam", () => {
           team: constants.teamId,
           eventId: constants.eventId,
         },
-        4,
+        {
+          days: 4,
+        },
       ),
     );
   });

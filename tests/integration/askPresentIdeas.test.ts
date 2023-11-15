@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { presentIdeas, testItems, users } from "@/db/schema";
-import { getScheduleWithDaysOffset } from "@/functions/utils/scheduler/getScheduleExtension";
+import { getScheduleWithTimeOffset } from "@/functions/utils/scheduler/getScheduleExtension";
 import { constructPresentIdeaSavedMessage } from "@/services/slack/constructPresentIdeaSavedMessage";
 import { pollInterval, timeout, waitTimeout } from "@/testUtils/constants";
 import { deleteLastDm } from "@/testUtils/integration/deleteLastDm";
@@ -201,7 +201,7 @@ describe("Present ideas", () => {
       expect(
         schedule.ScheduleExpression,
         "Incorrect schedule extension",
-      ).toEqual(getScheduleWithDaysOffset(4));
+      ).toEqual(getScheduleWithTimeOffset({ days: 4 }));
 
       expect(
         schedule.ScheduleExpressionTimezone,
