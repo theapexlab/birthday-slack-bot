@@ -126,7 +126,7 @@ describe("askPresentIdeasFromTeam", () => {
       askPresentIdeasFromTeam,
     );
 
-    expect(schedulerClient.send).toHaveBeenCalledTimes(1);
+    expect(schedulerClient.send).toHaveBeenCalledTimes(2);
     expect(CreateScheduleCommand).toHaveBeenCalledWith(
       mockEventSchedulerPayload(
         "askPresentAndSquadJoinFromTeam",
