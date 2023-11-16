@@ -1,0 +1,1 @@
+ALTER TABLE "squadJoins" ADD CONSTRAINT "squadJoins_birthday_person_user_id_team_id_unique" UNIQUE("birthday_person","user_id","team_id");

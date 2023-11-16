@@ -43,6 +43,13 @@
       "when": 1699867144665,
       "tag": "0005_squad_joins",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1700142341811,
+      "tag": "0006_squad_joins_unique",
+      "breakpoints": true
     }
   ]
 }
