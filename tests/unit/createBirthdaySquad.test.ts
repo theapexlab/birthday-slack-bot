@@ -9,6 +9,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import {
   afterAll,
+  afterEach,
   beforeAll,
   beforeEach,
   describe,
@@ -36,6 +37,8 @@ const constants = vi.hoisted(() => ({
   teamId: "T001",
   otherUserIds: ["U002", "U003", "U004", "U005", "U006"],
   conversationId: "CH001",
+  krisztaUserId: "KU001",
+  mateUserId: "MU001",
 }));
 
 const event = vi.hoisted(
@@ -53,8 +56,8 @@ vi.mock("@/services/slack/openConversation", async () => ({
 
 vi.mock("sst/node/config", () => ({
   Config: {
-    KRISZTA_SLACK_USER_ID: import.meta.env.VITE_SLACK_USER_ID,
-    MATE_SLACK_USER_ID: import.meta.env.VITE_SLACK_USER_ID,
+    KRISZTA_SLACK_USER_ID: constants.krisztaUserId,
+    MATE_SLACK_USER_ID: constants.mateUserId,
   },
 }));
 
@@ -182,6 +185,85 @@ describe("3 or more squad members applied", () => {
         team: constants.teamId,
         eventId: constants.eventId,
       }),
+    );
+  });
+});
+describe.only("Add admin to the squad", () => {
+  let insertedSquadMembers: string[];
+
+  beforeAll(async () => {
+    await testDb.delete(users);
+    await testDb.delete(squadJoins);
+  });
+
+  afterEach(async () => {
+    vi.clearAllMocks();
+    await testDb.delete(users);
+    await testDb.delete(squadJoins);
+  });
+
+  it("Should add Kriszta to conversation", async () => {
+    await testDb.insert(users).values({
+      id: constants.birthdayPerson,
+      teamId: constants.teamId,
+      birthday: dayjs.utc().toDate(),
+    });
+
+    await testDb.insert(users).values(
+      constants.otherUserIds.map((userId) => ({
+        id: userId,
+        teamId: constants.teamId,
+        birthday: dayjs.utc().toDate(),
+      })),
+    );
+
+    insertedSquadMembers = await seedSquadJoins(
+      constants.birthdayPerson,
+      constants.teamId,
+      constants.otherUserIds,
+      3,
+    );
+
+    await sendMockSqsMessage("createBirthdaySquad", event, handler);
+
+    expect(openConversation).toBeCalledWith(
+      expect.arrayContaining([
+        ...insertedSquadMembers,
+        constants.krisztaUserId,
+      ]),
+    );
+  });
+
+  it("Should add Mate to conversation if it's Krista's birthday", async () => {
+    await testDb.insert(users).values({
+      id: constants.krisztaUserId,
+      teamId: constants.teamId,
+      birthday: dayjs.utc().toDate(),
+    });
+
+    await testDb.insert(users).values(
+      constants.otherUserIds.map((userId) => ({
+        id: userId,
+        teamId: constants.teamId,
+        birthday: dayjs.utc().toDate(),
+      })),
+    );
+
+    insertedSquadMembers = await seedSquadJoins(
+      constants.krisztaUserId,
+      constants.teamId,
+      constants.otherUserIds,
+      3,
+    );
+
+    await sendMockSqsMessage(
+      "createBirthdaySquad",
+      { ...event, birthdayPerson: constants.krisztaUserId },
+      handler,
+    );
+
+    expect(openConversation).toBeCalledWith(
+      expect.arrayContaining([...insertedSquadMembers, constants.mateUserId]),
     );
   });
 });

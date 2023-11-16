@@ -7,6 +7,7 @@ import { timeout } from "@/testUtils/constants";
 import { deleteLastDm } from "@/testUtils/integration/deleteLastDm";
 import { sendScheduleEvent } from "@/testUtils/integration/sendScheduleEvent";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
+import { seedSquadJoins } from "@/testUtils/seedSquadJoins";
 import { testDb } from "@/testUtils/testDb";
 import { scheduleEvent } from "@/types/schedule";
 
@@ -27,6 +28,7 @@ const constants = vi.hoisted(() => ({
 describe("CreateBirthdaySquad", () => {
   beforeAll(async () => {
     await testDb.delete(users);
+    await testDb.delete(squadJoins);
   });
 
   afterEach(async () => {
@@ -36,7 +38,53 @@ describe("CreateBirthdaySquad", () => {
   });
 
   it(
-    "Should publish sendWelcomeMessage to the conversation",
+    "Should publish sendWelcomeMessage to the conversation with the joined members",
+    async () => {
+      await testDb.insert(users).values({
+        id: constants.birthdayPerson,
+        teamId: constants.teamId,
+        birthday: dayjs.utc().toDate(),
+      });
+
+      await testDb.insert(users).values(
+        constants.otherUserIds.map((userId) => ({
+          id: userId,
+          teamId: constants.teamId,
+          birthday: dayjs.utc().toDate(),
+        })),
+      );
+
+      await seedSquadJoins(
+        constants.birthdayPerson,
+        constants.teamId,
+        constants.otherUserIds,
+        2,
+      );
+
+      const eventId = "CS1_" + Date.now().toString();
+
+      await sendScheduleEvent(scheduleEvent, {
+        eventId,
+        eventType: "createBirthdaySquad",
+        payload: {
+          team: import.meta.env.VITE_SLACK_TEAM_ID,
+          birthdayPerson: constants.birthdayPerson,
+          eventId,
+        },
+      });
+
+      const message = await waitForDm(eventId);
+
+      expect(message.metadata?.event_type, "EventType doesn't match").toEqual(
+        "sendSquadWelcomeMessage",
+      );
+      expect(message.text, "Message doesn't match").toEqual("Test message");
+    },
+    timeout,
+  );
+
+  it(
+    "Should publish sendWelcomeMessage to the conversation with the random users",
     async () => {
       await testDb.insert(users).values({
         id: constants.birthdayPerson,
