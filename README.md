@@ -53,6 +53,8 @@ npx sst secrets set SLACK_BOT_TOKEN <your-bot-token>
 npx sst secrets set SLACK_SIGNING_SECRET <your-signing-secret>
 npx sst secrets set CORE_SLACK_CHANNEL_ID <your-test-channel>
 npx sst secrets set RANDOM_SLACK_CHANNEL_ID <your-test-channel>
+npx sst secrets set KRISZTA_SLACK_USER_ID <your-test-user>
+npx sst secrets set MATE_SLACK_USER_ID <your-test-user>
 ```
 
 3. Install dependencies: `pnpm i`

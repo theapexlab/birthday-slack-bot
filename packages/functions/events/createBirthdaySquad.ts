@@ -1,3 +1,5 @@
+import { Config } from "sst/node/config";
+
 import {
   getRandomSquadMembers,
   getSquadMembers,
@@ -5,8 +7,6 @@ import {
 import { openConversation } from "@/services/slack/openConversation";
 import {
   BIRTHDAY_SQUAD_SIZE,
-  KRISZTA_USER_ID,
-  MATE_USER_ID,
   MIN_BIRTHDAY_SQUAD_SIZE,
 } from "@/utils/constants";
 import { handleEvent } from "@/utils/eventBridge/handleEvent";
@@ -15,6 +15,8 @@ import { publishEvent } from "@/utils/eventBridge/publishEvent";
 export const handler = handleEvent(
   "createBirthdaySquad",
   async ({ team, birthdayPerson, eventId }) => {
+    const { KRISZTA_SLACK_USER_ID, MATE_SLACK_USER_ID } = Config;
+
     try {
       const appliedSquadMembers = await getSquadMembers(team, birthdayPerson);
 
@@ -31,7 +33,9 @@ export const handler = handleEvent(
 
       // Include Kriszta in all squads except on her birthday, where Mate is added to the squad.
       squadMembers.push(
-        birthdayPerson !== KRISZTA_USER_ID ? KRISZTA_USER_ID : MATE_USER_ID,
+        birthdayPerson !== KRISZTA_SLACK_USER_ID
+          ? KRISZTA_SLACK_USER_ID
+          : MATE_SLACK_USER_ID,
       );
 
       if (squadMembers.length < 2) {
