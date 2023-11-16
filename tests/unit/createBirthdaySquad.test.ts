@@ -188,7 +188,7 @@ describe("3 or more squad members applied", () => {
     );
   });
 });
-describe.only("Add admin to the squad", () => {
+describe("Add admin to the squad", () => {
   let insertedSquadMembers: string[];
 
   beforeAll(async () => {
