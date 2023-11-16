@@ -27,13 +27,15 @@ export const handler = cronHandler(async (eventId?: string) => {
       throw new Error("Failed to send ice breaker question");
     }
 
-    await db.insert(iceBreakerThreads).values(
-      users.map((user) => ({
-        userId: user.id,
-        teamId: user.teamId,
-        threadId: message.ts!,
-      })),
-    );
+    if (users.length) {
+      await db.insert(iceBreakerThreads).values(
+        users.map((user) => ({
+          userId: user.id,
+          teamId: user.teamId,
+          threadId: message.ts!,
+        })),
+      );
+    }
 
     return {
       message: "Ice breaker question sent",
