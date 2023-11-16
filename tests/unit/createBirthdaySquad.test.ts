@@ -78,7 +78,7 @@ describe("Final squad size is less then 2", () => {
 
     expect(getRandomSquadMembersSpy).toHaveBeenCalledWith({
       teamId: constants.teamId,
-      usersToExclude: [constants.birthdayPerson],
+      usersToExclude: [constants.birthdayPerson, constants.krisztaUserId],
       limit: BIRTHDAY_SQUAD_SIZE,
     });
 
@@ -95,7 +95,7 @@ describe("Final squad size is less then 2", () => {
 
     expect(getRandomSquadMembersSpy).toHaveBeenCalledWith({
       teamId: constants.teamId,
-      usersToExclude: [constants.birthdayPerson],
+      usersToExclude: [constants.birthdayPerson, constants.krisztaUserId],
       limit: BIRTHDAY_SQUAD_SIZE,
     });
 
@@ -115,7 +115,7 @@ describe("3 or less squad members applied", () => {
 
     expect(getRandomSquadMembersSpy).toHaveBeenCalledWith({
       teamId: constants.teamId,
-      usersToExclude: [constants.birthdayPerson],
+      usersToExclude: [constants.birthdayPerson, constants.krisztaUserId],
       limit: BIRTHDAY_SQUAD_SIZE,
     });
   });
