@@ -43,6 +43,13 @@ vi.mock("@/services/slack/openConversation", async () => ({
   openConversation: vi.fn().mockResolvedValue(constants.conversationId),
 }));
 
+vi.mock("sst/node/config", () => ({
+  Config: {
+    KRISZTA_SLACK_USER_ID: import.meta.env.VITE_SLACK_USER_ID,
+    MATE_SLACK_USER_ID: import.meta.env.VITE_SLACK_USER_ID,
+  },
+}));
+
 describe("CreateBirthdaySquad", () => {
   beforeEach(() => {});
 
