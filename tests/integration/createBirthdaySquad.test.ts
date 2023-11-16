@@ -100,7 +100,7 @@ describe("CreateBirthdaySquad", () => {
         })),
       );
 
-      const eventId = "CS1_" + Date.now().toString();
+      const eventId = "CS2_" + Date.now().toString();
 
       await sendScheduleEvent(scheduleEvent, {
         eventId,
