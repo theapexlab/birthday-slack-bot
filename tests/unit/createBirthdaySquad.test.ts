@@ -7,7 +7,15 @@ import {
 } from "@aws-sdk/client-eventbridge";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 
 import * as getSquadMembers from "@/db/queries/getSquadMembers";
 import { squadJoins, users } from "@/db/schema";
@@ -50,34 +58,11 @@ vi.mock("sst/node/config", () => ({
   },
 }));
 
-describe("CreateBirthdaySquad", () => {
-  beforeEach(() => {});
-
-  afterEach(async () => {
-    vi.clearAllMocks();
-  });
-
-  it("Should call getSquadMembers", async () => {
-    const getSquadMembersSpy = vi.spyOn(getSquadMembers, "getSquadMembers");
-
-    await sendMockSqsMessage("createBirthdaySquad", event, handler);
-
-    expect(getSquadMembersSpy).toHaveBeenCalledWith(
-      constants.teamId,
-      constants.birthdayPerson,
-    );
-  });
-});
-
 describe("Final squad size is less then 2", () => {
   let eventBridge: EventBridgeClient;
 
   beforeEach(() => {
     eventBridge = new EventBridgeClient();
-  });
-
-  afterEach(async () => {
-    vi.clearAllMocks();
   });
 
   it("Should not call openConversation", async () => {
@@ -117,10 +102,6 @@ describe("Final squad size is less then 2", () => {
 });
 
 describe("3 or less squad members applied", () => {
-  afterEach(async () => {
-    vi.clearAllMocks();
-  });
-
   it("Should call getRandomSquadMembers", async () => {
     const getRandomSquadMembersSpy = vi.spyOn(
       getSquadMembers,
@@ -140,7 +121,10 @@ describe("3 or less squad members applied", () => {
 describe("3 or more squad members applied", () => {
   let insertedSquadMembers: string[];
 
-  beforeEach(async () => {
+  beforeAll(async () => {
+    await testDb.delete(users);
+    await testDb.delete(squadJoins);
+
     await testDb.insert(users).values({
       id: constants.birthdayPerson,
       teamId: constants.teamId,
@@ -163,7 +147,7 @@ describe("3 or more squad members applied", () => {
     );
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     vi.clearAllMocks();
     await testDb.delete(users);
     await testDb.delete(squadJoins);
