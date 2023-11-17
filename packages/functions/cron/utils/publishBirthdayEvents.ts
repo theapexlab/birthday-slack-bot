@@ -14,6 +14,10 @@ export const publishBirthdayEvents = async (args: Arguments) => {
     days: 4,
   });
 
+  await publishScheduledEvent("createBirthdaySquad", args, {
+    days: 8,
+  });
+
   await publishScheduledEvent("birthdayCleanup", args, {
     months: 2,
   });

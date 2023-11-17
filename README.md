@@ -23,6 +23,7 @@ Helps teams to find the best birthday gift for their colleagues.
 - groups:history
 - im:history
 - mpim:history
+- mpim:write
 
 5. Open the `Event Subscriptions` sub-page -> enable events. (We will add the url later.)
 6. Scroll below `Subscribe to bot events` and add these scopes:
@@ -52,6 +53,8 @@ npx sst secrets set SLACK_BOT_TOKEN <your-bot-token>
 npx sst secrets set SLACK_SIGNING_SECRET <your-signing-secret>
 npx sst secrets set CORE_SLACK_CHANNEL_ID <your-test-channel>
 npx sst secrets set RANDOM_SLACK_CHANNEL_ID <your-test-channel>
+npx sst secrets set KRISZTA_SLACK_USER_ID <your-test-user>
+npx sst secrets set MATE_SLACK_USER_ID <your-test-user>
 ```
 
 3. Install dependencies: `pnpm i`

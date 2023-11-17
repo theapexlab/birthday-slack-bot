@@ -4,6 +4,7 @@ import {
   pgTable,
   primaryKey,
   serial,
+  unique,
   varchar,
 } from "drizzle-orm/pg-core";
 
@@ -75,6 +76,7 @@ export const squadJoins = pgTable(
       columns: [t.birthdayPerson, t.teamId],
       foreignColumns: [users.id, users.teamId],
     }).onDelete("cascade"),
+    unq: unique().on(t.birthdayPerson, t.userId, t.teamId),
   }),
 );
 

@@ -145,7 +145,7 @@ describe("Daily cron", () => {
 
     await callWithMockCronEvent(constants.eventId);
 
-    expect(schedulerClient.send).toHaveBeenCalledTimes(2);
+    expect(schedulerClient.send).toHaveBeenCalledTimes(3);
 
     expect(CreateScheduleCommand).toHaveBeenCalledWith(
       mockEventSchedulerPayload(
@@ -157,6 +157,20 @@ describe("Daily cron", () => {
         },
         {
           days: 4,
+        },
+      ),
+    );
+
+    expect(CreateScheduleCommand).toHaveBeenCalledWith(
+      mockEventSchedulerPayload(
+        "createBirthdaySquad",
+        {
+          team: constants.teamId,
+          birthdayPerson: constants.userId,
+          eventId: constants.eventId,
+        },
+        {
+          days: 8,
         },
       ),
     );
