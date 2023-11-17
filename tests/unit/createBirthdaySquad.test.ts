@@ -104,7 +104,7 @@ describe("Final squad size is less then 2", () => {
   });
 });
 
-describe("3 or less squad members applied", () => {
+describe("2 or less squad members applied", () => {
   it("Should call getRandomSquadMembers", async () => {
     const getRandomSquadMembersSpy = vi.spyOn(
       getSquadMembers,
