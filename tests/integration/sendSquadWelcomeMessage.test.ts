@@ -48,7 +48,7 @@ vi.mock("@/services/slack/createSlackApp", async () => ({
   ),
 }));
 
-describe("Create birthday squad", () => {
+describe("Squad welcome message", () => {
   beforeAll(async () => {
     await testDb.delete(users);
     await testDb.delete(iceBreakerThreads);
@@ -65,7 +65,7 @@ describe("Create birthday squad", () => {
   });
 
   it(
-    "Should send welcome message to squad and message should contain icebreaker links and present ideas",
+    "Should contain icebreaker links and present ideas",
     async () => {
       await testDb.insert(users).values([
         {
@@ -105,10 +105,11 @@ describe("Create birthday squad", () => {
 
       await sendScheduleEvent({
         eventId: welcomeMessageEventId,
-        eventType: "createBirthdaySquad",
+        eventType: "sendSquadWelcomeMessage",
         payload: {
           team: import.meta.env.VITE_SLACK_TEAM_ID,
           birthdayPerson: constants.userId,
+          conversationId: import.meta.env.VITE_SLACK_DM_ID,
           eventId: welcomeMessageEventId,
         },
       });

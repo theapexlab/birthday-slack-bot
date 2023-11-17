@@ -7,13 +7,15 @@ import type { Events, EventType } from "@/events";
 import { getScheduleDetailType } from "@/utils/scheduler/getScheduleDetailType";
 const eventBridge = new EventBridgeClient();
 
-type DetailType = {
+type DetailType<T extends EventType> = {
   eventId: string;
-  eventType: EventType;
-  payload: Events[EventType];
+  eventType: T;
+  payload: Events[T];
 };
 
-export const sendScheduleEvent = async (detail: DetailType) => {
+export const sendScheduleEvent = async <T extends EventType>(
+  detail: DetailType<T>,
+) => {
   await eventBridge.send(
     new PutEventsCommand({
       Entries: [

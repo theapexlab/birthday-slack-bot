@@ -69,24 +69,28 @@ describe("Slack interactions", () => {
     timeout,
   );
 
-  test("Confirm message should be valid", async () => {
-    const eventId = "AB2_" + Date.now().toString();
+  test(
+    "Confirm message should be valid",
+    async () => {
+      const eventId = "AB2_" + Date.now().toString();
 
-    await app.client.chat.postMessage({
-      channel: import.meta.env.VITE_SLACK_USER_ID,
-      ...constructConfirmBirthdayMessage(constants.birthday, eventId),
-    });
+      await app.client.chat.postMessage({
+        channel: import.meta.env.VITE_SLACK_USER_ID,
+        ...constructConfirmBirthdayMessage(constants.birthday, eventId),
+      });
 
-    const message = await waitForDm(eventId);
+      const message = await waitForDm(eventId);
 
-    expect(message.blocks?.[0].text?.text).toContain(constants.birthday);
-    expect(message.blocks?.[1].elements?.[0].action_id).toEqual(
-      birthdayConfirmActionId,
-    );
-    expect(message.blocks?.[1].elements?.[1].action_id).toEqual(
-      birthdayIncorrectActionId,
-    );
-  });
+      expect(message.blocks?.[0].text?.text).toContain(constants.birthday);
+      expect(message.blocks?.[1].elements?.[0].action_id).toEqual(
+        birthdayConfirmActionId,
+      );
+      expect(message.blocks?.[1].elements?.[1].action_id).toEqual(
+        birthdayIncorrectActionId,
+      );
+    },
+    timeout,
+  );
 
   it(
     "Should send thank you message when birthday is confirmed",
