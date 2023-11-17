@@ -1,4 +1,3 @@
-import { PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 import type { StackContext } from "sst/constructs";
 import { Api, Function, Queue, use } from "sst/constructs";
 
@@ -11,17 +10,6 @@ import { EventBusStack } from "./EventBusStack";
 export function MyStack({ stack }: StackContext) {
   const { eventBus } = use(EventBusStack);
   const functionProps = getFunctionProps();
-
-  const schedulerRole = new Role(stack, "SchedulerRole", {
-    assumedBy: new ServicePrincipal("lambda.amazonaws.com"),
-  });
-
-  schedulerRole.addToPolicy(
-    new PolicyStatement({
-      actions: ["scheduler:CreateSchedule", "iam:PassRole"],
-      resources: ["*"],
-    }),
-  );
 
   eventBus.addRules(
     stack,
@@ -36,7 +24,6 @@ export function MyStack({ stack }: StackContext) {
                 function: {
                   handler: `packages/functions/events/${eventType}.handler`,
                   ...functionProps,
-                  role: schedulerRole,
                 },
               },
             }),

@@ -1,7 +1,7 @@
 import { getTeammates } from "@/db/queries/getTeammates";
 import { handleEvent } from "@/utils/eventBridge/handleEvent";
 import { publishEvent } from "@/utils/eventBridge/publishEvent";
-import { publishScheduledEvent } from "@/utils/scheduler/publishScheduledEvent";
+
 export const handler = handleEvent(
   "askPresentIdeasFromTeam",
   async ({ team, birthdayPerson, eventId }) => {
@@ -16,24 +16,6 @@ export const handler = handleEvent(
             eventId,
           }),
         ),
-      );
-      await publishScheduledEvent(
-        "askPresentAndSquadJoinFromTeam",
-        {
-          birthdayPerson,
-          team,
-          eventId,
-        },
-        4,
-      );
-      await publishScheduledEvent(
-        "createBirthdaySquad",
-        {
-          birthdayPerson,
-          team,
-          eventId,
-        },
-        8,
       );
     } catch (error) {
       console.error("Error processing askPresentIdeasFromTeam event: ", error);

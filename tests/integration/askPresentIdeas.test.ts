@@ -1,12 +1,11 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { eq } from "drizzle-orm";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { presentIdeas, testItems, users } from "@/db/schema";
-import { getScheduleWithDaysOffset } from "@/functions/utils/scheduler/getScheduleExtension";
+import { getScheduleWithTimeOffset } from "@/functions/utils/scheduler/getScheduleExtension";
 import { constructPresentIdeaSavedMessage } from "@/services/slack/constructPresentIdeaSavedMessage";
-import { pollInterval, timeout, waitTimeout } from "@/testUtils/constants";
+import { timeout } from "@/testUtils/constants";
 import { deleteLastDm } from "@/testUtils/integration/deleteLastDm";
 import {
   cleanUpSchedule,
@@ -15,7 +14,11 @@ import {
 import { sendCronEvent } from "@/testUtils/integration/sendCronEvent";
 import { sendSlackInteraction } from "@/testUtils/integration/sendSlackInteraction";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
-import { testDb, waitForTestItem } from "@/testUtils/testDb";
+import {
+  testDb,
+  waitForPresentIdeas,
+  waitForTestItem,
+} from "@/testUtils/testDb";
 import {
   presentIdeasInputActionId,
   presentIdeasSaveButtonActionId,
@@ -135,24 +138,12 @@ describe("Present ideas", () => {
         },
       });
 
-      const presentIdea = await vi.waitFor(
-        async () => {
-          const items = await testDb
-            .select()
-            .from(presentIdeas)
-            .where(eq(presentIdeas.userId, constants.userId))
-            .limit(1);
-
-          if (items.length === 0) {
-            throw new Error("Present idea not saved");
-          }
-          return items[0];
-        },
-        {
-          timeout: waitTimeout,
-          interval: pollInterval,
-        },
-      );
+      const presentIdea = (
+        await waitForPresentIdeas({
+          userId: constants.userId,
+          teamId: constants.teamId,
+        })
+      )[0];
 
       expect(
         presentIdea.birthdayPerson,
@@ -172,6 +163,7 @@ describe("Present ideas", () => {
     },
     timeout,
   );
+
   it(
     "Should create schedule for PresentAndSquadJoin event",
     async () => {
@@ -201,7 +193,7 @@ describe("Present ideas", () => {
       expect(
         schedule.ScheduleExpression,
         "Incorrect schedule extension",
-      ).toEqual(getScheduleWithDaysOffset(4));
+      ).toEqual(getScheduleWithTimeOffset(4, "days"));
 
       expect(
         schedule.ScheduleExpressionTimezone,
@@ -214,6 +206,94 @@ describe("Present ideas", () => {
       ).toEqual("DELETE");
 
       await cleanUpSchedule(`${eventId}_askPresentAndSquadJoinFromTeam`);
+    },
+    timeout,
+  );
+
+  it(
+    "Should create schedule for PresentAndSquadJoin event",
+    async () => {
+      await testDb.insert(users).values([
+        {
+          id: import.meta.env.VITE_SLACK_USER_ID,
+          teamId: import.meta.env.VITE_SLACK_TEAM_ID,
+          birthday: new Date(),
+        },
+        {
+          id: constants.birthdayPerson,
+          teamId: import.meta.env.VITE_SLACK_TEAM_ID,
+          birthday: dayjs.utc().add(2, "month").toDate(),
+        },
+      ]);
+
+      const eventId = "PI4_" + Date.now().toString();
+
+      await sendCronEvent("daily", eventId);
+
+      await waitForDm(eventId);
+
+      const schedule = await getSchedule(`${eventId}_createBirthdaySquad`);
+
+      expect(
+        schedule.ScheduleExpression,
+        "Incorrect schedule extension",
+      ).toEqual(getScheduleWithTimeOffset(8, "days"));
+
+      expect(
+        schedule.ScheduleExpressionTimezone,
+        "Timezone should be UTC",
+      ).toEqual("UTC");
+
+      expect(
+        schedule.ActionAfterCompletion,
+        "After completion should be DELETE",
+      ).toEqual("DELETE");
+
+      await cleanUpSchedule(`${eventId}_createBirthdaySquad`);
+    },
+    timeout,
+  );
+
+  it(
+    "Should create schedule for birthdayCleanup event",
+    async () => {
+      await testDb.insert(users).values([
+        {
+          id: import.meta.env.VITE_SLACK_USER_ID,
+          teamId: import.meta.env.VITE_SLACK_TEAM_ID,
+          birthday: new Date(),
+        },
+        {
+          id: constants.birthdayPerson,
+          teamId: import.meta.env.VITE_SLACK_TEAM_ID,
+          birthday: dayjs.utc().add(2, "month").toDate(),
+        },
+      ]);
+
+      const eventId = "PI5_" + Date.now().toString();
+
+      await sendCronEvent("daily", eventId);
+
+      await waitForDm(eventId);
+
+      const schedule = await getSchedule(`${eventId}_birthdayCleanup`);
+
+      expect(
+        schedule.ScheduleExpression,
+        "Incorrect schedule extension",
+      ).toEqual(getScheduleWithTimeOffset(2, "months"));
+
+      expect(
+        schedule.ScheduleExpressionTimezone,
+        "Timezone should be UTC",
+      ).toEqual("UTC");
+
+      expect(
+        schedule.ActionAfterCompletion,
+        "After completion should be DELETE",
+      ).toEqual("DELETE");
+
+      await cleanUpSchedule(`${eventId}_birthdayCleanup`);
     },
     timeout,
   );

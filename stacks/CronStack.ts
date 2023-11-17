@@ -1,3 +1,4 @@
+import { PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 import type { StackContext } from "sst/constructs";
 import { Cron } from "sst/constructs";
 
@@ -31,11 +32,23 @@ export function CronStack({ stack }: StackContext) {
     schedule: "cron(0 11 ? * 3#1 *)",
   });
 
+  const schedulerRole = new Role(stack, "SchedulerRole", {
+    assumedBy: new ServicePrincipal("lambda.amazonaws.com"),
+  });
+
+  schedulerRole.addToPolicy(
+    new PolicyStatement({
+      actions: ["scheduler:CreateSchedule", "iam:PassRole"],
+      resources: ["*"],
+    }),
+  );
+
   new Cron(stack, "DailyCron", {
     job: {
       function: {
         handler: "packages/functions/cron/daily.handler",
         ...functionProps,
+        role: schedulerRole,
       },
     },
     cdk: isTestable

@@ -1,11 +1,16 @@
 import "@/testUtils/unit/mockDb";
 import "@/testUtils/unit/mockEventBridge";
 import "@/testUtils/unit/mockSlackApp";
+import "@/testUtils/unit/mockEventScheduler";
 
 import {
   EventBridgeClient,
   PutEventsCommand,
 } from "@aws-sdk/client-eventbridge";
+import {
+  CreateScheduleCommand,
+  SchedulerClient,
+} from "@aws-sdk/client-scheduler";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import {
@@ -22,6 +27,7 @@ import { users } from "@/db/schema";
 import { handler } from "@/functions/cron/daily";
 import { testDb } from "@/testUtils/testDb";
 import { mockEventBridgePayload } from "@/testUtils/unit/mockEventBridgePayload";
+import { mockEventSchedulerPayload } from "@/testUtils/unit/mockEventSchedulerPayload";
 import { mockLambdaEvent } from "@/testUtils/unit/mockLambdaPayload";
 
 dayjs.extend(utc);
@@ -42,6 +48,7 @@ const constants = vi.hoisted(() => ({
 }));
 
 describe("Daily cron", () => {
+  let schedulerClient: SchedulerClient;
   let eventBridge: EventBridgeClient;
 
   beforeAll(async () => {
@@ -50,6 +57,7 @@ describe("Daily cron", () => {
 
   beforeEach(() => {
     eventBridge = new EventBridgeClient();
+    schedulerClient = new SchedulerClient();
   });
 
   afterEach(async () => {
@@ -126,5 +134,68 @@ describe("Daily cron", () => {
     await callWithMockCronEvent(constants.eventId);
 
     expect(eventBridge.send).not.toHaveBeenCalled();
+  });
+
+  it("Should publish scheduled birthday events if user has birthday exactly 2 months from now", async () => {
+    await testDb.insert(users).values({
+      id: constants.userId,
+      teamId: constants.teamId,
+      birthday: dayjs.utc().add(2, "month").toDate(),
+    });
+
+    await callWithMockCronEvent(constants.eventId);
+
+    expect(schedulerClient.send).toHaveBeenCalledTimes(3);
+
+    expect(CreateScheduleCommand).toHaveBeenCalledWith(
+      mockEventSchedulerPayload(
+        "askPresentAndSquadJoinFromTeam",
+        {
+          team: constants.teamId,
+          birthdayPerson: constants.userId,
+          eventId: constants.eventId,
+        },
+        4,
+        "days",
+      ),
+    );
+
+    expect(CreateScheduleCommand).toHaveBeenCalledWith(
+      mockEventSchedulerPayload(
+        "createBirthdaySquad",
+        {
+          team: constants.teamId,
+          birthdayPerson: constants.userId,
+          eventId: constants.eventId,
+        },
+        8,
+        "days",
+      ),
+    );
+
+    expect(CreateScheduleCommand).toHaveBeenCalledWith(
+      mockEventSchedulerPayload(
+        "birthdayCleanup",
+        {
+          team: constants.teamId,
+          birthdayPerson: constants.userId,
+          eventId: constants.eventId,
+        },
+        2,
+        "months",
+      ),
+    );
+  });
+
+  it("Should not publish scheduled birthday events if no user has birthday exactly 2 months from now", async () => {
+    await testDb.insert(users).values({
+      id: constants.userId,
+      teamId: constants.teamId,
+      birthday: dayjs.utc().add(4, "month").toDate(),
+    });
+
+    await callWithMockCronEvent(constants.eventId);
+
+    expect(schedulerClient.send).not.toHaveBeenCalled();
   });
 });

@@ -6,13 +6,13 @@ dayjs.extend(utc);
 import { db } from "@/db/index";
 import { users } from "@/db/schema";
 
-type Args = {
+type Arguments = {
   user: string;
   teamId: string;
   birthday: string | null;
 };
 
-export const saveBirthday = async ({ birthday, teamId, user }: Args) => {
+export const saveBirthday = async ({ birthday, teamId, user }: Arguments) => {
   const birthdayDate = birthday ? dayjs.utc(birthday).toDate() : null;
 
   await db
