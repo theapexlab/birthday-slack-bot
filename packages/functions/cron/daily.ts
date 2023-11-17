@@ -12,7 +12,7 @@ import { cronHandler } from "@/utils/lambda/cronHandler";
 
 import { publishBirthdayEvents } from "./utils/publishBirthdayEvents";
 
-const sendReminderWhoseBirthdayIsMissing = async (eventId?: string) => {
+export const sendReminderWhoseBirthdayIsMissing = async (eventId?: string) => {
   const users = await getUsersWhoseBirthdayIsMissing();
 
   await Promise.all(
