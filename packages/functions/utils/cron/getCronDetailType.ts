@@ -1,4 +1,4 @@
 export type CronEventType = "iceBreaker" | "daily";
 
-export const getCronEvent = (type: CronEventType, stage: string) =>
+export const getCronDetailType = (type: CronEventType, stage: string) =>
   `${type}-${stage}`;

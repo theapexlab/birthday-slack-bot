@@ -1,7 +1,7 @@
 import type { APIGatewayProxyEventV2, EventBridgeEvent } from "aws-lambda";
 
 import type { BaseEvent } from "@/types/BaseEvent";
-import type { CronEventType } from "@/types/cron";
+import type { CronEventType } from "@/utils/cron/getCronDetailType";
 
 import { errorResult, okResult } from "./result";
 
