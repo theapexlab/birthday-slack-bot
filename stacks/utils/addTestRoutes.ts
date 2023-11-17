@@ -12,6 +12,8 @@ export const addTestRoutes = (stack: Stack, api: Api) => {
     "GET /userJoined":
       "packages/functions/lambdas/manualUserJoinedEvent.handler",
     "GET /squadJoin": "packages/functions/lambdas/manualSquadJoinEvent.handler",
+    "GET /createBirthdaySquad":
+      "packages/functions/events/manualCreateBirthdaySquad.handler",
   });
 
   stack.addOutputs({
@@ -20,6 +22,7 @@ export const addTestRoutes = (stack: Stack, api: Api) => {
     botJoinedTestUrl: api.url + "/botJoined",
     userJoinedTestUrl: api.url + "/userJoined?userId=",
     squadJoinTestUrl: api.url + "/squadJoin?userId=",
+    createBirthdaySquadTestUrl: api.url + "/createBirthdaySquad?userId=",
   });
 
   if (stack.stage === "staging") {

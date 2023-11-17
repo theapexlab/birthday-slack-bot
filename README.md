@@ -118,7 +118,8 @@ All urls are displayed in the console output.
   - Only sends it out to users who have not filled in their birthday yet.
 - Send out birthday present idea question: open `<ApiEndpoint>/daily`
   - Sends it out related to users whose birthday is in exactly 2 months.
-- Send out birthday present idea + squadjoin question: open `<ApiEndpoint>/squadJoin?userId=<slack user id>`
+- Send out birthday present idea + squadjoin question: open `<ApiEndpoint>/squadJoin?userId=<birthday person slack user id>`
+- Create birthday squad: open `<ApiEndpoint>/createBirthdaySquad?userId=<birthday person slack user id>`
 
 ## Generate a new migration
 
