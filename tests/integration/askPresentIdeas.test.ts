@@ -193,7 +193,7 @@ describe("Present ideas", () => {
       expect(
         schedule.ScheduleExpression,
         "Incorrect schedule extension",
-      ).toEqual(getScheduleWithTimeOffset({ days: 4 }));
+      ).toEqual(getScheduleWithTimeOffset(4, "days"));
 
       expect(
         schedule.ScheduleExpressionTimezone,
@@ -237,7 +237,7 @@ describe("Present ideas", () => {
       expect(
         schedule.ScheduleExpression,
         "Incorrect schedule extension",
-      ).toEqual(getScheduleWithTimeOffset({ days: 8 }));
+      ).toEqual(getScheduleWithTimeOffset(8, "days"));
 
       expect(
         schedule.ScheduleExpressionTimezone,
@@ -281,7 +281,7 @@ describe("Present ideas", () => {
       expect(
         schedule.ScheduleExpression,
         "Incorrect schedule extension",
-      ).toEqual(getScheduleWithTimeOffset({ months: 2 }));
+      ).toEqual(getScheduleWithTimeOffset(2, "months"));
 
       expect(
         schedule.ScheduleExpressionTimezone,

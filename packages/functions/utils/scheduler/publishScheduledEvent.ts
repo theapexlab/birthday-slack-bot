@@ -2,11 +2,11 @@ import {
   CreateScheduleCommand,
   SchedulerClient,
 } from "@aws-sdk/client-scheduler";
+import type { ManipulateType } from "dayjs";
 import dayjs from "dayjs";
 
 import type { Events, EventType } from "@/events";
 
-import type { TimeOffset } from "./getScheduleExtension";
 import { getScheduleWithTimeOffset } from "./getScheduleExtension";
 
 const schedulerLambdaArn = process.env.SCHEDULER_LAMBDA_ARN || "";
@@ -16,12 +16,13 @@ const schedulerClient = new SchedulerClient({});
 export const publishScheduledEvent = async <T extends EventType>(
   eventType: T,
   payload: Events[T],
-  timeOffset: TimeOffset,
+  timeOffset: number,
+  offsetType: ManipulateType,
 ) => {
   const createCommand = new CreateScheduleCommand({
     Name: `${payload.eventId || dayjs().valueOf()}_${eventType}`,
     FlexibleTimeWindow: { Mode: "OFF" },
-    ScheduleExpression: getScheduleWithTimeOffset(timeOffset),
+    ScheduleExpression: getScheduleWithTimeOffset(timeOffset, offsetType),
     ActionAfterCompletion: "DELETE",
     Target: {
       Arn: schedulerLambdaArn,

@@ -10,15 +10,14 @@ type Arguments = {
 export const publishBirthdayEvents = async (args: Arguments) => {
   await publishEvent("askPresentIdeasFromTeam", args);
 
-  await publishScheduledEvent("askPresentAndSquadJoinFromTeam", args, {
-    days: 4,
-  });
+  await publishScheduledEvent(
+    "askPresentAndSquadJoinFromTeam",
+    args,
+    4,
+    "days",
+  );
 
-  await publishScheduledEvent("createBirthdaySquad", args, {
-    days: 8,
-  });
+  await publishScheduledEvent("createBirthdaySquad", args, 8, "days");
 
-  await publishScheduledEvent("birthdayCleanup", args, {
-    months: 2,
-  });
+  await publishScheduledEvent("birthdayCleanup", args, 2, "months");
 };

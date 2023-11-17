@@ -1,17 +1,18 @@
+import type { ManipulateType } from "dayjs";
 import dayjs from "dayjs";
 
 import type { Events, EventType } from "@/events";
-import type { TimeOffset } from "@/functions/utils/scheduler/getScheduleExtension";
 import { getScheduleWithTimeOffset } from "@/functions/utils/scheduler/getScheduleExtension";
 
 export const mockEventSchedulerPayload = <T extends EventType>(
   eventType: T,
   payload: Events[T],
-  timeOffset: TimeOffset,
+  timeOffset: number,
+  offsetType: ManipulateType,
 ) => ({
   Name: `${payload.eventId || dayjs().valueOf()}_${eventType}`,
   FlexibleTimeWindow: { Mode: "OFF" },
-  ScheduleExpression: getScheduleWithTimeOffset(timeOffset),
+  ScheduleExpression: getScheduleWithTimeOffset(timeOffset, offsetType),
   ActionAfterCompletion: "DELETE",
   Target: {
     Arn: "",

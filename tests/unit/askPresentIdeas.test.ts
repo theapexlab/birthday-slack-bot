@@ -155,9 +155,8 @@ describe("Daily cron", () => {
           birthdayPerson: constants.userId,
           eventId: constants.eventId,
         },
-        {
-          days: 4,
-        },
+        4,
+        "days",
       ),
     );
 
@@ -169,9 +168,8 @@ describe("Daily cron", () => {
           birthdayPerson: constants.userId,
           eventId: constants.eventId,
         },
-        {
-          days: 8,
-        },
+        8,
+        "days",
       ),
     );
 
@@ -183,9 +181,8 @@ describe("Daily cron", () => {
           birthdayPerson: constants.userId,
           eventId: constants.eventId,
         },
-        {
-          months: 2,
-        },
+        2,
+        "months",
       ),
     );
   });
