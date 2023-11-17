@@ -9,7 +9,7 @@ import { EventBusStack } from "./EventBusStack";
 
 export function MyStack({ stack }: StackContext) {
   const { eventBus } = use(EventBusStack);
-  const functionProps = getFunctionProps(stack);
+  const functionProps = getFunctionProps();
 
   eventBus.addRules(
     stack,
