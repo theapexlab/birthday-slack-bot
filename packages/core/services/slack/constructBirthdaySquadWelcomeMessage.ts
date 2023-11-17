@@ -13,17 +13,21 @@ const previousPresentsSheet =
   "https://docs.google.com/spreadsheets/d/1pzdNkF-18OUS6qhcVD2HHGkTwTmCXJEvR8LBzPjUnGI/edit?pli=1#gid=0";
 
 const formatIceBreakerLinks = (iceBreakerLinks: string[]) =>
-  iceBreakerLinks.map((iceBreakerLink) => `• ${iceBreakerLink}`).join("\n");
+  iceBreakerLinks.length
+    ? iceBreakerLinks.map((iceBreakerLink) => `• ${iceBreakerLink}`).join("\n")
+    : null;
 
 const formatPresentIdeas = (presentIdeas: string[]) =>
-  presentIdeas
-    .map((idea) =>
-      idea
-        .split("\n")
-        .map((line) => `> ${line}`)
-        .join("\n"),
-    )
-    .join("\n\n");
+  presentIdeas.length
+    ? presentIdeas
+        .map((idea) =>
+          idea
+            .split("\n")
+            .map((line) => `> ${line}`)
+            .join("\n"),
+        )
+        .join("\n\n")
+    : null;
 
 export const constructBirthdaySquadWelcomeMessage = ({
   icebreakerLinks,
@@ -51,14 +55,20 @@ export const constructBirthdaySquadWelcomeMessage = ({
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*Icebreaker threads*\n${formattedIceBreakerLinks}`,
+          text: `*Icebreaker threads*\n${
+            formattedIceBreakerLinks || "No icebreaker threads."
+          }`,
         },
       },
       {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*Present ideas*\nHere are the present ideas from everyone in the team:\n\n${presentIdeasText}`,
+          text: `*Present ideas*\n${
+            presentIdeasText
+              ? `Here are the present ideas from everyone in the team:\n\n${presentIdeasText}`
+              : "No present ideas."
+          }`,
         },
       },
       {
