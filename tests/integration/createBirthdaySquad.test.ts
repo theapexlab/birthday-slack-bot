@@ -3,13 +3,13 @@ import utc from "dayjs/plugin/utc";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { squadJoins, users } from "@/db/schema";
+import { welcomeMessageEventType } from "@/services/slack/constructBirthdaySquadWelcomeMessage";
 import { timeout } from "@/testUtils/constants";
 import { deleteLastDm } from "@/testUtils/integration/deleteLastDm";
 import { sendScheduleEvent } from "@/testUtils/integration/sendScheduleEvent";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
 import { seedSquadJoins } from "@/testUtils/seedSquadJoins";
 import { testDb } from "@/testUtils/testDb";
-import { scheduleEvent } from "@/types/schedule";
 
 dayjs.extend(utc);
 
@@ -63,7 +63,7 @@ describe("CreateBirthdaySquad", () => {
 
       const eventId = "CS1_" + Date.now().toString();
 
-      await sendScheduleEvent(scheduleEvent, {
+      await sendScheduleEvent({
         eventId,
         eventType: "createBirthdaySquad",
         payload: {
@@ -76,9 +76,8 @@ describe("CreateBirthdaySquad", () => {
       const message = await waitForDm(eventId);
 
       expect(message.metadata?.event_type, "EventType doesn't match").toEqual(
-        "sendSquadWelcomeMessage",
+        welcomeMessageEventType,
       );
-      expect(message.text, "Message doesn't match").toEqual("Test message");
     },
     timeout,
   );
@@ -102,7 +101,7 @@ describe("CreateBirthdaySquad", () => {
 
       const eventId = "CS2_" + Date.now().toString();
 
-      await sendScheduleEvent(scheduleEvent, {
+      await sendScheduleEvent({
         eventId,
         eventType: "createBirthdaySquad",
         payload: {
@@ -115,9 +114,8 @@ describe("CreateBirthdaySquad", () => {
       const message = await waitForDm(eventId);
 
       expect(message.metadata?.event_type, "EventType doesn't match").toEqual(
-        "sendSquadWelcomeMessage",
+        welcomeMessageEventType,
       );
-      expect(message.text, "Message doesn't match").toEqual("Test message");
     },
     timeout,
   );

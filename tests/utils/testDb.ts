@@ -85,7 +85,7 @@ export const waitForUsers = async ({
 export const waitForIceBreakerThreads = async ({
   teamId,
   expectedCount,
-}: Omit<WaitForArgs, "userId">) =>
+}: WaitForArgs) =>
   vi.waitFor(
     async () => {
       const items = await testDb

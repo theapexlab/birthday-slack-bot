@@ -9,7 +9,7 @@ import {
 import { type StackContext } from "sst/constructs";
 import { Function } from "sst/constructs";
 
-import { scheduleEvent } from "@/types/schedule";
+import { getScheduleDetailType } from "@/utils/scheduler/getScheduleDetailType";
 
 import { getEventBusFunctionProps } from "./utils/getFunctionProps";
 import { isStageTestable } from "./utils/isStageTestable";
@@ -48,7 +48,7 @@ export function SchedulerStack({ stack }: StackContext) {
   if (isTestable) {
     new Rule(stack, "LambdaTriggerRule", {
       eventPattern: {
-        detailType: [scheduleEvent],
+        detailType: [getScheduleDetailType(stack.stage)],
       },
       targets: [new LambdaFunction(scheduleHandlerLambda)],
     });

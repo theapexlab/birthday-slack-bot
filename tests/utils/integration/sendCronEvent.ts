@@ -3,7 +3,10 @@ import {
   PutEventsCommand,
 } from "@aws-sdk/client-eventbridge";
 
-import type { CronEventType } from "@/types/cron";
+import {
+  type CronEventType,
+  getCronDetailType,
+} from "@/utils/cron/getCronDetailType";
 
 const eventBridge = new EventBridgeClient();
 
@@ -15,7 +18,7 @@ export const sendCronEvent = async (type: CronEventType, eventId: string) =>
           Detail: JSON.stringify({
             eventId,
           }),
-          DetailType: type,
+          DetailType: getCronDetailType(type, import.meta.env.VITE_STAGE),
           Source: "sst",
         },
       ],

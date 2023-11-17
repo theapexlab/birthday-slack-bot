@@ -101,6 +101,7 @@ jobs:
           VITE_RANDOM_SLACK_CHANNEL_ID: ${{ secrets.RANDOM_SLACK_CHANNEL_ID_TEST }}
           VITE_SLACK_DM_ID: ${{ secrets.SLACK_DM_ID_TEST }}
           VITE_SLACK_TEAM_ID: ${{ secrets.SLACK_TEAM_ID_TEST }}
+          VITE_STAGE: ${{ env.STAGE }}
           VITE_CI: true
           VITE_DB_NAME: ${{ steps.sst-output.outputs.database }}
           VITE_DB_SECRET_ARN: ${{ steps.sst-output.outputs.secretArn }}

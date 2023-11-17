@@ -4,25 +4,24 @@ import {
 } from "@aws-sdk/client-eventbridge";
 
 import type { Events, EventType } from "@/events";
-import type { ScheduleEventType } from "@/types/schedule";
+import { getScheduleDetailType } from "@/utils/scheduler/getScheduleDetailType";
 const eventBridge = new EventBridgeClient();
 
-type DetailType = {
+type DetailType<T extends EventType> = {
   eventId: string;
-  eventType: EventType;
-  payload: Events[EventType];
+  eventType: T;
+  payload: Events[T];
 };
 
-export const sendScheduleEvent = async (
-  type: ScheduleEventType,
-  detail: DetailType,
+export const sendScheduleEvent = async <T extends EventType>(
+  detail: DetailType<T>,
 ) => {
   await eventBridge.send(
     new PutEventsCommand({
       Entries: [
         {
           Detail: JSON.stringify(detail),
-          DetailType: type,
+          DetailType: getScheduleDetailType(import.meta.env.VITE_STAGE),
           Source: "sst",
         },
       ],

@@ -1,31 +1,35 @@
+import { getIceBreakerThreads } from "@/db/queries/getIceBreakerThreads";
+import { getPresentIdeasByUser } from "@/db/queries/getPresentIdeasByUser";
+import { constructBirthdaySquadWelcomeMessage } from "@/services/slack/constructBirthdaySquadWelcomeMessage";
 import { createSlackApp } from "@/services/slack/createSlackApp";
+import { getIceBreakerThreadLink } from "@/services/slack/getIceBreakerThreadLink";
 import { handleEvent } from "@/utils/eventBridge/handleEvent";
 
-//TODO APEX-1562
 export const handler = handleEvent(
   "sendSquadWelcomeMessage",
   async ({ team, birthdayPerson, conversationId, eventId }) => {
     try {
-      console.info({
-        team,
+      const iceBreakers = await getIceBreakerThreads(team, birthdayPerson);
+
+      const iceBreakerLinkResponses = await Promise.all(
+        iceBreakers.map(getIceBreakerThreadLink),
+      );
+
+      const presentIdeas = await getPresentIdeasByUser(team, birthdayPerson);
+
+      const message = constructBirthdaySquadWelcomeMessage({
+        icebreakerLinks: iceBreakerLinkResponses.flatMap(
+          (iceBreakerLink) => iceBreakerLink.permalink ?? [],
+        ),
+        presentIdeas,
         birthdayPerson,
-        conversationId,
         eventId,
       });
 
-      //TODO APEX-1562
       const app = createSlackApp();
       await app.client.chat.postMessage({
+        ...message,
         channel: conversationId,
-        metadata: eventId
-          ? {
-              event_type: "sendSquadWelcomeMessage",
-              event_payload: {
-                eventId,
-              },
-            }
-          : undefined,
-        text: "Test message",
       });
     } catch (error) {
       console.error("Error processing sendSquadWelcomeMessage event: ", error);
