@@ -13,7 +13,7 @@ export const addTestRoutes = (stack: Stack, api: Api) => {
       "packages/functions/lambdas/manualUserJoinedEvent.handler",
     "GET /squadJoin": "packages/functions/lambdas/manualSquadJoinEvent.handler",
     "GET /createBirthdaySquad":
-      "packages/functions/events/manualCreateBirthdaySquad.handler",
+      "packages/functions/lambdas/manualCreateBirthdaySquad.handler",
   });
 
   stack.addOutputs({
