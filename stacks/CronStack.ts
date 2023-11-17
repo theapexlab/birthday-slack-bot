@@ -2,7 +2,7 @@ import { PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 import type { StackContext } from "sst/constructs";
 import { Cron } from "sst/constructs";
 
-import { daily, iceBreaker } from "@/types/cron";
+import { getCronEvent } from "@/types/cron";
 
 import { getFunctionProps } from "./utils/getFunctionProps";
 import { isStageTestable } from "./utils/isStageTestable";
@@ -23,7 +23,7 @@ export function CronStack({ stack }: StackContext) {
       ? {
           rule: {
             eventPattern: {
-              detailType: [iceBreaker],
+              detailType: [getCronEvent("iceBreaker", stack.stage)],
             },
           },
         }
@@ -55,7 +55,7 @@ export function CronStack({ stack }: StackContext) {
       ? {
           rule: {
             eventPattern: {
-              detailType: [daily],
+              detailType: [getCronEvent("daily", stack.stage)],
             },
           },
         }

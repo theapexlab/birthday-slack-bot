@@ -11,6 +11,7 @@ interface ImportMetaEnv {
   readonly VITE_SLACK_BOT_USER_ID: string;
   readonly VITE_SLACK_DM_ID: string;
   readonly VITE_SLACK_TEAM_ID: string;
+  readonly VITE_STAGE: string;
   readonly VITE_CI: string | undefined;
   readonly VITE_DB_NAME: string | undefined;
   readonly VITE_DB_SECRET_ARN: string | undefined;

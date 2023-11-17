@@ -109,7 +109,7 @@ describe("Birthday cleanup", () => {
         ...otherItems,
       ]);
 
-      await sendScheduleEvent("scheduleEvent", {
+      await sendScheduleEvent({
         eventId,
         eventType: "birthdayCleanup",
         payload: {
@@ -174,7 +174,7 @@ describe("Birthday cleanup", () => {
         ...otherItems,
       ]);
 
-      await sendScheduleEvent("scheduleEvent", {
+      await sendScheduleEvent({
         eventId,
         eventType: "birthdayCleanup",
         payload: {
@@ -234,7 +234,7 @@ describe("Birthday cleanup", () => {
         ...otherItems,
       ]);
 
-      await sendScheduleEvent("scheduleEvent", {
+      await sendScheduleEvent({
         eventId,
         eventType: "birthdayCleanup",
         payload: {

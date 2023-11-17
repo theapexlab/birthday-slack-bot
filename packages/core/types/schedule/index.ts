@@ -1,3 +1,1 @@
-export const scheduleEvent = "scheduleEvent";
-
-export type ScheduleEventType = typeof scheduleEvent;
+export const getScheduledEvent = (stage: string) => `scheduleEvent-${stage}`;

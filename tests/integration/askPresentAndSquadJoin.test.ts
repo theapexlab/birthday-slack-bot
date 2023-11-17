@@ -15,7 +15,6 @@ import {
   waitForSquadJoins,
   waitForTestItem,
 } from "@/testUtils/testDb";
-import { scheduleEvent } from "@/types/schedule";
 import {
   additionalPresentIdeasInputActionId,
   additionalPresentIdeasSaveButtonActionId,
@@ -62,9 +61,9 @@ describe("Present and Squad Join", () => {
         },
       ]);
 
-      const eventId = "PI1_" + Date.now().toString();
+      const eventId = "SJ1_" + Date.now().toString();
 
-      await sendScheduleEvent(scheduleEvent, {
+      await sendScheduleEvent({
         eventId,
         eventType: "askPresentAndSquadJoinFromTeam",
         payload: {
@@ -117,7 +116,7 @@ describe("Present and Squad Join", () => {
         },
       ]);
 
-      const eventId = "PI2_" + Date.now().toString();
+      const eventId = "SJ2_" + Date.now().toString();
 
       await sendSlackInteraction({
         type: "block_actions",
