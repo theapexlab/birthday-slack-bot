@@ -119,7 +119,7 @@ describe("Birthday cleanup", () => {
       });
 
       const items = await waitForIceBreakerThreads({
-        expectedCount: 2,
+        expectedCount: otherItems.length,
       });
 
       otherItems.forEach((item, index) => {
@@ -184,7 +184,7 @@ describe("Birthday cleanup", () => {
       });
 
       const items = await waitForPresentIdeas({
-        expectedCount: 3,
+        expectedCount: otherItems.length,
       });
 
       otherItems.forEach((item, index) => {
@@ -244,7 +244,7 @@ describe("Birthday cleanup", () => {
       });
 
       const items = await waitForSquadJoins({
-        expectedCount: 3,
+        expectedCount: otherItems.length,
       });
 
       otherItems.forEach((item, index) => {
