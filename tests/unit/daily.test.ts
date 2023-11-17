@@ -136,7 +136,7 @@ describe("Daily cron", () => {
     expect(eventBridge.send).not.toHaveBeenCalled();
   });
 
-  it("Should publish askPresentAndSquadJoinFromTeam event with a schedule", async () => {
+  it("Should publish scheduled birthday events if user has birthday exactly 2 months from now", async () => {
     await testDb.insert(users).values({
       id: constants.userId,
       teamId: constants.teamId,
@@ -185,5 +185,17 @@ describe("Daily cron", () => {
         "months",
       ),
     );
+  });
+
+  it("Should not publish scheduled birthday events if no user has birthday exactly 2 months from now", async () => {
+    await testDb.insert(users).values({
+      id: constants.userId,
+      teamId: constants.teamId,
+      birthday: dayjs.utc().add(4, "month").toDate(),
+    });
+
+    await callWithMockCronEvent(constants.eventId);
+
+    expect(schedulerClient.send).not.toHaveBeenCalled();
   });
 });
