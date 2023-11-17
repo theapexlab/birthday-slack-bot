@@ -1,5 +1,3 @@
-import "@/testUtils/unit/mockDb";
-
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";

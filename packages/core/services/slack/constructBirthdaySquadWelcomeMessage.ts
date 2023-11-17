@@ -1,12 +1,8 @@
-import { getIceBreakerThreads } from "@/db/queries/getIceBreakerThreads";
-import { getPresentIdeasByUser } from "@/db/queries/getPresentIdeasByUser";
 import type { PostMessageArguments } from "@/types/MessageArguments";
 
-import { getIceBreakerThreadLink } from "./getIceBreakerThreadLink";
-
 type Arguments = {
-  channel: string;
-  teamId: string;
+  icebreakerLinks: string[];
+  presentIdeas: Map<string, string[]>;
   birthdayPerson: string;
   eventId?: string;
 };
@@ -29,32 +25,19 @@ const formatPresentIdeas = (presentIdeas: string[]) =>
     )
     .join("\n\n");
 
-export const constructBirthdaySquadWelcomeMessage = async ({
-  channel,
-  teamId,
+export const constructBirthdaySquadWelcomeMessage = ({
+  icebreakerLinks,
+  presentIdeas,
   birthdayPerson,
   eventId,
-}: Arguments): Promise<PostMessageArguments> => {
-  const iceBreakers = await getIceBreakerThreads(teamId, birthdayPerson);
-
-  const iceBreakerLinkResponses = await Promise.all(
-    iceBreakers.map(getIceBreakerThreadLink),
-  );
-
-  const iceBreakerLinks = formatIceBreakerLinks(
-    iceBreakerLinkResponses.flatMap(
-      (iceBreakerLink) => iceBreakerLink.permalink ?? [],
-    ),
-  );
-
-  const presentIdeas = await getPresentIdeasByUser(teamId, birthdayPerson);
+}: Arguments): Omit<PostMessageArguments, "channel"> => {
+  const formattedIceBreakerLinks = formatIceBreakerLinks(icebreakerLinks);
 
   const presentIdeasText = Array.from(presentIdeas.entries())
     .map(([user, ideas]) => `<@${user}>:\n${formatPresentIdeas(ideas)}\n`)
     .join("\n");
 
   return {
-    channel,
     text: `Welcome to the birthday squad of <@${birthdayPerson}>! 🎁`,
     blocks: [
       {
@@ -68,7 +51,7 @@ export const constructBirthdaySquadWelcomeMessage = async ({
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*Icebreaker threads*\n${iceBreakerLinks}`,
+          text: `*Icebreaker threads*\n${formattedIceBreakerLinks}`,
         },
       },
       {
