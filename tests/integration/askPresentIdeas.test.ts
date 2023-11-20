@@ -8,7 +8,7 @@ import { constructPresentIdeaSavedMessage } from "@/services/slack/constructPres
 import { timeout } from "@/testUtils/constants";
 import { deleteLastDm } from "@/testUtils/integration/deleteLastDm";
 import {
-  cleanUpSchedule,
+  cleanUpSchedules,
   getSchedule,
 } from "@/testUtils/integration/scheduler";
 import { sendCronEvent } from "@/testUtils/integration/sendCronEvent";
@@ -87,7 +87,7 @@ describe("Present ideas", () => {
         "Block doesn't contain save button",
       ).toBe(presentIdeasSaveButtonActionId);
 
-      await cleanUpSchedule(`${eventId}_askPresentAndSquadJoinFromTeam`);
+      await cleanUpSchedules(eventId);
     },
     timeout,
   );
@@ -205,7 +205,7 @@ describe("Present ideas", () => {
         "After completion should be DELETE",
       ).toEqual("DELETE");
 
-      await cleanUpSchedule(`${eventId}_askPresentAndSquadJoinFromTeam`);
+      await cleanUpSchedules(eventId);
     },
     timeout,
   );
@@ -249,7 +249,7 @@ describe("Present ideas", () => {
         "After completion should be DELETE",
       ).toEqual("DELETE");
 
-      await cleanUpSchedule(`${eventId}_createBirthdaySquad`);
+      await cleanUpSchedules(eventId);
     },
     timeout,
   );
@@ -293,7 +293,7 @@ describe("Present ideas", () => {
         "After completion should be DELETE",
       ).toEqual("DELETE");
 
-      await cleanUpSchedule(`${eventId}_birthdayCleanup`);
+      await cleanUpSchedules(eventId);
     },
     timeout,
   );
