@@ -13,9 +13,21 @@ export const getSchedule = async (name: string) =>
     }),
   );
 
-export const cleanUpSchedule = async (name: string) =>
-  schedulerClient.send(
-    new DeleteScheduleCommand({
-      Name: name,
-    }),
-  );
+export const cleanUpSchedules = async (eventId: string) =>
+  Promise.all([
+    schedulerClient.send(
+      new DeleteScheduleCommand({
+        Name: `${eventId}_askPresentAndSquadJoinFromTeam`,
+      }),
+    ),
+    schedulerClient.send(
+      new DeleteScheduleCommand({
+        Name: `${eventId}_createBirthdaySquad`,
+      }),
+    ),
+    schedulerClient.send(
+      new DeleteScheduleCommand({
+        Name: `${eventId}_birthdayCleanup`,
+      }),
+    ),
+  ]);
