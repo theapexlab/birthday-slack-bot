@@ -1,8 +1,8 @@
-import type { PostMessageArguments } from "@/types/MessageArguments";
+import type { ReplaceMessageArguments } from "@/types/MessageArguments";
 
 export const constructErrorMessage = (
   error: unknown,
-): Omit<PostMessageArguments, "channel"> => ({
+): ReplaceMessageArguments => ({
   text: `:warning: Something went wrong: ${formatError(error)}`,
 });
 

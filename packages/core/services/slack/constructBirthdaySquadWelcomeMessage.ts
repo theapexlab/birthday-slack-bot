@@ -1,4 +1,4 @@
-import type { PostMessageArguments } from "@/types/MessageArguments";
+import type { ReplaceMessageArguments } from "@/types/MessageArguments";
 
 type Arguments = {
   icebreakerLinks: string[];
@@ -34,7 +34,7 @@ export const constructBirthdaySquadWelcomeMessage = ({
   presentIdeas,
   birthdayPerson,
   eventId,
-}: Arguments): Omit<PostMessageArguments, "channel"> => {
+}: Arguments): ReplaceMessageArguments => {
   const formattedIceBreakerLinks = formatIceBreakerLinks(icebreakerLinks);
 
   const presentIdeasText = Array.from(presentIdeas.entries())

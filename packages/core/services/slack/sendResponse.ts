@@ -1,8 +1,8 @@
-import type { PostMessageArguments } from "@/types/MessageArguments";
+import type { ReplaceMessageArguments } from "@/types/MessageArguments";
 
 export const sendResponse = async (
   responseUrl: string,
-  message: Omit<PostMessageArguments, "channel">,
+  message: ReplaceMessageArguments,
 ) => {
   try {
     return fetch(responseUrl, {

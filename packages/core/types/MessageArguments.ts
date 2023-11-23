@@ -5,6 +5,4 @@ export type PostMessageArguments = Pick<
   "channel" | "text" | "blocks" | "metadata" | "unfurl_links"
 >;
 
-export type ReplaceMessageArguments = Omit<PostMessageArguments, "channel"> & {
-  replace_original: boolean;
-};
+export type ReplaceMessageArguments = Omit<PostMessageArguments, "channel">;

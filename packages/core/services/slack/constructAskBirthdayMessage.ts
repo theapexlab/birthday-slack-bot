@@ -15,7 +15,7 @@ type Arguments = {
 const constructBaseAskBirthdayMessage = ({
   name,
   eventId,
-}: Arguments): Omit<PostMessageArguments, "channel"> => ({
+}: Arguments): ReplaceMessageArguments => ({
   text: "Please share your birthday with us! 🥳",
   blocks: [
     makeTextBlock(`Hey ${name}! 👋`),
@@ -43,7 +43,4 @@ export const constructAskBirthdayMessage = (
 
 export const constructAskBirthdayMessageReplacement = (
   args: Arguments,
-): ReplaceMessageArguments => ({
-  ...constructBaseAskBirthdayMessage(args),
-  replace_original: true,
-});
+): ReplaceMessageArguments => constructBaseAskBirthdayMessage(args);
