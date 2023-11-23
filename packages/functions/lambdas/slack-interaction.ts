@@ -1,5 +1,7 @@
 import type { APIGatewayProxyHandlerV2 } from "aws-lambda";
 
+import { constructLoadingMessage } from "@/services/slack/constructLoadingMessage";
+import { sendResponse } from "@/services/slack/sendResponse";
 import {
   additionalPresentIdeasInputActionId,
   additionalPresentIdeasInputBlockId,
@@ -93,6 +95,8 @@ export const handler: APIGatewayProxyHandlerV2 = async (request) => {
         break;
       }
     }
+
+    await sendResponse(parsedData.response_url, constructLoadingMessage());
 
     return okResult();
   } catch (error) {
