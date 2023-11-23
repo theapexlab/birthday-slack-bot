@@ -4,6 +4,7 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { presentIdeas, testItems, users } from "@/db/schema";
 import { getScheduleWithTimeOffset } from "@/functions/utils/scheduler/getScheduleExtension";
+import { constructLoadingMessage } from "@/services/slack/constructLoadingMessage";
 import { constructPresentIdeaSavedMessage } from "@/services/slack/constructPresentIdeaSavedMessage";
 import { timeout } from "@/testUtils/constants";
 import { deleteLastDm } from "@/testUtils/integration/deleteLastDm";
@@ -17,7 +18,7 @@ import { waitForDm } from "@/testUtils/integration/waitForDm";
 import {
   testDb,
   waitForPresentIdeas,
-  waitForTestItem,
+  waitForTestItems,
 } from "@/testUtils/testDb";
 import {
   presentIdeasInputActionId,
@@ -154,12 +155,26 @@ describe("Present ideas", () => {
         constants.presentIdea,
       );
 
-      const item = await waitForTestItem(eventId);
+      const items = await waitForTestItems(eventId);
+
+      expect(items.length, "Incorrect number of items saved").toEqual(2);
+
+      expect(items, "Didn't send loading message").toContainEqual(
+        expect.objectContaining({
+          testId: eventId,
+          payload: JSON.stringify(constructLoadingMessage()),
+        }),
+      );
 
       expect(
-        item.payload,
+        items,
         "Payload doesn't match present idea saved message",
-      ).toEqual(JSON.stringify(constructPresentIdeaSavedMessage()));
+      ).toContainEqual(
+        expect.objectContaining({
+          testId: eventId,
+          payload: JSON.stringify(constructPresentIdeaSavedMessage()),
+        }),
+      );
     },
     timeout,
   );

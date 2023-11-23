@@ -1,5 +1,8 @@
 import { saveBirthday } from "@/db/queries/saveBirthday";
-import { constructAskBirthdayMessage } from "@/services/slack/constructAskBirthdayMessage";
+import {
+  constructAskBirthdayMessage,
+  constructAskBirthdayMessageReplacement,
+} from "@/services/slack/constructAskBirthdayMessage";
 import { constructErrorMessage } from "@/services/slack/constructErrorMessage";
 import { createSlackApp } from "@/services/slack/createSlackApp";
 import { getUserInfo } from "@/services/slack/getUserInfo";
@@ -25,7 +28,10 @@ export const handler = handleEvent(
       };
 
       if (responseUrl) {
-        await sendResponse(responseUrl, constructAskBirthdayMessage(payload));
+        await sendResponse(
+          responseUrl,
+          constructAskBirthdayMessageReplacement(payload),
+        );
         return;
       }
 

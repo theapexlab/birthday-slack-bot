@@ -4,13 +4,14 @@ import { testItems, users } from "@/db/schema";
 import { constructAskBirthdayMessageReplacement } from "@/services/slack/constructAskBirthdayMessage";
 import { constructBirthdayConfirmedMessage } from "@/services/slack/constructBirthdayConfirmedMessage";
 import { constructConfirmBirthdayMessage } from "@/services/slack/constructConfirmBirthdayMessage";
+import { constructLoadingMessage } from "@/services/slack/constructLoadingMessage";
 import { timeout } from "@/testUtils/constants";
 import { deleteLastDm } from "@/testUtils/integration/deleteLastDm";
 import { sendCronEvent } from "@/testUtils/integration/sendCronEvent";
 import { sendSlackInteraction } from "@/testUtils/integration/sendSlackInteraction";
 import { app } from "@/testUtils/integration/testSlackApp";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
-import { testDb, waitForTestItem, waitForUsers } from "@/testUtils/testDb";
+import { testDb, waitForTestItems, waitForUsers } from "@/testUtils/testDb";
 import {
   birthdayConfirmActionId,
   birthdayIncorrectActionId,
@@ -57,13 +58,27 @@ describe("Slack interactions", () => {
         ],
       });
 
-      const item = await waitForTestItem(eventId);
+      const items = await waitForTestItems(eventId);
+
+      expect(items.length, "Incorrect number of items saved").toEqual(2);
+
+      expect(items, "Didn't send loading message").toContainEqual(
+        expect.objectContaining({
+          testId: eventId,
+          payload: JSON.stringify(constructLoadingMessage()),
+        }),
+      );
 
       expect(
-        item.payload,
+        items,
         "Payload doesn't match confirm birthday message",
-      ).toEqual(
-        JSON.stringify(constructConfirmBirthdayMessage(constants.birthday)),
+      ).toContainEqual(
+        expect.objectContaining({
+          testId: eventId,
+          payload: JSON.stringify(
+            constructConfirmBirthdayMessage(constants.birthday),
+          ),
+        }),
       );
     },
     timeout,
@@ -113,12 +128,26 @@ describe("Slack interactions", () => {
         ],
       });
 
-      const item = await waitForTestItem(eventId);
+      const items = await waitForTestItems(eventId);
+
+      expect(items.length, "Incorrect number of items saved").toEqual(2);
+
+      expect(items, "Didn't send loading message").toContainEqual(
+        expect.objectContaining({
+          testId: eventId,
+          payload: JSON.stringify(constructLoadingMessage()),
+        }),
+      );
 
       expect(
-        item.payload,
+        items,
         "Payload doesn't match birthday confirmed message",
-      ).toEqual(JSON.stringify(constructBirthdayConfirmedMessage()));
+      ).toContainEqual(
+        expect.objectContaining({
+          testId: eventId,
+          payload: JSON.stringify(constructBirthdayConfirmedMessage()),
+        }),
+      );
     },
     timeout,
   );
@@ -183,18 +212,30 @@ describe("Slack interactions", () => {
         user: import.meta.env.VITE_SLACK_USER_ID,
       });
 
-      const item = await waitForTestItem(eventId);
+      const items = await waitForTestItems(eventId);
+
+      expect(items.length, "Incorrect number of items saved").toEqual(2);
+
+      expect(items, "Didn't send loading message").toContainEqual(
+        expect.objectContaining({
+          testId: eventId,
+          payload: JSON.stringify(constructLoadingMessage()),
+        }),
+      );
 
       expect(
-        item.payload,
-        "Payload doesn't match ask birthday message",
-      ).toEqual(
-        JSON.stringify(
-          constructAskBirthdayMessageReplacement({
-            name: user?.profile?.first_name || user?.name || "",
-            user: import.meta.env.VITE_SLACK_USER_ID,
-          }),
-        ),
+        items,
+        "Payload doesn't match birthday confirmed message",
+      ).toContainEqual(
+        expect.objectContaining({
+          testId: eventId,
+          payload: JSON.stringify(
+            constructAskBirthdayMessageReplacement({
+              name: user?.profile?.first_name || user?.name || "",
+              user: import.meta.env.VITE_SLACK_USER_ID,
+            }),
+          ),
+        }),
       );
     },
     timeout,

@@ -83,6 +83,7 @@ export const squadJoins = pgTable(
 export type SquadJoin = typeof squadJoins.$inferInsert;
 
 export const testItems = pgTable("testItems", {
-  id: varchar("id").primaryKey().notNull(),
+  id: serial("id").primaryKey().notNull(),
+  testId: varchar("test_id").notNull(),
   payload: varchar("payload").notNull(),
 });
