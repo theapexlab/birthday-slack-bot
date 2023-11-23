@@ -3,7 +3,7 @@ import type { ReplaceMessageArguments } from "@/types/MessageArguments";
 export const constructErrorMessage = (
   error: unknown,
 ): ReplaceMessageArguments => ({
-  text: `:warning: Something went wrong: ${formatError(error)}`,
+  text: `⚠️ Something went wrong: ${formatError(error)}`,
 });
 
 const formatError = (error: unknown): string => {
