@@ -8,6 +8,9 @@ export function StorageStack({ stack }: StackContext) {
   const db = new RDS(stack, "Database", {
     defaultDatabaseName: "birthdayBotDb",
     engine: "postgresql13.9",
+    scaling: {
+      autoPause: stack.stage !== "production",
+    },
   });
 
   stack.addOutputs({
