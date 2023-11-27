@@ -1,18 +1,19 @@
 import { constructConfirmBirthdayMessage } from "@/services/slack/constructConfirmBirthdayMessage";
+import { constructErrorMessage } from "@/services/slack/constructErrorMessage";
+import { sendResponse } from "@/services/slack/sendResponse";
 import { handleEvent } from "@/utils/eventBridge/handleEvent";
 
 export const handler = handleEvent(
   "birthdayFilled",
   async ({ birthday, responseUrl }) => {
     try {
-      await fetch(responseUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(constructConfirmBirthdayMessage(birthday)),
-      });
+      await sendResponse(
+        responseUrl,
+        constructConfirmBirthdayMessage(birthday),
+      );
     } catch (error) {
+      await sendResponse(responseUrl, constructErrorMessage(error));
+
       console.error("birthdayFilled", error);
     }
   },

@@ -50,6 +50,13 @@
       "when": 1700142341811,
       "tag": "0006_squad_joins_unique",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1700744521560,
+      "tag": "0007_make_test_item_pk_serial",
+      "breakpoints": true
     }
   ]
 }

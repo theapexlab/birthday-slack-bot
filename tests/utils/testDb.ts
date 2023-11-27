@@ -26,19 +26,22 @@ export const [testDb] = dbFactory(
       },
 );
 
-export const waitForTestItem = async (id: string) =>
+export const waitForTestItems = async (id: string, expectedCount: number = 2) =>
   vi.waitFor(
     async () => {
       const items = await testDb
         .select()
         .from(testItems)
-        .where(eq(testItems.id, id))
-        .limit(1);
+        .where(eq(testItems.testId, id))
+        .limit(expectedCount);
 
-      if (items.length === 0) {
-        throw new Error("Testitem not saved");
+      if (items.length !== expectedCount) {
+        throw new Error(
+          `Expected ${expectedCount} test item(s) but got ${items.length}`,
+        );
       }
-      return items[0];
+
+      return items;
     },
     {
       timeout: waitTimeout,

@@ -3,8 +3,10 @@ import {
   constructAskBirthdayMessage,
   constructAskBirthdayMessageReplacement,
 } from "@/services/slack/constructAskBirthdayMessage";
+import { constructErrorMessage } from "@/services/slack/constructErrorMessage";
 import { createSlackApp } from "@/services/slack/createSlackApp";
 import { getUserInfo } from "@/services/slack/getUserInfo";
+import { sendResponse } from "@/services/slack/sendResponse";
 import { handleEvent } from "@/utils/eventBridge/handleEvent";
 
 export const handler = handleEvent(
@@ -26,13 +28,10 @@ export const handler = handleEvent(
       };
 
       if (responseUrl) {
-        await fetch(responseUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(constructAskBirthdayMessageReplacement(payload)),
-        });
+        await sendResponse(
+          responseUrl,
+          constructAskBirthdayMessageReplacement(payload),
+        );
         return;
       }
 
@@ -44,6 +43,10 @@ export const handler = handleEvent(
 
       await app.client.chat.postMessage(constructAskBirthdayMessage(payload));
     } catch (error) {
+      if (responseUrl) {
+        await sendResponse(responseUrl, constructErrorMessage(error));
+      }
+
       console.error("Error processing askBirthday event: ", error);
     }
   },

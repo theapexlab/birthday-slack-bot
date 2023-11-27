@@ -3,6 +3,7 @@ import utc from "dayjs/plugin/utc";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { presentIdeas, testItems, users } from "@/db/schema";
+import { constructLoadingMessage } from "@/services/slack/constructLoadingMessage";
 import { constructPresentIdeaSavedMessage } from "@/services/slack/constructPresentIdeaSavedMessage";
 import { timeout } from "@/testUtils/constants";
 import { deleteLastDm } from "@/testUtils/integration/deleteLastDm";
@@ -13,7 +14,7 @@ import {
   testDb,
   waitForPresentIdeas,
   waitForSquadJoins,
-  waitForTestItem,
+  waitForTestItems,
 } from "@/testUtils/testDb";
 import {
   additionalPresentIdeasInputActionId,
@@ -184,12 +185,26 @@ describe("Present and Squad Join", () => {
         "Squad join not matching with the birthday person",
       ).toEqual(presentIdea.birthdayPerson);
 
-      const item = await waitForTestItem(eventId);
+      const items = await waitForTestItems(eventId);
+
+      expect(items.length, "Incorrect number of items saved").toEqual(2);
+
+      expect(items, "Didn't send loading message").toContainEqual(
+        expect.objectContaining({
+          testId: eventId,
+          payload: JSON.stringify(constructLoadingMessage()),
+        }),
+      );
 
       expect(
-        item.payload,
+        items,
         "Payload doesn't match present idea saved message",
-      ).toEqual(JSON.stringify(constructPresentIdeaSavedMessage()));
+      ).toContainEqual(
+        expect.objectContaining({
+          testId: eventId,
+          payload: JSON.stringify(constructPresentIdeaSavedMessage()),
+        }),
+      );
     },
     timeout,
   );

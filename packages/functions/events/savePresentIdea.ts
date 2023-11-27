@@ -1,5 +1,7 @@
 import { savePresentIdea } from "@/db/queries/savePresentIdea";
+import { constructErrorMessage } from "@/services/slack/constructErrorMessage";
 import { constructPresentIdeaSavedMessage } from "@/services/slack/constructPresentIdeaSavedMessage";
+import { sendResponse } from "@/services/slack/sendResponse";
 import { handleEvent } from "@/utils/eventBridge/handleEvent";
 
 export const handler = handleEvent(
@@ -13,14 +15,10 @@ export const handler = handleEvent(
         presentIdea,
       });
 
-      await fetch(responseUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(constructPresentIdeaSavedMessage()),
-      });
+      await sendResponse(responseUrl, constructPresentIdeaSavedMessage());
     } catch (error) {
+      await sendResponse(responseUrl, constructErrorMessage(error));
+
       console.error("Error processing savePresentIdea event: ", error);
     }
   },

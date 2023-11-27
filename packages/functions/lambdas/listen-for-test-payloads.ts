@@ -17,13 +17,13 @@ export const handler: APIGatewayProxyHandlerV2 = async (request) => {
     }
 
     await db.insert(testItems).values({
-      id: key,
+      testId: key,
       payload: request.body,
     });
 
     return okResult();
   } catch (error) {
-    console.error(`Error handling slack event: ${error}`);
+    console.error(`Error saving test item: ${error}`);
     return errorResult(error);
   }
 };
