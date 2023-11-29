@@ -13,11 +13,11 @@ export function ConfigStack({ stack }: StackContext) {
     stack,
     "RANDOM_SLACK_CHANNEL_ID",
   );
-  const KRISZTA_SLACK_USER_ID = new Config.Secret(
+  const ADMIN_SLACK_USER_ID = new Config.Secret(stack, "ADMIN_SLACK_USER_ID");
+  const DEPUTY_ADMIN_SLACK_USER_ID = new Config.Secret(
     stack,
-    "KRISZTA_SLACK_USER_ID",
+    "DEPUTY_ADMIN_SLACK_USER_ID",
   );
-  const MATE_SLACK_USER_ID = new Config.Secret(stack, "MATE_SLACK_USER_ID");
 
   return [
     SLACK_LOG_LEVEL,
@@ -25,7 +25,7 @@ export function ConfigStack({ stack }: StackContext) {
     SLACK_SIGNING_SECRET,
     CORE_SLACK_CHANNEL_ID,
     RANDOM_SLACK_CHANNEL_ID,
-    KRISZTA_SLACK_USER_ID,
-    MATE_SLACK_USER_ID,
+    ADMIN_SLACK_USER_ID,
+    DEPUTY_ADMIN_SLACK_USER_ID,
   ];
 }
