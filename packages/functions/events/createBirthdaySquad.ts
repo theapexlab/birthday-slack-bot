@@ -17,7 +17,7 @@ export const handler = handleEvent(
   async ({ team, birthdayPerson, eventId }) => {
     const { ADMIN_SLACK_USER_ID, DEPUTY_ADMIN_SLACK_USER_ID } = Config;
 
-    // Include admin in all squads except on his/her birthday, where deputy admin is added to the squad.
+    // Include admin in all squads except on the individual's birthday, where deputy admin is added to the squad.
     const adminPerson =
       birthdayPerson !== ADMIN_SLACK_USER_ID
         ? ADMIN_SLACK_USER_ID

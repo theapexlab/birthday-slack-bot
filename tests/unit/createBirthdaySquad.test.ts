@@ -37,8 +37,8 @@ const constants = vi.hoisted(() => ({
   teamId: "T001",
   otherUserIds: ["U002", "U003", "U004", "U005", "U006"],
   conversationId: "CH001",
-  adminUserId: "KU001",
-  deputyAdminUserId: "MU001",
+  adminUserId: "AU001",
+  deputyAdminUserId: "DAU001",
 }));
 
 const event = vi.hoisted(
