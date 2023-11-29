@@ -37,8 +37,8 @@ const constants = vi.hoisted(() => ({
   teamId: "T001",
   otherUserIds: ["U002", "U003", "U004", "U005", "U006"],
   conversationId: "CH001",
-  krisztaUserId: "KU001",
-  mateUserId: "MU001",
+  adminUserId: "KU001",
+  deputyAdminUserId: "MU001",
 }));
 
 const event = vi.hoisted(
@@ -56,8 +56,8 @@ vi.mock("@/services/slack/openConversation", async () => ({
 
 vi.mock("sst/node/config", () => ({
   Config: {
-    KRISZTA_SLACK_USER_ID: constants.krisztaUserId,
-    MATE_SLACK_USER_ID: constants.mateUserId,
+    ADMIN_SLACK_USER_ID: constants.adminUserId,
+    DEPUTY_ADMIN_SLACK_USER_ID: constants.deputyAdminUserId,
   },
 }));
 
@@ -78,7 +78,7 @@ describe("Final squad size is less then 2", () => {
 
     expect(getRandomSquadMembersSpy).toHaveBeenCalledWith({
       teamId: constants.teamId,
-      usersToExclude: [constants.birthdayPerson, constants.krisztaUserId],
+      usersToExclude: [constants.birthdayPerson, constants.adminUserId],
       limit: BIRTHDAY_SQUAD_SIZE,
     });
 
@@ -95,7 +95,7 @@ describe("Final squad size is less then 2", () => {
 
     expect(getRandomSquadMembersSpy).toHaveBeenCalledWith({
       teamId: constants.teamId,
-      usersToExclude: [constants.birthdayPerson, constants.krisztaUserId],
+      usersToExclude: [constants.birthdayPerson, constants.adminUserId],
       limit: BIRTHDAY_SQUAD_SIZE,
     });
 
@@ -115,7 +115,7 @@ describe("2 or less squad members applied", () => {
 
     expect(getRandomSquadMembersSpy).toHaveBeenCalledWith({
       teamId: constants.teamId,
-      usersToExclude: [constants.birthdayPerson, constants.krisztaUserId],
+      usersToExclude: [constants.birthdayPerson, constants.adminUserId],
       limit: BIRTHDAY_SQUAD_SIZE,
     });
   });
@@ -202,7 +202,7 @@ describe("Add admin to the squad", () => {
     await testDb.delete(squadJoins);
   });
 
-  it("Should add Kriszta to conversation", async () => {
+  it("Should add admin to conversation", async () => {
     await testDb.insert(users).values({
       id: constants.birthdayPerson,
       teamId: constants.teamId,
@@ -227,16 +227,13 @@ describe("Add admin to the squad", () => {
     await sendMockSqsMessage("createBirthdaySquad", event, handler);
 
     expect(openConversation).toBeCalledWith(
-      expect.arrayContaining([
-        ...insertedSquadMembers,
-        constants.krisztaUserId,
-      ]),
+      expect.arrayContaining([...insertedSquadMembers, constants.adminUserId]),
     );
   });
 
-  it("Should add Mate to conversation if it's Krista's birthday", async () => {
+  it("Should add deputy admin to conversation if it's admins birthday", async () => {
     await testDb.insert(users).values({
-      id: constants.krisztaUserId,
+      id: constants.adminUserId,
       teamId: constants.teamId,
       birthday: dayjs.utc().toDate(),
     });
@@ -250,7 +247,7 @@ describe("Add admin to the squad", () => {
     );
 
     insertedSquadMembers = await seedSquadJoins(
-      constants.krisztaUserId,
+      constants.adminUserId,
       constants.teamId,
       constants.otherUserIds,
       3,
@@ -258,12 +255,15 @@ describe("Add admin to the squad", () => {
 
     await sendMockSqsMessage(
       "createBirthdaySquad",
-      { ...event, birthdayPerson: constants.krisztaUserId },
+      { ...event, birthdayPerson: constants.adminUserId },
       handler,
     );
 
     expect(openConversation).toBeCalledWith(
-      expect.arrayContaining([...insertedSquadMembers, constants.mateUserId]),
+      expect.arrayContaining([
+        ...insertedSquadMembers,
+        constants.deputyAdminUserId,
+      ]),
     );
   });
 });

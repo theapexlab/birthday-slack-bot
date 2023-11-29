@@ -55,8 +55,8 @@ jobs:
           npx sst secrets set SLACK_SIGNING_SECRET "${{ secrets.SLACK_SIGNING_SECRET_STAGING }}" --stage "${{ env.stage }}"
           npx sst secrets set CORE_SLACK_CHANNEL_ID "${{ secrets.CORE_SLACK_CHANNEL_ID_STAGING }}" --stage "${{ env.stage }}"
           npx sst secrets set RANDOM_SLACK_CHANNEL_ID "${{ secrets.RANDOM_SLACK_CHANNEL_ID_STAGING }}" --stage "${{ env.stage }}"
-          npx sst secrets set KRISZTA_SLACK_USER_ID "${{ secrets.KRISZTA_SLACK_USER_ID_STAGING }}" --stage ${{ env.stage }}
-          npx sst secrets set MATE_SLACK_USER_ID "${{ secrets.MATE_SLACK_USER_ID_STAGING }}" --stage ${{ env.stage }}
+          npx sst secrets set ADMIN_SLACK_USER_ID "${{ secrets.ADMIN_SLACK_USER_ID_STAGING }}" --stage ${{ env.stage }}
+          npx sst secrets set DEPUTY_ADMIN_SLACK_USER_ID "${{ secrets.DEPUTY_ADMIN_SLACK_USER_ID_STAGING }}" --stage ${{ env.stage }}
 
       - name: Deploy stack
         run: pnpm run deploy --stage "${{ env.stage }}"

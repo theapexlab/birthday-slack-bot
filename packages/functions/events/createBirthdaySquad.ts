@@ -15,13 +15,13 @@ import { publishEvent } from "@/utils/eventBridge/publishEvent";
 export const handler = handleEvent(
   "createBirthdaySquad",
   async ({ team, birthdayPerson, eventId }) => {
-    const { KRISZTA_SLACK_USER_ID, MATE_SLACK_USER_ID } = Config;
+    const { ADMIN_SLACK_USER_ID, DEPUTY_ADMIN_SLACK_USER_ID } = Config;
 
-    // Include Kriszta in all squads except on her birthday, where Mate is added to the squad.
+    // Include admin in all squads except on his/her birthday, where deputy admin is added to the squad.
     const adminPerson =
-      birthdayPerson !== KRISZTA_SLACK_USER_ID
-        ? KRISZTA_SLACK_USER_ID
-        : MATE_SLACK_USER_ID;
+      birthdayPerson !== ADMIN_SLACK_USER_ID
+        ? ADMIN_SLACK_USER_ID
+        : DEPUTY_ADMIN_SLACK_USER_ID;
 
     try {
       const appliedSquadMembers = await getSquadMembers(team, birthdayPerson);
