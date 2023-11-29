@@ -43,11 +43,6 @@ const Events = z.object({
     presentIdea: z.string(),
     responseUrl: z.string(),
   }),
-  saveSquadJoin: BaseEvent.extend({
-    birthdayPerson: z.string(),
-    user: z.string(),
-    team: z.string(),
-  }),
   askPresentAndSquadJoinFromTeam: BaseEvent.extend({
     birthdayPerson: z.string(),
     team: z.string(),
@@ -55,6 +50,11 @@ const Events = z.object({
   askPresentAndSquadJoinFromUser: BaseEvent.extend({
     birthdayPerson: z.string(),
     user: z.string(),
+  }),
+  saveSquadJoin: BaseEvent.extend({
+    birthdayPerson: z.string(),
+    user: z.string(),
+    team: z.string(),
   }),
   createBirthdaySquad: BaseEvent.extend({
     birthdayPerson: z.string(),
