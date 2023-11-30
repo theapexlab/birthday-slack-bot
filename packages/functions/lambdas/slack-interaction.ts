@@ -94,6 +94,8 @@ export const handler: APIGatewayProxyHandlerV2 = async (request) => {
         });
         break;
       }
+      default:
+        return okResult();
     }
 
     await sendResponse(parsedData.response_url, constructLoadingMessage());
