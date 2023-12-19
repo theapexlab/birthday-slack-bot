@@ -76,3 +76,8 @@ export type Events = z.infer<typeof Events>;
 export type EventType = keyof Events;
 
 export const eventTypes = Object.keys(Events.shape) as EventType[];
+
+export type EventPayload<T extends EventType> = {
+  type: T;
+  payload: Events[T];
+};
