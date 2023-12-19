@@ -12,6 +12,8 @@ export const publishEvent = async <T extends EventType>(
   payload: Events[T],
 ) => {
   try {
+    console.log("Publishing event", event, payload);
+
     await client.send(
       new PutEventsCommand({
         Entries: [

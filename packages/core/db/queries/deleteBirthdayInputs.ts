@@ -4,6 +4,8 @@ import { db } from "@/db/index";
 import { iceBreakerThreads, presentIdeas, squadJoins } from "@/db/schema";
 
 export const deleteBirthdayInputs = async (teamId: string, userId: string) => {
+  console.log("Deleting birthday inputs", teamId, userId);
+
   await db.transaction(async (tx) => {
     await tx
       .delete(iceBreakerThreads)
@@ -32,4 +34,6 @@ export const deleteBirthdayInputs = async (teamId: string, userId: string) => {
         ),
       );
   });
+
+  console.log("Birthday inputs deleted", teamId, userId);
 };
