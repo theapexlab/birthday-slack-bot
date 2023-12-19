@@ -10,6 +10,7 @@ export function StorageStack({ stack }: StackContext) {
     engine: "postgresql13.9",
     scaling: {
       autoPause: stack.stage !== "production",
+      minCapacity: "ACU_1",
     },
   });
 
