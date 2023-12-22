@@ -13,6 +13,8 @@ type Arguments = {
 };
 
 export const saveBirthday = async ({ birthday, teamId, user }: Arguments) => {
+  console.log("Saving birthday", user, birthday, teamId);
+
   const birthdayDate = birthday ? dayjs.utc(birthday).toDate() : null;
 
   await db
@@ -28,4 +30,6 @@ export const saveBirthday = async ({ birthday, teamId, user }: Arguments) => {
         birthday: birthdayDate,
       },
     });
+
+  console.log("Birthday saved", user, birthday, teamId);
 };
