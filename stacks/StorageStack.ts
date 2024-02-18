@@ -14,16 +14,19 @@ import {
 import { Duration } from "aws-cdk-lib/core";
 import type { StackContext } from "sst/constructs";
 
+const dbName = "birthdayBotDb";
+const dbUsername = "birthdayBotDbAdmin";
+
 export function StorageStack({ stack }: StackContext) {
   if (process.env.USE_LOCAL_DB) {
-    return {};
+    return null;
   }
 
   const vpc = new Vpc(stack, "vpc", {});
 
   const dbSecret = new DatabaseSecret(stack, "RDS secret", {
-    username: "birthdayBotDbAdmin",
-    dbname: "birthdayBotDb",
+    username: dbUsername,
+    dbname: dbName,
   });
 
   const db = new DatabaseInstance(stack, "Database", {
@@ -31,21 +34,22 @@ export function StorageStack({ stack }: StackContext) {
       version: PostgresEngineVersion.VER_13,
     }),
     instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.MICRO),
-    databaseName: "birthdayBotDb",
+    databaseName: dbName,
     allocatedStorage: 10,
     backupRetention: Duration.days(3),
     vpc,
     credentials: Credentials.fromSecret(dbSecret),
+    publiclyAccessible: true,
   });
 
-  stack.addOutputs({
-    RDS_INSTANCE_ARN: db.instanceArn,
-    RDS_SECRET_ARN: dbSecret.secretArn,
-    RDS_DATABASE: "birthdayBotDb",
-  });
-
-  return {
-    db,
-    dbSecret,
+  const outputs = {
+    RDS_HOST: db.instanceEndpoint.hostname,
+    RDS_NAME: dbName,
+    RDS_USER: dbUsername,
+    RDS_PASSWORD: dbSecret.secretValueFromJson("password").toString(),
   };
+
+  stack.addOutputs(outputs);
+
+  return outputs;
 }

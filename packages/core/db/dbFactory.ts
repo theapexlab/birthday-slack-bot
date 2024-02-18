@@ -1,8 +1,5 @@
-import { RDSDataClient } from "@aws-sdk/client-rds-data";
-import { drizzle as drizzleRds } from "drizzle-orm/aws-data-api/pg";
-import { migrate as migrateRds } from "drizzle-orm/aws-data-api/pg/migrator";
-import { drizzle as drizzleNode } from "drizzle-orm/node-postgres";
-import { migrate as migrateNode } from "drizzle-orm/node-postgres/migrator";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { migrate } from "drizzle-orm/node-postgres/migrator";
 import pg from "pg";
 
 import * as schema from "./schema";
@@ -11,45 +8,30 @@ const migrationsFolder = "./packages/core/db/migrations";
 
 type FactoryPayload =
   | {
-      type: "node";
       connectionString: string;
     }
   | {
-      type: "aws";
+      host: string;
       database: string;
-      secretArn: string;
-      resourceArn: string;
+      user: string;
+      password: string;
     };
 
 export const dbFactory = (payload: FactoryPayload) => {
-  if (payload.type === "node") {
-    const pool = new pg.Pool({
-      ...payload,
-    });
+  console.log("DB Factory payload", payload);
 
-    const db = drizzleNode(pool, {
-      schema,
-    });
-
-    return [
-      db,
-      async () => {
-        await migrateNode(db, {
-          migrationsFolder,
-        });
-      },
-    ] as const;
-  }
-
-  const db = drizzleRds(new RDSDataClient({}), {
+  const pool = new pg.Pool({
     ...payload,
+  });
+
+  const db = drizzle(pool, {
     schema,
   });
 
   return [
     db,
     async () => {
-      await migrateRds(db, {
+      await migrate(db, {
         migrationsFolder,
       });
     },

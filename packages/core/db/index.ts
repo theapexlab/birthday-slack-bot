@@ -3,13 +3,12 @@ import { dbFactory } from "./dbFactory";
 export const [db, migrate] = dbFactory(
   process.env.IS_LOCAL
     ? {
-        type: "node",
         connectionString: process.env.DB_URL ?? "",
       }
     : {
-        type: "aws",
+        host: process.env.DB_HOST ?? "",
         database: process.env.DB_NAME ?? "",
-        secretArn: process.env.DB_SECRET_ARN ?? "",
-        resourceArn: process.env.DB_INSTANCE_ARN ?? "",
+        user: process.env.DB_USER ?? "",
+        password: process.env.DB_PASSWORD ?? "",
       },
 );

@@ -16,15 +16,16 @@ const getBaseFunctionProps = () => {
 
 export const getDbFunctionProps = () => {
   const baseFunctionProps = getBaseFunctionProps();
-  const { db, dbSecret } = use(StorageStack);
+  const dbOutputs = use(StorageStack);
 
   return {
     ...baseFunctionProps,
     environment: {
       DB_URL: process.env.DB_URL || "",
-      DB_NAME: "birthdayBotDb",
-      DB_SECRET_ARN: dbSecret?.secretArn || "",
-      DB_INSTANCE_ARN: db?.instanceArn || "",
+      DB_HOST: dbOutputs?.RDS_HOST || "",
+      DB_NAME: dbOutputs?.RDS_NAME || "",
+      DB_USER: dbOutputs?.RDS_USER || "",
+      DB_PASSWORD: dbOutputs?.RDS_PASSWORD || "",
     },
   };
 };
