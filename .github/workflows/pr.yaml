@@ -79,11 +79,11 @@ jobs:
           echo "apiEndpoint=$URL" >> "$GITHUB_OUTPUT"
           MIGRATION_FUNCTION=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-MyStack"].MigrationFunctionName' .sst/outputs.json)
           echo "migrationFunction=$MIGRATION_FUNCTION" >> "$GITHUB_OUTPUT"
-          SECRET_ARN=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-StorageStack"].RDSSECRETARN' .sst/outputs.json)
+          SECRET_ARN=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-StorageStack"].RDS_SECRET_ARN' .sst/outputs.json)
           echo "secretArn=$SECRET_ARN" >> "$GITHUB_OUTPUT"
-          CLUSTER_ARN=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-StorageStack"].RDSCLUSTERARN' .sst/outputs.json)
-          echo "clusterArn=$CLUSTER_ARN" >> "$GITHUB_OUTPUT"
-          DATABASE=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-StorageStack"].RDSDATABASE' .sst/outputs.json)
+          INSTANCE_ARN=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-StorageStack"].RDS_INSTANCE_ARN' .sst/outputs.json)
+          echo "instanceArn=$INSTANCE_ARN" >> "$GITHUB_OUTPUT"
+          DATABASE=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-StorageStack"].RDS_DATABASE' .sst/outputs.json)
           echo "database=$DATABASE" >> "$GITHUB_OUTPUT"
 
       - name: Migration
@@ -105,4 +105,4 @@ jobs:
           VITE_CI: true
           VITE_DB_NAME: ${{ steps.sst-output.outputs.database }}
           VITE_DB_SECRET_ARN: ${{ steps.sst-output.outputs.secretArn }}
-          VITE_DB_CLUSTER_ARN: ${{ steps.sst-output.outputs.clusterArn }}
+          VITE_DB_INSTANCE_ARN: ${{ steps.sst-output.outputs.instanceArn }}

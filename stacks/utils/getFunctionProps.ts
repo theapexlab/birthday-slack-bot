@@ -1,9 +1,9 @@
 import { use } from "sst/constructs";
+import { StorageStack } from "stacks/StorageStack";
 
 import { ConfigStack } from "../ConfigStack";
 import { EventBusStack } from "../EventBusStack";
 import { SchedulerStack } from "../SchedulerStack";
-import { StorageStack } from "../StorageStack";
 
 const getBaseFunctionProps = () => {
   const secrets = use(ConfigStack);
@@ -16,16 +16,16 @@ const getBaseFunctionProps = () => {
 
 export const getDbFunctionProps = () => {
   const baseFunctionProps = getBaseFunctionProps();
-  const { db } = use(StorageStack);
-
-  const bind = [...baseFunctionProps.bind, ...(db ? [db] : [])];
+  const { db, dbSecret } = use(StorageStack);
 
   return {
     ...baseFunctionProps,
     environment: {
       DB_URL: process.env.DB_URL || "",
+      DB_NAME: "birthdayBotDb",
+      DB_SECRET_ARN: dbSecret?.secretArn || "",
+      DB_INSTANCE_ARN: db?.instanceArn || "",
     },
-    bind,
   };
 };
 

@@ -18,7 +18,7 @@ export const [testDb] = dbFactory(
         type: "aws",
         database: import.meta.env.VITE_DB_NAME!,
         secretArn: import.meta.env.VITE_DB_SECRET_ARN!,
-        resourceArn: import.meta.env.VITE_DB_CLUSTER_ARN!,
+        resourceArn: import.meta.env.VITE_DB_INSTANCE_ARN!,
       }
     : {
         type: "node",

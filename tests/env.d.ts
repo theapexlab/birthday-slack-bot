@@ -15,7 +15,7 @@ interface ImportMetaEnv {
   readonly VITE_CI: string | undefined;
   readonly VITE_DB_NAME: string | undefined;
   readonly VITE_DB_SECRET_ARN: string | undefined;
-  readonly VITE_DB_CLUSTER_ARN: string | undefined;
+  readonly VITE_DB_INSTANCE_ARN: string | undefined;
   readonly VITE_DB_URL: string | undefined;
 }
 
