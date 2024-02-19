@@ -2,6 +2,7 @@ import {
   InstanceClass,
   InstanceSize,
   InstanceType,
+  SubnetType,
   Vpc,
 } from "aws-cdk-lib/aws-ec2";
 import {
@@ -22,7 +23,15 @@ export function StorageStack({ stack }: StackContext) {
     return null;
   }
 
-  const vpc = new Vpc(stack, "vpc", {});
+  const vpc = new Vpc(stack, "vpc", {
+    subnetConfiguration: [
+      {
+        cidrMask: 24,
+        name: "public",
+        subnetType: SubnetType.PUBLIC,
+      },
+    ],
+  });
 
   const dbSecret = new DatabaseSecret(stack, "RDS secret", {
     username: dbUsername,
@@ -38,6 +47,7 @@ export function StorageStack({ stack }: StackContext) {
     allocatedStorage: 10,
     backupRetention: Duration.days(3),
     vpc,
+    vpcSubnets: vpc.selectSubnets(),
     credentials: Credentials.fromSecret(dbSecret),
     publiclyAccessible: true,
   });
