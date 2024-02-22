@@ -81,16 +81,16 @@ jobs:
           MIGRATION_FUNCTION=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-MyStack"].MigrationFunctionName' .sst/outputs.json)
           echo "migrationFunction=$MIGRATION_FUNCTION" >> "$GITHUB_OUTPUT"
 
-          HOST=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-StorageStack"].RDS_HOST' .sst/outputs.json)
+          HOST=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-StorageStack"].rdsHost' .sst/outputs.json)
           echo "host=$HOST" >> "$GITHUB_OUTPUT"
 
-          DATABASE=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-StorageStack"].RDS_NAME' .sst/outputs.json)
+          DATABASE=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-StorageStack"].rdsName' .sst/outputs.json)
           echo "database=$DATABASE" >> "$GITHUB_OUTPUT"
 
-          DB_USER=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-StorageStack"].RDS_USER' .sst/outputs.json)
+          DB_USER=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-StorageStack"].rdsUser' .sst/outputs.json)
           echo "dbUser=$DB_USER" >> "$GITHUB_OUTPUT"
 
-          DB_PASSWORD=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-StorageStack"].RDS_PASSWORD' .sst/outputs.json)
+          DB_PASSWORD=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-StorageStack"].rdsPassword' .sst/outputs.json)
           echo "dbPassword=$DB_PASSWORD" >> "$GITHUB_OUTPUT"
 
       - name: Migration
