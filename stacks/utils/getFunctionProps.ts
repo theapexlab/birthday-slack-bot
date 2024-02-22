@@ -23,10 +23,10 @@ export const getDbFunctionProps = () => {
     vpc,
     environment: {
       DB_URL: process.env.DB_URL || "",
-      DB_HOST: outputs?.RDS_HOST || "",
-      DB_NAME: outputs?.RDS_NAME || "",
-      DB_USER: outputs?.RDS_USER || "",
-      DB_PASSWORD: outputs?.RDS_PASSWORD || "",
+      DB_HOST: outputs?.rdsHost || "",
+      DB_NAME: outputs?.rdsName || "",
+      DB_USER: outputs?.rdsUser || "",
+      DB_PASSWORD: outputs?.rdsPassword || "",
     },
   };
 };
