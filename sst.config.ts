@@ -1,7 +1,7 @@
 import type { SSTConfig } from "sst";
 
 import { ConfigStack } from "./stacks/ConfigStack";
-import { CronStack } from "./stacks/CronStack";
+// import { CronStack } from "./stacks/CronStack";
 import { EventBusStack } from "./stacks/EventBusStack";
 import { MyStack } from "./stacks/MyStack";
 import { SchedulerStack } from "./stacks/SchedulerStack";
@@ -21,6 +21,6 @@ export default {
       .stack(EventBusStack)
       .stack(SchedulerStack)
       .stack(MyStack)
-      .stack(CronStack);
+      // .stack(CronStack);
   },
 } satisfies SSTConfig;
