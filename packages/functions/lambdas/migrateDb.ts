@@ -3,7 +3,7 @@ import { errorResult, okResult } from "@/utils/lambda/result";
 
 export const handler = async () => {
   try {
-    console.log("🦄Migrating db...");
+    console.log("Migrating db...");
 
     await migrate();
 
