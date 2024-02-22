@@ -20,7 +20,7 @@ export default {
       .stack(StorageStack)
       .stack(EventBusStack)
       .stack(SchedulerStack)
-      .stack(MyStack)
-      // .stack(CronStack);
+      .stack(MyStack);
+    // .stack(CronStack);
   },
 } satisfies SSTConfig;
