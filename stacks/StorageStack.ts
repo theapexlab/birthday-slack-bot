@@ -41,7 +41,10 @@ export function StorageStack({ stack }: StackContext) {
     description: "SecurityGroup associated with the RDS instance",
     allowAllOutbound: true,
   });
-  rdsSecurtyGroup.connections.allowFromAnyIpv4(Port.tcp(5432), "Allow postgres port");
+  rdsSecurtyGroup.connections.allowFromAnyIpv4(
+    Port.tcp(5432),
+    "Allow postgres port",
+  );
 
   const dbSecret = new DatabaseSecret(stack, "RDS secret", {
     username: dbUsername,
