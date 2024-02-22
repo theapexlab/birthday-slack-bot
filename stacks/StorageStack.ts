@@ -67,10 +67,10 @@ export function StorageStack({ stack }: StackContext) {
   });
 
   const outputs = {
-    RDS_HOST: db.instanceEndpoint.hostname,
-    RDS_NAME: dbName,
-    RDS_USER: dbUsername,
-    RDS_PASSWORD: dbSecret.secretValueFromJson("password").toString(),
+    rdsHost: db.instanceEndpoint.hostname,
+    rdsName: dbName,
+    rdsUser: dbUsername,
+    rdsPassword: dbSecret.secretValueFromJson("password").toString(),
   };
 
   stack.addOutputs(outputs);
