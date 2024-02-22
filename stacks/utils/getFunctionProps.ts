@@ -16,16 +16,17 @@ const getBaseFunctionProps = () => {
 
 export const getDbFunctionProps = () => {
   const baseFunctionProps = getBaseFunctionProps();
-  const dbOutputs = use(StorageStack);
+  const { outputs, vpc } = use(StorageStack);
 
   return {
     ...baseFunctionProps,
+    vpc,
     environment: {
       DB_URL: process.env.DB_URL || "",
-      DB_HOST: dbOutputs?.RDS_HOST || "",
-      DB_NAME: dbOutputs?.RDS_NAME || "",
-      DB_USER: dbOutputs?.RDS_USER || "",
-      DB_PASSWORD: dbOutputs?.RDS_PASSWORD || "",
+      DB_HOST: outputs?.RDS_HOST || "",
+      DB_NAME: outputs?.RDS_NAME || "",
+      DB_USER: outputs?.RDS_USER || "",
+      DB_PASSWORD: outputs?.RDS_PASSWORD || "",
     },
   };
 };

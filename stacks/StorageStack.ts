@@ -62,5 +62,5 @@ export function StorageStack({ stack }: StackContext) {
 
   stack.addOutputs(outputs);
 
-  return outputs;
+  return { outputs, vpc };
 }
