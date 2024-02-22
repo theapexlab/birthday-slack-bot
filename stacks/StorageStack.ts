@@ -2,6 +2,8 @@ import {
   InstanceClass,
   InstanceSize,
   InstanceType,
+  Port,
+  SecurityGroup,
   // SubnetType,
   Vpc,
 } from "aws-cdk-lib/aws-ec2";
@@ -34,6 +36,13 @@ export function StorageStack({ stack }: StackContext) {
     // ],
   });
 
+  const rdsSecurtyGroup = new SecurityGroup(stack, "RdsSecurityGroupt", {
+    vpc,
+    description: "SecurityGroup associated with the RDS instance",
+    allowAllOutbound: true,
+  });
+  rdsSecurtyGroup.connections.allowFromAnyIpv4(Port.tcp(5432), "Allow postgres port");
+
   const dbSecret = new DatabaseSecret(stack, "RDS secret", {
     username: dbUsername,
     dbname: dbName,
@@ -51,6 +60,7 @@ export function StorageStack({ stack }: StackContext) {
     vpcSubnets: vpc.selectSubnets(),
     credentials: Credentials.fromSecret(dbSecret),
     publiclyAccessible: true,
+    securityGroups: [rdsSecurtyGroup],
   });
 
   const outputs = {
