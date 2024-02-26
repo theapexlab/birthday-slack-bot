@@ -100,7 +100,7 @@ jobs:
         run: pnpm migration:ci ${{ steps.sst-output.outputs.migrationFunction }}
 
       - name: Run tests
-        run: pnpm test:ci  ${{ steps.sst-output.outputs.cleanUpFunction }}
+        run: pnpm test:ci
         env:
           VITE_API_URL: ${{ steps.sst-output.outputs.apiEndpoint }}
           VITE_SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN_TEST }}
@@ -117,3 +117,4 @@ jobs:
           VITE_DB_NAME: ${{ steps.sst-output.outputs.database }}
           VITE_DB_USER: ${{ steps.sst-output.outputs.dbUser }}
           VITE_DB_PASSWORD: ${{ steps.sst-output.outputs.dbPassword }}
+          VITE_CLEANUP_FUNCTION_NAME: ${{ steps.sst-output.outputs.cleanUpFunction }}
