@@ -3,7 +3,7 @@ import { InvokeCommand, LambdaClient } from "@aws-sdk/client-lambda";
 const client = new LambdaClient({ region: "eu-central-1" });
 
 const executeSql = async (sql: string) => {
-  console.log("🚀 ~ executeSql ~ sql:", sql);
+  // console.log("🚀 ~ executeSql ~ sql:", sql);
   const res = await client.send(
     new InvokeCommand({
       FunctionName: process.env.VITE_CLEANUP_FUNCTION_NAME,
@@ -17,10 +17,10 @@ const executeSql = async (sql: string) => {
     ? Buffer.from(res.Payload?.buffer).toString()
     : undefined;
   const parsedPayload = JSON.parse(payload);
-  console.log(
-    "🚀 ~ executeSql ~ responsePayload:",
-    JSON.parse(parsedPayload.body),
-  );
+  // console.log(
+  //   "🚀 ~ executeSql ~ responsePayload:",
+  //   JSON.parse(parsedPayload.body),
+  // );
   return JSON.parse(parsedPayload.body);
 };
 

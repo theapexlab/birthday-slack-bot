@@ -27,7 +27,7 @@ export const waitForTestItems = async (id: string, expectedCount: number = 2) =>
       //   .where(eq(testItems.testId, id))
       //   .limit(expectedCount);
       const items = await queryDb(
-        `SELECT * FROM test-items WHERE test_id = '${id}'  LIMIT ${expectedCount}`,
+        `SELECT * FROM test_items WHERE test_id = '${id}'  LIMIT ${expectedCount}`,
       );
 
       if (items.length !== expectedCount) {
