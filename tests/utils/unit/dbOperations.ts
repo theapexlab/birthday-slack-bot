@@ -61,4 +61,7 @@ export const generateInsertQuery = (tableName, values) => {
 export const insertDb = async (tableName, values) =>
   executeSql(generateInsertQuery(tableName, values));
 
-export const queryDb = async (query) => executeSql(query);
+export const queryDb = async (query) => {
+  const res = await executeSql(query);
+  return res.rows;
+};
