@@ -52,8 +52,8 @@ vi.mock("@/services/slack/createSlackApp", async () => ({
 describe("Squad welcome message", () => {
   beforeAll(async () => {
     await cleanUp("users");
-    await cleanUp("iceBreakerThreads");
-    await cleanUp("presentIdeas");
+    await cleanUp("ice_breaker_threads");
+    await cleanUp("present_ideas");
   });
 
   afterEach(async () => {
@@ -61,8 +61,8 @@ describe("Squad welcome message", () => {
     await deleteLastDm();
 
     await cleanUp("users");
-    await cleanUp("iceBreakerThreads");
-    await cleanUp("presentIdeas");
+    await cleanUp("ice_breaker_threads");
+    await cleanUp("present_ideas");
   });
 
   it(

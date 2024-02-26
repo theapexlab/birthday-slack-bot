@@ -127,7 +127,7 @@ describe("3 or more squad members applied", () => {
 
   beforeAll(async () => {
     await cleanUp("users");
-    await cleanUp("squadJoins");
+    await cleanUp("squad_joins");
 
     await testDb.insert(users).values({
       id: constants.birthdayPerson,
@@ -154,7 +154,7 @@ describe("3 or more squad members applied", () => {
   afterAll(async () => {
     vi.clearAllMocks();
     await cleanUp("users");
-    await cleanUp("squadJoins");
+    await cleanUp("squad_joins");
   });
 
   it("Should not call getRandomSquadMembers", async () => {
@@ -194,13 +194,13 @@ describe("Add admin to the squad", () => {
 
   beforeAll(async () => {
     await cleanUp("users");
-    await cleanUp("squadJoins");
+    await cleanUp("squad_joins");
   });
 
   afterEach(async () => {
     vi.clearAllMocks();
     await cleanUp("users");
-    await cleanUp("squadJoins");
+    await cleanUp("squad_joins");
   });
 
   it("Should add admin to conversation", async () => {

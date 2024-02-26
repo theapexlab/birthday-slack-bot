@@ -28,14 +28,14 @@ const constants = vi.hoisted(() => ({
 describe("Slack interactions", () => {
   beforeAll(async () => {
     await cleanUp("users");
-    await cleanUp("testItems");
+    await cleanUp("test_items");
   });
 
   afterEach(async () => {
     await deleteLastDm();
 
     await cleanUp("users");
-    await cleanUp("testItems");
+    await cleanUp("test_items");
   });
 
   it(

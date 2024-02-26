@@ -21,7 +21,7 @@ export const users = pgTable(
 );
 
 export const iceBreakerThreads = pgTable(
-  "iceBreakerThreads",
+  "ice_breaker_threads",
   {
     id: serial("id").primaryKey().notNull(),
     teamId: varchar("team_id").notNull(),
@@ -37,7 +37,7 @@ export const iceBreakerThreads = pgTable(
 );
 
 export const presentIdeas = pgTable(
-  "presentIdeas",
+  "present_ideas",
   {
     id: serial("id").primaryKey().notNull(),
     teamId: varchar("team_id").notNull(),
@@ -60,7 +60,7 @@ export const presentIdeas = pgTable(
 export type PresentIdea = typeof presentIdeas.$inferInsert;
 
 export const squadJoins = pgTable(
-  "squadJoins",
+  "squad_joins",
   {
     id: serial("id").primaryKey().notNull(),
     teamId: varchar("team_id").notNull(),
@@ -82,7 +82,7 @@ export const squadJoins = pgTable(
 
 export type SquadJoin = typeof squadJoins.$inferInsert;
 
-export const testItems = pgTable("testItems", {
+export const testItems = pgTable("test_items", {
   id: serial("id").primaryKey().notNull(),
   testId: varchar("test_id").notNull(),
   payload: varchar("payload").notNull(),

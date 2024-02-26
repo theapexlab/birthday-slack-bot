@@ -29,13 +29,13 @@ const constants = vi.hoisted(() => ({
 describe("CreateBirthdaySquad", () => {
   beforeAll(async () => {
     await cleanUp("users");
-    await cleanUp("squadJoins");
+    await cleanUp("squad_joins");
   });
 
   afterEach(async () => {
     await deleteLastDm();
     await cleanUp("users");
-    await cleanUp("squadJoins");
+    await cleanUp("squad_joins");
   });
 
   it(

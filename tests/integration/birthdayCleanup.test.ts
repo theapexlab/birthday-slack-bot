@@ -36,9 +36,9 @@ const constants = vi.hoisted(() => ({
 describe("Birthday cleanup", () => {
   beforeAll(async () => {
     await cleanUp("users");
-    await cleanUp("iceBreakerThreads");
-    await cleanUp("presentIdeas");
-    await cleanUp("squadJoins");
+    await cleanUp("ice_breaker_threads");
+    await cleanUp("present_ideas");
+    await cleanUp("squad_joins");
   });
 
   beforeEach(async () => {
@@ -78,9 +78,9 @@ describe("Birthday cleanup", () => {
 
   afterEach(async () => {
     await cleanUp("users");
-    await cleanUp("iceBreakerThreads");
-    await cleanUp("presentIdeas");
-    await cleanUp("squadJoins");
+    await cleanUp("ice_breaker_threads");
+    await cleanUp("present_ideas");
+    await cleanUp("squad_joins");
   });
 
   it(

@@ -19,13 +19,13 @@ const constants = vi.hoisted(() => ({
 describe("Icebreaker questions", () => {
   beforeAll(async () => {
     await cleanUp("users");
-    await cleanUp("iceBreakerThreads");
+    await cleanUp("ice_breaker_threads");
   });
 
   afterEach(async () => {
     await deleteLastRandomChannelPost();
     await cleanUp("users");
-    await cleanUp("iceBreakerThreads");
+    await cleanUp("ice_breaker_threads");
   });
 
   it(

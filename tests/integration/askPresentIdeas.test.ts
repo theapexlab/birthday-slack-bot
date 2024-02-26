@@ -38,16 +38,16 @@ const constants = vi.hoisted(() => ({
 describe("Present ideas", () => {
   beforeAll(async () => {
     await cleanUp("users");
-    await cleanUp("testItems");
-    await cleanUp("presentIdeas");
+    await cleanUp("test_items");
+    await cleanUp("present_ideas");
   });
 
   afterEach(async () => {
     await deleteLastDm();
 
     await cleanUp("users");
-    await cleanUp("testItems");
-    await cleanUp("presentIdeas");
+    await cleanUp("test_items");
+    await cleanUp("present_ideas");
   });
 
   it(
