@@ -60,13 +60,8 @@ export function MyStack({ stack }: StackContext) {
     ...getDbFunctionProps(),
   });
 
-  const cleanUpFn = new Function(stack, "MigrateDb", {
+  const cleanUpFn = new Function(stack, "CleanUp", {
     handler: "packages/functions/lambdas/cleanUp.handler",
-    copyFiles: [
-      {
-        from: "packages/core/db/migrations",
-      },
-    ],
     timeout: "60 seconds",
     ...getDbFunctionProps(),
   });
