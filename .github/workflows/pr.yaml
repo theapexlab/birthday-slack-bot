@@ -100,7 +100,7 @@ jobs:
         run: pnpm migration:ci ${{ steps.sst-output.outputs.migrationFunction }}
 
       - name: Run tests
-        run: pnpm test:ci
+        run: pnpm test:integration
         env:
           VITE_API_URL: ${{ steps.sst-output.outputs.apiEndpoint }}
           VITE_SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN_TEST }}
