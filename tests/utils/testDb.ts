@@ -6,10 +6,10 @@ import {
   iceBreakerThreads,
   presentIdeas,
   squadJoins,
-  testItems,
   users,
 } from "@/db/schema";
 
+import { queryDb } from "./unit/dbOperations";
 import { pollInterval, waitTimeout } from "./constants";
 
 export const [testDb] = dbFactory(
@@ -28,11 +28,14 @@ export const [testDb] = dbFactory(
 export const waitForTestItems = async (id: string, expectedCount: number = 2) =>
   vi.waitFor(
     async () => {
-      const items = await testDb
-        .select()
-        .from(testItems)
-        .where(eq(testItems.testId, id))
-        .limit(expectedCount);
+      // const items = await testDb
+      //   .select()
+      //   .from(testItems)
+      //   .where(eq(testItems.testId, id))
+      //   .limit(expectedCount);
+      const items = await queryDb(
+        `SELECT * FROM test-items WHERE test_id = '${id}'  LIMIT ${expectedCount}`,
+      );
 
       if (items.length !== expectedCount) {
         throw new Error(
