@@ -22,6 +22,7 @@ import { constructAskBirthdayMessage } from "@/services/slack/constructAskBirthd
 import { createSlackApp } from "@/services/slack/createSlackApp";
 import { getUserInfo } from "@/services/slack/getUserInfo";
 import { testDb } from "@/testUtils/testDb";
+import { cleanUp } from "@/testUtils/unit/cleanUp";
 import { sendMockSqsMessage } from "@/testUtils/unit/sendMockSqsMessage";
 
 dayjs.extend(utc);
@@ -57,7 +58,7 @@ describe("Member joined channel", () => {
 
   afterEach(async () => {
     vi.clearAllMocks();
-    await testDb.delete(users);
+    await cleanUp("users");
   });
 
   it("Should not do anything if user is a bot", async () => {
@@ -103,11 +104,11 @@ describe("Member joined channel", () => {
 
 describe("getUsersWhoseBirthdayIsMissing", () => {
   beforeAll(async () => {
-    await testDb.delete(users);
+    await cleanUp("users");
   });
   afterEach(async () => {
     vi.clearAllMocks();
-    await testDb.delete(users);
+    await cleanUp("users");
   });
 
   const mockUser = {

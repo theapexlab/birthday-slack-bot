@@ -19,13 +19,14 @@ import {
 } from "vitest";
 
 import * as getSquadMembers from "@/db/queries/getSquadMembers";
-import { squadJoins, users } from "@/db/schema";
+import { users } from "@/db/schema";
 import type { Events } from "@/events";
 import { handler } from "@/functions/events/createBirthdaySquad";
 import { BIRTHDAY_SQUAD_SIZE } from "@/functions/utils/constants";
 import { openConversation } from "@/services/slack/openConversation";
 import { seedSquadJoins } from "@/testUtils/seedSquadJoins";
 import { testDb } from "@/testUtils/testDb";
+import { cleanUp } from "@/testUtils/unit/cleanUp";
 import { mockEventBridgePayload } from "@/testUtils/unit/mockEventBridgePayload";
 import { sendMockSqsMessage } from "@/testUtils/unit/sendMockSqsMessage";
 
@@ -125,8 +126,8 @@ describe("3 or more squad members applied", () => {
   let insertedSquadMembers: string[];
 
   beforeAll(async () => {
-    await testDb.delete(users);
-    await testDb.delete(squadJoins);
+    await cleanUp("users");
+    await cleanUp("squadJoins");
 
     await testDb.insert(users).values({
       id: constants.birthdayPerson,
@@ -152,8 +153,8 @@ describe("3 or more squad members applied", () => {
 
   afterAll(async () => {
     vi.clearAllMocks();
-    await testDb.delete(users);
-    await testDb.delete(squadJoins);
+    await cleanUp("users");
+    await cleanUp("squadJoins");
   });
 
   it("Should not call getRandomSquadMembers", async () => {
@@ -192,14 +193,14 @@ describe("Add admin to the squad", () => {
   let insertedSquadMembers: string[];
 
   beforeAll(async () => {
-    await testDb.delete(users);
-    await testDb.delete(squadJoins);
+    await cleanUp("users");
+    await cleanUp("squadJoins");
   });
 
   afterEach(async () => {
     vi.clearAllMocks();
-    await testDb.delete(users);
-    await testDb.delete(squadJoins);
+    await cleanUp("users");
+    await cleanUp("squadJoins");
   });
 
   it("Should add admin to conversation", async () => {

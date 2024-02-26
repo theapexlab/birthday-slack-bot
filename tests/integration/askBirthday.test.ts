@@ -1,6 +1,6 @@
 import { afterEach, beforeAll, describe, expect, it, test, vi } from "vitest";
 
-import { testItems, users } from "@/db/schema";
+import { users } from "@/db/schema";
 import { constructAskBirthdayMessageReplacement } from "@/services/slack/constructAskBirthdayMessage";
 import { constructBirthdayConfirmedMessage } from "@/services/slack/constructBirthdayConfirmedMessage";
 import { constructConfirmBirthdayMessage } from "@/services/slack/constructConfirmBirthdayMessage";
@@ -12,6 +12,7 @@ import { sendSlackInteraction } from "@/testUtils/integration/sendSlackInteracti
 import { app } from "@/testUtils/integration/testSlackApp";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
 import { testDb, waitForTestItems, waitForUsers } from "@/testUtils/testDb";
+import { cleanUp } from "@/testUtils/unit/cleanUp";
 import {
   birthdayConfirmActionId,
   birthdayIncorrectActionId,
@@ -26,15 +27,15 @@ const constants = vi.hoisted(() => ({
 
 describe("Slack interactions", () => {
   beforeAll(async () => {
-    await testDb.delete(users);
-    await testDb.delete(testItems);
+    await cleanUp("users");
+    await cleanUp("testItems");
   });
 
   afterEach(async () => {
     await deleteLastDm();
 
-    await testDb.delete(users);
-    await testDb.delete(testItems);
+    await cleanUp("users");
+    await cleanUp("testItems");
   });
 
   it(

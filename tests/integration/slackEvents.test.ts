@@ -5,6 +5,7 @@ import { timeout } from "@/testUtils/constants";
 import { deleteLastDm } from "@/testUtils/integration/deleteLastDm";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
 import { testDb, waitForUsers } from "@/testUtils/testDb";
+import { cleanUp } from "@/testUtils/unit/cleanUp";
 import type { SlackCallbackRequest } from "@/types/SlackEventRequest";
 
 const constants = vi.hoisted(() => ({
@@ -27,12 +28,12 @@ export const sendSlackEvent = async (body: SlackCallbackRequest) =>
 
 describe("Slack events", () => {
   beforeAll(async () => {
-    await testDb.delete(users);
+    await cleanUp("users");
   });
 
   afterEach(async () => {
     await deleteLastDm();
-    await testDb.delete(users);
+    await cleanUp("users");
   });
 
   it(

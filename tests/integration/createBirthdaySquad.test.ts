@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
-import { squadJoins, users } from "@/db/schema";
+import { users } from "@/db/schema";
 import { welcomeMessageEventType } from "@/services/slack/constructBirthdaySquadWelcomeMessage";
 import { timeout } from "@/testUtils/constants";
 import { deleteLastDm } from "@/testUtils/integration/deleteLastDm";
@@ -10,6 +10,7 @@ import { sendScheduleEvent } from "@/testUtils/integration/sendScheduleEvent";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
 import { seedSquadJoins } from "@/testUtils/seedSquadJoins";
 import { testDb } from "@/testUtils/testDb";
+import { cleanUp } from "@/testUtils/unit/cleanUp";
 
 dayjs.extend(utc);
 
@@ -27,14 +28,14 @@ const constants = vi.hoisted(() => ({
 
 describe("CreateBirthdaySquad", () => {
   beforeAll(async () => {
-    await testDb.delete(users);
-    await testDb.delete(squadJoins);
+    await cleanUp("users");
+    await cleanUp("squadJoins");
   });
 
   afterEach(async () => {
     await deleteLastDm();
-    await testDb.delete(users);
-    await testDb.delete(squadJoins);
+    await cleanUp("users");
+    await cleanUp("squadJoins");
   });
 
   it(

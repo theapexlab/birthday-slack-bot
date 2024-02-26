@@ -26,6 +26,7 @@ import {
 import { users } from "@/db/schema";
 import { handler } from "@/functions/cron/daily";
 import { testDb } from "@/testUtils/testDb";
+import { cleanUp } from "@/testUtils/unit/cleanUp";
 import { mockEventBridgePayload } from "@/testUtils/unit/mockEventBridgePayload";
 import { mockEventSchedulerPayload } from "@/testUtils/unit/mockEventSchedulerPayload";
 import { mockLambdaEvent } from "@/testUtils/unit/mockLambdaPayload";
@@ -52,7 +53,7 @@ describe("Daily cron", () => {
   let eventBridge: EventBridgeClient;
 
   beforeAll(async () => {
-    await testDb.delete(users);
+    await cleanUp("users");
   });
 
   beforeEach(() => {
@@ -62,7 +63,7 @@ describe("Daily cron", () => {
 
   afterEach(async () => {
     vi.clearAllMocks();
-    await testDb.delete(users);
+    await cleanUp("users");
   });
 
   it("Should publish askPresentIdeasFromTeam event if user has birthday exactly 2 months from now", async () => {

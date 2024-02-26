@@ -22,6 +22,7 @@ import {
   waitForPresentIdeas,
   waitForSquadJoins,
 } from "@/testUtils/testDb";
+import { cleanUp } from "@/testUtils/unit/cleanUp";
 
 const constants = vi.hoisted(() => ({
   teamId: "T1",
@@ -34,10 +35,10 @@ const constants = vi.hoisted(() => ({
 
 describe("Birthday cleanup", () => {
   beforeAll(async () => {
-    await testDb.delete(users);
-    await testDb.delete(iceBreakerThreads);
-    await testDb.delete(presentIdeas);
-    await testDb.delete(squadJoins);
+    await cleanUp("users");
+    await cleanUp("iceBreakerThreads");
+    await cleanUp("presentIdeas");
+    await cleanUp("squadJoins");
   });
 
   beforeEach(async () => {
@@ -76,10 +77,10 @@ describe("Birthday cleanup", () => {
   });
 
   afterEach(async () => {
-    await testDb.delete(users);
-    await testDb.delete(iceBreakerThreads);
-    await testDb.delete(presentIdeas);
-    await testDb.delete(squadJoins);
+    await cleanUp("users");
+    await cleanUp("iceBreakerThreads");
+    await cleanUp("presentIdeas");
+    await cleanUp("squadJoins");
   });
 
   it(

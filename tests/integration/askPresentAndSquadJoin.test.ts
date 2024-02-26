@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
-import { presentIdeas, testItems, users } from "@/db/schema";
+import { users } from "@/db/schema";
 import { constructLoadingMessage } from "@/services/slack/constructLoadingMessage";
 import { constructPresentIdeaSavedMessage } from "@/services/slack/constructPresentIdeaSavedMessage";
 import { timeout } from "@/testUtils/constants";
@@ -16,6 +16,7 @@ import {
   waitForSquadJoins,
   waitForTestItems,
 } from "@/testUtils/testDb";
+import { cleanUp } from "@/testUtils/unit/cleanUp";
 import {
   additionalPresentIdeasInputActionId,
   additionalPresentIdeasSaveButtonActionId,
@@ -33,17 +34,17 @@ const constants = vi.hoisted(() => ({
 
 describe("Present and Squad Join", () => {
   beforeAll(async () => {
-    await testDb.delete(users);
-    await testDb.delete(testItems);
-    await testDb.delete(presentIdeas);
+    await cleanUp("users");
+    await cleanUp("testItems");
+    await cleanUp("presentIdeas");
   });
 
   afterEach(async () => {
     await deleteLastDm();
 
-    await testDb.delete(users);
-    await testDb.delete(testItems);
-    await testDb.delete(presentIdeas);
+    await cleanUp("users");
+    await cleanUp("testItems");
+    await cleanUp("presentIdeas");
   });
 
   it(

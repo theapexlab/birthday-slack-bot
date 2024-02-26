@@ -1,6 +1,5 @@
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
-import { iceBreakerThreads, users } from "@/db/schema";
 import { timeout } from "@/testUtils/constants";
 import {
   generateIceBreakerTestUsers,
@@ -10,7 +9,8 @@ import {
 import { deleteLastRandomChannelPost } from "@/testUtils/integration/deleteLastRandomPost";
 import { sendCronEvent } from "@/testUtils/integration/sendCronEvent";
 import { waitForPostInRandom } from "@/testUtils/integration/waitForPostInRandom";
-import { testDb, waitForIceBreakerThreads } from "@/testUtils/testDb";
+import { waitForIceBreakerThreads } from "@/testUtils/testDb";
+import { cleanUp } from "@/testUtils/unit/cleanUp";
 
 const constants = vi.hoisted(() => ({
   teamId: "T1",
@@ -18,14 +18,14 @@ const constants = vi.hoisted(() => ({
 
 describe("Icebreaker questions", () => {
   beforeAll(async () => {
-    await testDb.delete(users);
-    await testDb.delete(iceBreakerThreads);
+    await cleanUp("users");
+    await cleanUp("iceBreakerThreads");
   });
 
   afterEach(async () => {
     await deleteLastRandomChannelPost();
-    await testDb.delete(users);
-    await testDb.delete(iceBreakerThreads);
+    await cleanUp("users");
+    await cleanUp("iceBreakerThreads");
   });
 
   it(

@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
-import { iceBreakerThreads, presentIdeas, users } from "@/db/schema";
+import { presentIdeas, users } from "@/db/schema";
 import { getIceBreakerThreadLink } from "@/services/slack/getIceBreakerThreadLink";
 import { timeout } from "@/testUtils/constants";
 import { deleteLastDm } from "@/testUtils/integration/deleteLastDm";
@@ -14,6 +14,7 @@ import { sendCronEvent } from "@/testUtils/integration/sendCronEvent";
 import { sendScheduleEvent } from "@/testUtils/integration/sendScheduleEvent";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
 import { testDb, waitForIceBreakerThreads } from "@/testUtils/testDb";
+import { cleanUp } from "@/testUtils/unit/cleanUp";
 
 dayjs.extend(utc);
 
@@ -50,18 +51,18 @@ vi.mock("@/services/slack/createSlackApp", async () => ({
 
 describe("Squad welcome message", () => {
   beforeAll(async () => {
-    await testDb.delete(users);
-    await testDb.delete(iceBreakerThreads);
-    await testDb.delete(presentIdeas);
+    await cleanUp("users");
+    await cleanUp("iceBreakerThreads");
+    await cleanUp("presentIdeas");
   });
 
   afterEach(async () => {
     await deleteLastRandomChannelPost();
     await deleteLastDm();
 
-    await testDb.delete(users);
-    await testDb.delete(iceBreakerThreads);
-    await testDb.delete(presentIdeas);
+    await cleanUp("users");
+    await cleanUp("iceBreakerThreads");
+    await cleanUp("presentIdeas");
   });
 
   it(
