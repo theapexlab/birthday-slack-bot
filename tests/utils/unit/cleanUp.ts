@@ -12,7 +12,7 @@ export const cleanUp = async (tableName: string) => {
     new InvokeCommand({
       FunctionName: process.env.VITE_CLEANUP_FUNCTION_NAME,
       Payload: JSON.stringify({
-        slq: `SELECT table_name FROM information_schema.tables WHERE table_schema='public'`,
+        sql: `SELECT table_name FROM information_schema.tables WHERE table_schema='public'`,
       }),
     }),
   );
