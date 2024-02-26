@@ -16,16 +16,20 @@ const getBaseFunctionProps = () => {
 
 export const getDbFunctionProps = () => {
   const baseFunctionProps = getBaseFunctionProps();
-  const { db } = use(StorageStack);
+  const { outputs, vpc } = use(StorageStack);
 
-  const bind = [...baseFunctionProps.bind, ...(db ? [db] : [])];
+  // const bind = [...baseFunctionProps.bind, ...(db ? [db] : [])];
 
   return {
     ...baseFunctionProps,
+    vpc,
     environment: {
       DB_URL: process.env.DB_URL || "",
+      DB_NAME: outputs.RDSDATABASE,
+      DB_SECRET_ARN: outputs.RDSSECRETARN,
+      DB_RESOURCE_ARN: outputs.RDSCLUSTERARN,
     },
-    bind,
+    // bind,
   };
 };
 

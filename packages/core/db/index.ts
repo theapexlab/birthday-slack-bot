@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-import { RDS } from "sst/node/rds";
-
 import { dbFactory } from "./dbFactory";
 
 export const [db, migrate] = dbFactory(
@@ -11,11 +8,8 @@ export const [db, migrate] = dbFactory(
       }
     : {
         type: "aws",
-        //@ts-ignore
-        database: RDS.Database.defaultDatabaseName,
-        //@ts-ignore
-        secretArn: RDS.Database.secretArn,
-        //@ts-ignore
-        resourceArn: RDS.Database.clusterArn,
+        database: process.env.DB_NAME ?? "",
+        secretArn: process.env.DB_SECRET_ARN ?? "",
+        resourceArn: process.env.DB_RESOURCE_ARN ?? "",
       },
 );
