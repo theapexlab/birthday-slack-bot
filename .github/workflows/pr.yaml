@@ -81,6 +81,9 @@ jobs:
           MIGRATION_FUNCTION=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-MyStack"].MigrationFunctionName' .sst/outputs.json)
           echo "migrationFunction=$MIGRATION_FUNCTION" >> "$GITHUB_OUTPUT"
 
+          CLEANUP_FUNCTION=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-MyStack"].CleanUpFunctionName' .sst/outputs.json)
+          echo "cleanUpFunction=$CLEANUP_FUNCTION" >> "$GITHUB_OUTPUT"
+
           HOST=$(jq -r '.["${{env.STAGE}}-birthday-slack-bot-StorageStack"].rdsHost' .sst/outputs.json)
           echo "host=$HOST" >> "$GITHUB_OUTPUT"
 
@@ -97,7 +100,7 @@ jobs:
         run: pnpm migration:ci ${{ steps.sst-output.outputs.migrationFunction }}
 
       - name: Run tests
-        run: pnpm test:ci
+        run: pnpm test:ci  ${{ steps.sst-output.outputs.cleanUpFunction }}
         env:
           VITE_API_URL: ${{ steps.sst-output.outputs.apiEndpoint }}
           VITE_SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN_TEST }}
