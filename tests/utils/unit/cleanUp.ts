@@ -16,10 +16,11 @@ export const cleanUp = async (tableName: string) => {
       }),
     }),
   );
+  console.log("🚀 ~ cleanUp ~ res:", res);
 
-  const payload = res.Payload
-    ? Buffer.from(res.Payload?.buffer).toString()
-    : undefined;
-
-  return JSON.parse(payload || "");
+  //   const payload = res.Payload
+  //     ? Buffer.from(res.Payload?.buffer).toString()
+  //     : undefined;
+  return;
+  //   return JSON.parse(payload || "");
 };
