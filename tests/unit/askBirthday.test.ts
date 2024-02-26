@@ -15,14 +15,12 @@ import {
 } from "vitest";
 
 import { getUsersWhoseBirthdayIsMissing } from "@/db/queries/getBirthdays";
-import { users } from "@/db/schema";
 import type { Events } from "@/events";
 import { handler } from "@/functions/events/askBirthday";
 import { constructAskBirthdayMessage } from "@/services/slack/constructAskBirthdayMessage";
 import { createSlackApp } from "@/services/slack/createSlackApp";
 import { getUserInfo } from "@/services/slack/getUserInfo";
-import { testDb } from "@/testUtils/testDb";
-import { cleanUp } from "@/testUtils/unit/dbOperations";
+import { cleanUp, insertDb } from "@/testUtils/unit/dbOperations";
 import { sendMockSqsMessage } from "@/testUtils/unit/sendMockSqsMessage";
 
 dayjs.extend(utc);
@@ -118,7 +116,11 @@ describe("getUsersWhoseBirthdayIsMissing", () => {
   };
 
   it("should return with the mock user", async () => {
-    await testDb.insert(users).values([mockUser]);
+    await insertDb("users", {
+      birthday: null,
+      id: constants.userId,
+      team_id: constants.team_id,
+    });
     const result = await getUsersWhoseBirthdayIsMissing();
 
     expect(result).toEqual([mockUser]);
@@ -130,7 +132,11 @@ describe("getUsersWhoseBirthdayIsMissing", () => {
       birthday: dayjs.utc().toDate(),
     };
 
-    await testDb.insert(users).values([mockUserWithBirthday]);
+    await insertDb("users", {
+      birthday: mockUserWithBirthday.birthday,
+      id: mockUserWithBirthday.id,
+      team_id: mockUserWithBirthday.teamId,
+    });
     const result = await getUsersWhoseBirthdayIsMissing();
 
     expect(result).toEqual([]);

@@ -1,9 +1,8 @@
 import MockDate from "mockdate";
 
-import { users } from "@/db/schema";
 import { getIceBreakerWindow } from "@/services/birthday/getIcebreakerWindow";
 
-import { testDb } from "./testDb";
+import { insertDb } from "./unit/dbOperations";
 
 export const generateIceBreakerTestUsers = async (today?: string) => {
   if (today) {
@@ -30,10 +29,11 @@ export const generateIceBreakerTestUsers = async (today?: string) => {
     start.add(6, "months"), // random day outside the window
   ];
 
-  await testDb.insert(users).values(
+  await insertDb(
+    "users",
     birthdays.map((birthday, i) => ({
       id: `U${i + 1}`,
-      teamId: "T1",
+      team_id: "T1",
       birthday: birthday.toDate(),
     })),
   );

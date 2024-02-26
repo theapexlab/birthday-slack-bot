@@ -23,10 +23,8 @@ import {
   vi,
 } from "vitest";
 
-import { users } from "@/db/schema";
 import { handler } from "@/functions/cron/daily";
-import { testDb } from "@/testUtils/testDb";
-import { cleanUp } from "@/testUtils/unit/dbOperations";
+import { cleanUp, insertDb } from "@/testUtils/unit/dbOperations";
 import { mockEventBridgePayload } from "@/testUtils/unit/mockEventBridgePayload";
 import { mockEventSchedulerPayload } from "@/testUtils/unit/mockEventSchedulerPayload";
 import { mockLambdaEvent } from "@/testUtils/unit/mockLambdaPayload";
@@ -67,9 +65,9 @@ describe("Daily cron", () => {
   });
 
   it("Should publish askPresentIdeasFromTeam event if user has birthday exactly 2 months from now", async () => {
-    await testDb.insert(users).values({
+    await insertDb("users", {
       id: constants.userId,
-      teamId: constants.teamId,
+      team_id: constants.teamId,
       birthday: dayjs.utc().add(2, "month").toDate(),
     });
 
@@ -86,15 +84,15 @@ describe("Daily cron", () => {
   });
 
   it("Should publish askPresentIdeasFromTeam event twice if 2 users have birthday exactly 2 months from now", async () => {
-    await testDb.insert(users).values([
+    await insertDb("users", [
       {
         id: constants.userId,
-        teamId: constants.teamId,
+        team_id: constants.teamId,
         birthday: dayjs.utc().add(2, "month").toDate(),
       },
       {
         id: constants.otherUserIds[0],
-        teamId: constants.teamId,
+        team_id: constants.teamId,
         birthday: dayjs.utc().add(2, "month").toDate(),
       },
     ]);
@@ -119,15 +117,15 @@ describe("Daily cron", () => {
   });
 
   it("Should not publish askPresentIdeasFromTeam event if no user has birthday exactly 2 months from now", async () => {
-    await testDb.insert(users).values([
+    await insertDb("users", [
       {
         id: constants.userId,
-        teamId: constants.teamId,
+        team_id: constants.teamId,
         birthday: dayjs.utc().add(3, "month").toDate(),
       },
       {
         id: constants.otherUserIds[0],
-        teamId: constants.teamId,
+        team_id: constants.teamId,
         birthday: dayjs.utc().add(4, "month").toDate(),
       },
     ]);
@@ -138,9 +136,9 @@ describe("Daily cron", () => {
   });
 
   it("Should publish scheduled birthday events if user has birthday exactly 2 months from now", async () => {
-    await testDb.insert(users).values({
+    await insertDb("users", {
       id: constants.userId,
-      teamId: constants.teamId,
+      team_id: constants.teamId,
       birthday: dayjs.utc().add(2, "month").toDate(),
     });
 
@@ -189,9 +187,9 @@ describe("Daily cron", () => {
   });
 
   it("Should not publish scheduled birthday events if no user has birthday exactly 2 months from now", async () => {
-    await testDb.insert(users).values({
+    await insertDb("users", {
       id: constants.userId,
-      teamId: constants.teamId,
+      team_id: constants.teamId,
       birthday: dayjs.utc().add(4, "month").toDate(),
     });
 

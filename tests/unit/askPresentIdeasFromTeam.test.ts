@@ -18,11 +18,9 @@ import {
   vi,
 } from "vitest";
 
-import { users } from "@/db/schema";
 import type { Events } from "@/events";
 import { handler as askPresentIdeasFromTeam } from "@/functions/events/askPresentIdeasFromTeam";
-import { testDb } from "@/testUtils/testDb";
-import { cleanUp } from "@/testUtils/unit/dbOperations";
+import { cleanUp, insertDb } from "@/testUtils/unit/dbOperations";
 import { mockEventBridgePayload } from "@/testUtils/unit/mockEventBridgePayload";
 import { sendMockSqsMessage } from "@/testUtils/unit/sendMockSqsMessage";
 
@@ -72,10 +70,11 @@ describe("askPresentIdeasFromTeam", () => {
       eventId: constants.eventId,
     } satisfies Events["askPresentIdeasFromTeam"];
 
-    await testDb.insert(users).values(
+    await insertDb(
+      "users",
       constants.otherUserIds.map((userId) => ({
         id: userId,
-        teamId: constants.teamId,
+        team_id: constants.teamId,
         birthday: dayjs.utc().toDate(),
       })),
     );
@@ -105,9 +104,9 @@ describe("askPresentIdeasFromTeam", () => {
       eventId: constants.eventId,
     } satisfies Events["askPresentIdeasFromTeam"];
 
-    await testDb.insert(users).values({
+    await insertDb("users", {
       id: constants.userId,
-      teamId: constants.teamId,
+      team_id: constants.teamId,
       birthday: dayjs.utc().toDate(),
     });
 

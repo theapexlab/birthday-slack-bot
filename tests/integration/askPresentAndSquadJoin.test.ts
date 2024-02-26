@@ -2,7 +2,6 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
-import { users } from "@/db/schema";
 import { constructLoadingMessage } from "@/services/slack/constructLoadingMessage";
 import { constructPresentIdeaSavedMessage } from "@/services/slack/constructPresentIdeaSavedMessage";
 import { timeout } from "@/testUtils/constants";
@@ -11,12 +10,11 @@ import { sendScheduleEvent } from "@/testUtils/integration/sendScheduleEvent";
 import { sendSlackInteraction } from "@/testUtils/integration/sendSlackInteraction";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
 import {
-  testDb,
   waitForPresentIdeas,
   waitForSquadJoins,
   waitForTestItems,
 } from "@/testUtils/testDb";
-import { cleanUp } from "@/testUtils/unit/dbOperations";
+import { cleanUp, insertDb } from "@/testUtils/unit/dbOperations";
 import {
   additionalPresentIdeasInputActionId,
   additionalPresentIdeasSaveButtonActionId,
@@ -50,15 +48,15 @@ describe("Present and Squad Join", () => {
   it(
     "Should ask for present and squad join in DM",
     async () => {
-      await testDb.insert(users).values([
+      await insertDb("users", [
         {
           id: import.meta.env.VITE_SLACK_USER_ID,
-          teamId: import.meta.env.VITE_SLACK_TEAM_ID,
+          team_id: import.meta.env.VITE_SLACK_TEAM_ID,
           birthday: new Date(),
         },
         {
           id: constants.birthdayPerson,
-          teamId: import.meta.env.VITE_SLACK_TEAM_ID,
+          team_id: import.meta.env.VITE_SLACK_TEAM_ID,
           birthday: dayjs.utc().add(2, "month").toDate(),
         },
       ]);
@@ -105,15 +103,15 @@ describe("Present and Squad Join", () => {
   it(
     "Should save additional present idea and squad join to db",
     async () => {
-      await testDb.insert(users).values([
+      await insertDb("users", [
         {
           id: constants.userId,
-          teamId: constants.teamId,
+          team_id: constants.teamId,
           birthday: new Date(),
         },
         {
           id: constants.birthdayPerson,
-          teamId: constants.teamId,
+          team_id: constants.teamId,
           birthday: new Date(),
         },
       ]);

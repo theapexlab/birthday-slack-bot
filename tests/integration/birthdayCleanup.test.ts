@@ -8,21 +8,14 @@ import {
   vi,
 } from "vitest";
 
-import {
-  iceBreakerThreads,
-  presentIdeas,
-  squadJoins,
-  users,
-} from "@/db/schema";
 import { timeout } from "@/testUtils/constants";
 import { sendScheduleEvent } from "@/testUtils/integration/sendScheduleEvent";
 import {
-  testDb,
   waitForIceBreakerThreads,
   waitForPresentIdeas,
   waitForSquadJoins,
 } from "@/testUtils/testDb";
-import { cleanUp } from "@/testUtils/unit/dbOperations";
+import { cleanUp, insertDb } from "@/testUtils/unit/dbOperations";
 
 const constants = vi.hoisted(() => ({
   teamId: "T1",
@@ -42,35 +35,35 @@ describe("Birthday cleanup", () => {
   });
 
   beforeEach(async () => {
-    await testDb.insert(users).values([
+    await insertDb("users", [
       {
         id: constants.birthdayPerson,
-        teamId: constants.teamId,
+        team_id: constants.teamId,
         birthday: new Date(),
       },
       {
         id: constants.otherUserIdsInTeam[0],
-        teamId: constants.teamId,
+        team_id: constants.teamId,
         birthday: new Date(),
       },
       {
         id: constants.otherUserIdsInTeam[1],
-        teamId: constants.teamId,
+        team_id: constants.teamId,
         birthday: new Date(),
       },
       {
         id: constants.otherBirthdayPerson,
-        teamId: constants.otherTeamId,
+        team_id: constants.otherTeamId,
         birthday: new Date(),
       },
       {
         id: constants.otherUserIdsInOtherTeam[0],
-        teamId: constants.otherTeamId,
+        team_id: constants.otherTeamId,
         birthday: new Date(),
       },
       {
         id: constants.otherUserIdsInOtherTeam[1],
-        teamId: constants.otherTeamId,
+        team_id: constants.otherTeamId,
         birthday: new Date(),
       },
     ]);
@@ -90,20 +83,20 @@ describe("Birthday cleanup", () => {
 
       const otherItems = [
         {
-          teamId: constants.teamId,
+          team_id: constants.teamId,
           threadId: "T1",
           userId: constants.otherUserIdsInTeam[0],
         },
         {
-          teamId: constants.otherTeamId,
+          team_id: constants.otherTeamId,
           threadId: "T2",
           userId: constants.otherBirthdayPerson,
         },
       ];
 
-      await testDb.insert(iceBreakerThreads).values([
+      await insertDb("users", [
         {
-          teamId: constants.teamId,
+          team_id: constants.teamId,
           threadId: "T1",
           userId: constants.birthdayPerson,
         },
@@ -142,34 +135,34 @@ describe("Birthday cleanup", () => {
         {
           birthdayPerson: constants.otherUserIdsInTeam[0],
           presentIdea: "PI3",
-          teamId: constants.teamId,
+          team_id: constants.teamId,
           userId: constants.birthdayPerson,
         },
         {
           birthdayPerson: constants.otherBirthdayPerson,
           presentIdea: "PI4",
-          teamId: constants.otherTeamId,
+          team_id: constants.otherTeamId,
           userId: constants.otherUserIdsInOtherTeam[0],
         },
         {
           birthdayPerson: constants.otherBirthdayPerson,
           presentIdea: "PI5",
-          teamId: constants.otherTeamId,
+          team_id: constants.otherTeamId,
           userId: constants.otherUserIdsInOtherTeam[1],
         },
       ];
 
-      await testDb.insert(presentIdeas).values([
+      await insertDb("users", [
         {
           birthdayPerson: constants.birthdayPerson,
           presentIdea: "PI1",
-          teamId: constants.teamId,
+          team_id: constants.teamId,
           userId: constants.otherUserIdsInTeam[0],
         },
         {
           birthdayPerson: constants.birthdayPerson,
           presentIdea: "PI2",
-          teamId: constants.teamId,
+          team_id: constants.teamId,
           userId: constants.otherUserIdsInTeam[1],
         },
         ...otherItems,
@@ -206,30 +199,30 @@ describe("Birthday cleanup", () => {
       const otherItems = [
         {
           birthdayPerson: constants.otherUserIdsInTeam[0],
-          teamId: constants.teamId,
+          team_id: constants.teamId,
           userId: constants.birthdayPerson,
         },
         {
           birthdayPerson: constants.otherBirthdayPerson,
-          teamId: constants.otherTeamId,
+          team_id: constants.otherTeamId,
           userId: constants.otherUserIdsInOtherTeam[0],
         },
         {
           birthdayPerson: constants.otherBirthdayPerson,
-          teamId: constants.otherTeamId,
+          team_id: constants.otherTeamId,
           userId: constants.otherUserIdsInOtherTeam[1],
         },
       ];
 
-      await testDb.insert(squadJoins).values([
+      await insertDb("users", [
         {
           birthdayPerson: constants.birthdayPerson,
-          teamId: constants.teamId,
+          team_id: constants.teamId,
           userId: constants.otherUserIdsInTeam[0],
         },
         {
           birthdayPerson: constants.birthdayPerson,
-          teamId: constants.teamId,
+          team_id: constants.teamId,
           userId: constants.otherUserIdsInTeam[1],
         },
         ...otherItems,

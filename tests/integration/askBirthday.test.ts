@@ -1,6 +1,5 @@
 import { afterEach, beforeAll, describe, expect, it, test, vi } from "vitest";
 
-import { users } from "@/db/schema";
 import { constructAskBirthdayMessageReplacement } from "@/services/slack/constructAskBirthdayMessage";
 import { constructBirthdayConfirmedMessage } from "@/services/slack/constructBirthdayConfirmedMessage";
 import { constructConfirmBirthdayMessage } from "@/services/slack/constructConfirmBirthdayMessage";
@@ -11,8 +10,8 @@ import { sendCronEvent } from "@/testUtils/integration/sendCronEvent";
 import { sendSlackInteraction } from "@/testUtils/integration/sendSlackInteraction";
 import { app } from "@/testUtils/integration/testSlackApp";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
-import { testDb, waitForTestItems, waitForUsers } from "@/testUtils/testDb";
-import { cleanUp } from "@/testUtils/unit/dbOperations";
+import { waitForTestItems, waitForUsers } from "@/testUtils/testDb";
+import { cleanUp, insertDb } from "@/testUtils/unit/dbOperations";
 import {
   birthdayConfirmActionId,
   birthdayIncorrectActionId,
@@ -247,10 +246,10 @@ describe("Slack interactions", () => {
     async () => {
       const eventId = "AB5_" + Date.now().toString();
 
-      await testDb.insert(users).values([
+      await insertDb("users", [
         {
           id: import.meta.env.VITE_SLACK_USER_ID,
-          teamId: import.meta.env.VITE_SLACK_TEAM_ID,
+          team_id: import.meta.env.VITE_SLACK_TEAM_ID,
           birthday: null,
         },
       ]);
