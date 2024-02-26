@@ -1,20 +1,20 @@
 import { cleanUp } from "@/db/queries/cleanUp";
 import { errorResult, okResult } from "@/utils/lambda/result";
 
-export const handler = async (event: { tableName: string }) => {
+export const handler = async (event: { sql: string }) => {
   console.log("🚀 ~ handler ~ event:", event);
 
   try {
     // Extract tableName from the event object
-    const { tableName } = event;
+    const { sql } = event;
 
-    if (!tableName) {
-      throw new Error("tableName parameter is required");
+    if (!sql) {
+      throw new Error("sql parameter is required");
     }
 
     console.log("Cleaning up db...");
 
-    const result = await cleanUp(tableName);
+    const result = await cleanUp(sql);
     console.log("🚀 ~ handler ~ result:", result);
 
     console.log("Clean up complete!");
