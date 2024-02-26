@@ -16,8 +16,9 @@ const executeSql = async (sql: string) => {
   const payload = res.Payload
     ? Buffer.from(res.Payload?.buffer).toString()
     : undefined;
-  console.log("🚀 ~ executeSql ~ responsePayload:", payload);
-  return payload;
+  const parsedPayload = JSON.parse(payload);
+  console.log("🚀 ~ executeSql ~ responsePayload:", parsedPayload);
+  return parsedPayload;
 };
 
 export const cleanUp = async (tableName: string) =>
@@ -56,3 +57,5 @@ export const generateInsertQuery = (tableName, values) => {
 
 export const insertDb = async (tableName, values) =>
   executeSql(generateInsertQuery(tableName, values));
+
+export const query = async (query) => executeSql(query);
