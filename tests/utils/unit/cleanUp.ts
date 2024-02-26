@@ -2,13 +2,12 @@
 
 // const client = new LambdaClient({ region: "eu-central-1" });
 
-export const cleanUp = async (tableName: string) =>
-  // {
-  tableName;
+// export const cleanUp = async (tableName: string) => {
+//   tableName;
 //   console.log(
 //     "🚀 ~ cleanUp ~ argv:",
 //     process.env.VITE_CLEANUP_FUNCTION_NAME,
-//     tableName,
+//     // tableName,
 //   );
 //   const res = await client.send(
 //     new InvokeCommand({
@@ -23,6 +22,7 @@ export const cleanUp = async (tableName: string) =>
 //   const payload = res.Payload
 //     ? Buffer.from(res.Payload?.buffer).toString()
 //     : undefined;
+//   console.log("🚀 ~ cleanUp ~ payload:", payload);
 //   return;
-//   return JSON.parse(payload || "");
+//   // return JSON.parse(payload || "")
 // };

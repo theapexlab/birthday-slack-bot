@@ -10,7 +10,7 @@ import { deleteLastRandomChannelPost } from "@/testUtils/integration/deleteLastR
 import { sendCronEvent } from "@/testUtils/integration/sendCronEvent";
 import { waitForPostInRandom } from "@/testUtils/integration/waitForPostInRandom";
 import { waitForIceBreakerThreads } from "@/testUtils/testDb";
-import { cleanUp } from "@/testUtils/unit/cleanUp";
+import { cleanUp } from "@/testUtils/unit/dbOperations";
 
 const constants = vi.hoisted(() => ({
   teamId: "T1",

@@ -19,7 +19,7 @@ import {
 } from "vitest";
 
 import { handler } from "@/functions/schedule/scheduleHandlerLambda";
-import { cleanUp } from "@/testUtils/unit/cleanUp";
+import { cleanUp } from "@/testUtils/unit/dbOperations";
 import { mockEventBridgePayload } from "@/testUtils/unit/mockEventBridgePayload";
 import {
   mockLambdaContext,

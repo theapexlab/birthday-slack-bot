@@ -10,7 +10,7 @@ import { sendScheduleEvent } from "@/testUtils/integration/sendScheduleEvent";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
 import { seedSquadJoins } from "@/testUtils/seedSquadJoins";
 import { testDb } from "@/testUtils/testDb";
-import { cleanUp } from "@/testUtils/unit/cleanUp";
+import { cleanUp } from "@/testUtils/unit/dbOperations";
 
 dayjs.extend(utc);
 

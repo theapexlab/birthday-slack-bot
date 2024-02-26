@@ -20,7 +20,7 @@ import {
   waitForPresentIdeas,
   waitForTestItems,
 } from "@/testUtils/testDb";
-import { cleanUp } from "@/testUtils/unit/cleanUp";
+import { cleanUp } from "@/testUtils/unit/dbOperations";
 import {
   presentIdeasInputActionId,
   presentIdeasSaveButtonActionId,

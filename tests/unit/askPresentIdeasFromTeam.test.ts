@@ -22,7 +22,7 @@ import { users } from "@/db/schema";
 import type { Events } from "@/events";
 import { handler as askPresentIdeasFromTeam } from "@/functions/events/askPresentIdeasFromTeam";
 import { testDb } from "@/testUtils/testDb";
-import { cleanUp } from "@/testUtils/unit/cleanUp";
+import { cleanUp } from "@/testUtils/unit/dbOperations";
 import { mockEventBridgePayload } from "@/testUtils/unit/mockEventBridgePayload";
 import { sendMockSqsMessage } from "@/testUtils/unit/sendMockSqsMessage";
 

@@ -9,7 +9,7 @@ import {
   usersInWindow,
   usersOutsideWindow,
 } from "@/testUtils/generateIceBreakerTestUsers";
-import { cleanUp } from "@/testUtils/unit/cleanUp";
+import { cleanUp } from "@/testUtils/unit/dbOperations";
 import { testCases } from "@/testUtils/unit/iceBreakerTestCases";
 
 const constants = vi.hoisted(() => ({

@@ -12,7 +12,7 @@ import { sendSlackInteraction } from "@/testUtils/integration/sendSlackInteracti
 import { app } from "@/testUtils/integration/testSlackApp";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
 import { testDb, waitForTestItems, waitForUsers } from "@/testUtils/testDb";
-import { cleanUp } from "@/testUtils/unit/cleanUp";
+import { cleanUp } from "@/testUtils/unit/dbOperations";
 import {
   birthdayConfirmActionId,
   birthdayIncorrectActionId,

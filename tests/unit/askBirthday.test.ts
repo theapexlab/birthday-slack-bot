@@ -22,7 +22,7 @@ import { constructAskBirthdayMessage } from "@/services/slack/constructAskBirthd
 import { createSlackApp } from "@/services/slack/createSlackApp";
 import { getUserInfo } from "@/services/slack/getUserInfo";
 import { testDb } from "@/testUtils/testDb";
-import { cleanUp } from "@/testUtils/unit/cleanUp";
+import { cleanUp } from "@/testUtils/unit/dbOperations";
 import { sendMockSqsMessage } from "@/testUtils/unit/sendMockSqsMessage";
 
 dayjs.extend(utc);

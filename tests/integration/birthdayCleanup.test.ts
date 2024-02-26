@@ -22,7 +22,7 @@ import {
   waitForPresentIdeas,
   waitForSquadJoins,
 } from "@/testUtils/testDb";
-import { cleanUp } from "@/testUtils/unit/cleanUp";
+import { cleanUp } from "@/testUtils/unit/dbOperations";
 
 const constants = vi.hoisted(() => ({
   teamId: "T1",

@@ -26,7 +26,7 @@ import { BIRTHDAY_SQUAD_SIZE } from "@/functions/utils/constants";
 import { openConversation } from "@/services/slack/openConversation";
 import { seedSquadJoins } from "@/testUtils/seedSquadJoins";
 import { testDb } from "@/testUtils/testDb";
-import { cleanUp } from "@/testUtils/unit/cleanUp";
+import { cleanUp } from "@/testUtils/unit/dbOperations";
 import { mockEventBridgePayload } from "@/testUtils/unit/mockEventBridgePayload";
 import { sendMockSqsMessage } from "@/testUtils/unit/sendMockSqsMessage";
 
