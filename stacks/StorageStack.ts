@@ -22,7 +22,7 @@ const dbUsername = "birthdayBotDbAdmin";
 
 export function StorageStack({ stack }: StackContext) {
   if (process.env.USE_LOCAL_DB) {
-    return null;
+    return { outputs: null, rds: null };
   }
 
   const vpc = new Vpc(stack, "vpc", {

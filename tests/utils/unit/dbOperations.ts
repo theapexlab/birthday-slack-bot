@@ -61,7 +61,17 @@ export const generateInsertQuery = (tableName, values) => {
 export const insertDb = async (tableName, values) =>
   executeSql(generateInsertQuery(tableName, values));
 
+const toCamelCase = (str) =>
+  str.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+
 export const queryDb = async (query) => {
   const res = await executeSql(query);
-  return res.rows;
+  const formattedRows = res.rows.map((row) => {
+    const newRow = {};
+    Object.keys(row).forEach((key) => {
+      newRow[toCamelCase(key)] = row[key];
+    });
+    return newRow;
+  });
+  return formattedRows;
 };
