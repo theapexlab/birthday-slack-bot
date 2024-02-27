@@ -19,7 +19,7 @@ import {
 
 const constants = vi.hoisted(() => ({
   responseUrl: `${import.meta.env.VITE_API_URL}/slack/test-payload`,
-  birthday: "2000-02-15",
+  birthday: "2000-02-15T00:00:00.000Z",
   teamId: "T1",
   userId: "U1",
 }));
@@ -181,7 +181,7 @@ describe("Slack interactions", () => {
       expect(item, "User doesn't match expected user").toEqual({
         id: constants.userId,
         teamId: constants.teamId,
-        birthday: new Date(constants.birthday),
+        birthday: new Date(constants.birthday).toISOString(),
       });
     },
     timeout,

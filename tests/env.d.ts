@@ -18,7 +18,7 @@ interface ImportMetaEnv {
   readonly VITE_DB_USER: string | undefined;
   readonly VITE_DB_PASSWORD: string | undefined;
   readonly VITE_DB_URL: string | undefined;
-  readonly VITE_CLEANUP_FUNCTION_NAME: string | undefined;
+  readonly VITE_DB_FUNCTION_NAME: string | undefined;
 }
 
 interface ImportMeta {

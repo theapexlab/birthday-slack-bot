@@ -60,8 +60,8 @@ export function MyStack({ stack }: StackContext) {
     ...getDbFunctionProps(),
   });
 
-  const cleanUpFn = new Function(stack, "CleanUp", {
-    handler: "packages/functions/lambdas/cleanUp.handler",
+  const dbOperationsFn = new Function(stack, "DbOperations", {
+    handler: "packages/functions/lambdas/dbOperations.handler",
     timeout: "60 seconds",
     ...getDbFunctionProps(),
   });
@@ -69,6 +69,6 @@ export function MyStack({ stack }: StackContext) {
   stack.addOutputs({
     ApiEndpoint: api.url,
     MigrationFunctionName: migrationFn.functionName,
-    CleanUpFunctionName: cleanUpFn.functionName,
+    DbOperationsFunctionName: dbOperationsFn.functionName,
   });
 }

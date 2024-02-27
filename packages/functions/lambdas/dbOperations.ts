@@ -1,4 +1,4 @@
-import { cleanUp } from "@/db/queries/cleanUp";
+import { executeSql } from "@/db/queries/dbOperations";
 import { errorResult, okResult } from "@/utils/lambda/result";
 
 export const handler = async (event: { sql: string }) => {
@@ -14,7 +14,7 @@ export const handler = async (event: { sql: string }) => {
 
     console.log("Cleaning up db...");
 
-    const result = await cleanUp(sql);
+    const result = await executeSql(sql);
     console.log("🚀 ~ handler ~ result:", result);
 
     console.log("Clean up complete!");

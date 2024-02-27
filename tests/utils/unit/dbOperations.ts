@@ -6,7 +6,7 @@ const executeSql = async (sql: string) => {
   // console.log("🚀 ~ executeSql ~ sql:", sql);
   const res = await client.send(
     new InvokeCommand({
-      FunctionName: process.env.VITE_CLEANUP_FUNCTION_NAME,
+      FunctionName: process.env.VITE_DB_FUNCTION_NAME,
       Payload: JSON.stringify({
         sql,
       }),
