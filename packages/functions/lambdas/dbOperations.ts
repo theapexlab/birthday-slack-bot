@@ -21,7 +21,7 @@ export const handler = async (event: { sql: string }) => {
 
     return okResult(result);
   } catch (error) {
-    console.error(`Error migrating db: ${error}`);
+    console.error(`Error executing command: ${error}`);
 
     return errorResult(error);
   }
