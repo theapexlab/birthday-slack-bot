@@ -18,8 +18,6 @@ type FactoryPayload =
     };
 
 export const dbFactory = (payload: FactoryPayload) => {
-  console.log("DB Factory payload", payload);
-
   const pool = new pg.Pool({
     ...payload,
   });
