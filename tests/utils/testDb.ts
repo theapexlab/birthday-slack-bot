@@ -15,13 +15,12 @@ import { pollInterval, waitTimeout } from "./constants";
 export const [testDb] = dbFactory(
   import.meta.env.VITE_CI
     ? {
-        type: "aws",
+        host: import.meta.env.VITE_DB_HOST!,
         database: import.meta.env.VITE_DB_NAME!,
-        secretArn: import.meta.env.VITE_DB_SECRET_ARN!,
-        resourceArn: import.meta.env.VITE_DB_CLUSTER_ARN!,
+        user: import.meta.env.VITE_DB_USER!,
+        password: import.meta.env.VITE_DB_PASSWORD!,
       }
     : {
-        type: "node",
         connectionString: import.meta.env.VITE_DB_URL!,
       },
 );
