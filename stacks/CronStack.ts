@@ -38,7 +38,13 @@ export function CronStack({ stack }: StackContext) {
 
   schedulerRole.addToPolicy(
     new PolicyStatement({
-      actions: ["scheduler:CreateSchedule", "iam:PassRole"],
+      actions: [
+        "scheduler:CreateSchedule",
+        "iam:PassRole",
+        "ec2:CreateNetworkInterface",
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:DeleteNetworkInterface",
+      ],
       resources: ["*"],
     }),
   );
