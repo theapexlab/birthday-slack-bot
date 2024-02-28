@@ -57,6 +57,13 @@
       "when": 1700744521560,
       "tag": "0007_make_test_item_pk_serial",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1708968065425,
+      "tag": "0008_table_rename_to_snake_case",
+      "breakpoints": true
     }
   ]
 }

@@ -18,10 +18,9 @@ import {
   vi,
 } from "vitest";
 
-import { users } from "@/db/schema";
 import type { Events } from "@/events";
 import { handler as askPresentIdeasFromTeam } from "@/functions/events/askPresentIdeasFromTeam";
-import { testDb } from "@/testUtils/testDb";
+import { cleanUp, insertDb } from "@/testUtils/unit/dbOperations";
 import { mockEventBridgePayload } from "@/testUtils/unit/mockEventBridgePayload";
 import { sendMockSqsMessage } from "@/testUtils/unit/sendMockSqsMessage";
 
@@ -52,7 +51,7 @@ describe("askPresentIdeasFromTeam", () => {
   let eventBridge: EventBridgeClient;
 
   beforeAll(async () => {
-    await testDb.delete(users);
+    await cleanUp("users");
   });
 
   beforeEach(() => {
@@ -61,7 +60,7 @@ describe("askPresentIdeasFromTeam", () => {
 
   afterEach(async () => {
     vi.clearAllMocks();
-    await testDb.delete(users);
+    await cleanUp("users");
   });
 
   it("Should publish askPresentIdeasFromUser event", async () => {
@@ -71,10 +70,11 @@ describe("askPresentIdeasFromTeam", () => {
       eventId: constants.eventId,
     } satisfies Events["askPresentIdeasFromTeam"];
 
-    await testDb.insert(users).values(
+    await insertDb(
+      "users",
       constants.otherUserIds.map((userId) => ({
         id: userId,
-        teamId: constants.teamId,
+        team_id: constants.teamId,
         birthday: dayjs.utc().toDate(),
       })),
     );
@@ -104,9 +104,9 @@ describe("askPresentIdeasFromTeam", () => {
       eventId: constants.eventId,
     } satisfies Events["askPresentIdeasFromTeam"];
 
-    await testDb.insert(users).values({
+    await insertDb("users", {
       id: constants.userId,
-      teamId: constants.teamId,
+      team_id: constants.teamId,
       birthday: dayjs.utc().toDate(),
     });
 

@@ -1,6 +1,4 @@
-import { squadJoins } from "@/db/schema";
-
-import { testDb } from "./testDb";
+import { insertDb } from "./unit/dbOperations";
 
 export const seedSquadJoins = async (
   birthdayPerson: string,
@@ -10,7 +8,8 @@ export const seedSquadJoins = async (
 ) => {
   const insertedSquadMembers = userIds.slice(0, count);
 
-  await testDb.insert(squadJoins).values(
+  await insertDb(
+    "users",
     insertedSquadMembers.map((userId) => ({
       userId,
       teamId: teamId,

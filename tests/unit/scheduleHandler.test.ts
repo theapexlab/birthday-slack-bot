@@ -18,9 +18,8 @@ import {
   vi,
 } from "vitest";
 
-import { users } from "@/db/schema";
 import { handler } from "@/functions/schedule/scheduleHandlerLambda";
-import { testDb } from "@/testUtils/testDb";
+import { cleanUp } from "@/testUtils/unit/dbOperations";
 import { mockEventBridgePayload } from "@/testUtils/unit/mockEventBridgePayload";
 import {
   mockLambdaContext,
@@ -40,7 +39,7 @@ describe("Schedule handler", () => {
   let eventBridge: EventBridgeClient;
 
   beforeAll(async () => {
-    await testDb.delete(users);
+    await cleanUp("users");
   });
 
   beforeEach(() => {
@@ -49,7 +48,7 @@ describe("Schedule handler", () => {
 
   afterEach(async () => {
     vi.clearAllMocks();
-    await testDb.delete(users);
+    await cleanUp("users");
   });
 
   it("Should publish event with the given type and payload", async () => {

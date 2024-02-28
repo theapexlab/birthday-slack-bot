@@ -5,7 +5,6 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
-import { iceBreakerThreads, presentIdeas, users } from "@/db/schema";
 import { getIceBreakerThreadLink } from "@/services/slack/getIceBreakerThreadLink";
 import { timeout } from "@/testUtils/constants";
 import { deleteLastDm } from "@/testUtils/integration/deleteLastDm";
@@ -13,7 +12,8 @@ import { deleteLastRandomChannelPost } from "@/testUtils/integration/deleteLastR
 import { sendCronEvent } from "@/testUtils/integration/sendCronEvent";
 import { sendScheduleEvent } from "@/testUtils/integration/sendScheduleEvent";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
-import { testDb, waitForIceBreakerThreads } from "@/testUtils/testDb";
+import { waitForIceBreakerThreads } from "@/testUtils/testDb";
+import { cleanUp, insertDb } from "@/testUtils/unit/dbOperations";
 
 dayjs.extend(utc);
 
@@ -50,32 +50,32 @@ vi.mock("@/services/slack/createSlackApp", async () => ({
 
 describe("Squad welcome message", () => {
   beforeAll(async () => {
-    await testDb.delete(users);
-    await testDb.delete(iceBreakerThreads);
-    await testDb.delete(presentIdeas);
+    await cleanUp("users");
+    await cleanUp("ice_breaker_threads");
+    await cleanUp("present_ideas");
   });
 
   afterEach(async () => {
     await deleteLastRandomChannelPost();
     await deleteLastDm();
 
-    await testDb.delete(users);
-    await testDb.delete(iceBreakerThreads);
-    await testDb.delete(presentIdeas);
+    await cleanUp("users");
+    await cleanUp("ice_breaker_threads");
+    await cleanUp("present_ideas");
   });
 
   it(
     "Should contain icebreaker links and present ideas",
     async () => {
-      await testDb.insert(users).values([
+      await insertDb("users", [
         {
           id: constants.userId,
-          teamId: constants.teamId,
+          team_id: constants.teamId,
           birthday: dayjs.utc().add(2, "month").toDate(),
         },
         {
           id: constants.otherUserId,
-          teamId: constants.teamId,
+          team_id: constants.teamId,
           birthday: new Date(),
         },
       ]);
@@ -92,11 +92,11 @@ describe("Squad welcome message", () => {
 
       await Promise.all(
         constants.presentIdeas.map(({ userId, presentIdea }) =>
-          testDb.insert(presentIdeas).values({
-            teamId: constants.teamId,
-            userId,
-            birthdayPerson: constants.userId,
-            presentIdea: presentIdea,
+          insertDb("present_ideas", {
+            team_id: constants.teamId,
+            user_id: userId,
+            birthday_person: constants.userId,
+            present_idea: presentIdea,
           }),
         ),
       );

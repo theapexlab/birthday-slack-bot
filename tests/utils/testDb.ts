@@ -1,27 +1,19 @@
-import { and, eq } from "drizzle-orm";
 import { vi } from "vitest";
 
 import { dbFactory } from "@/db/dbFactory";
-import {
-  iceBreakerThreads,
-  presentIdeas,
-  squadJoins,
-  testItems,
-  users,
-} from "@/db/schema";
 
+import { queryDb } from "./unit/dbOperations";
 import { pollInterval, waitTimeout } from "./constants";
 
 export const [testDb] = dbFactory(
   import.meta.env.VITE_CI
     ? {
-        type: "aws",
+        host: import.meta.env.VITE_DB_HOST!,
         database: import.meta.env.VITE_DB_NAME!,
-        secretArn: import.meta.env.VITE_DB_SECRET_ARN!,
-        resourceArn: import.meta.env.VITE_DB_CLUSTER_ARN!,
+        user: import.meta.env.VITE_DB_USER!,
+        password: import.meta.env.VITE_DB_PASSWORD!,
       }
     : {
-        type: "node",
         connectionString: import.meta.env.VITE_DB_URL!,
       },
 );
@@ -29,11 +21,9 @@ export const [testDb] = dbFactory(
 export const waitForTestItems = async (id: string, expectedCount: number = 2) =>
   vi.waitFor(
     async () => {
-      const items = await testDb
-        .select()
-        .from(testItems)
-        .where(eq(testItems.testId, id))
-        .limit(expectedCount);
+      const items = await queryDb(
+        `SELECT * FROM test_items WHERE test_id = '${id}'  LIMIT ${expectedCount}`,
+      );
 
       if (items.length !== expectedCount) {
         throw new Error(
@@ -62,15 +52,9 @@ export const waitForUsers = async ({
 }: WaitForArgs) =>
   vi.waitFor(
     async () => {
-      const items = await testDb
-        .select()
-        .from(users)
-        .where(
-          and(
-            userId ? eq(users.id, userId) : undefined,
-            teamId ? eq(users.teamId, teamId) : undefined,
-          ),
-        );
+      const items = await queryDb(
+        `SELECT * FROM users WHERE id = '${userId}' AND team_id = '${teamId}'`,
+      );
 
       if (items.length !== expectedCount) {
         throw new Error(
@@ -91,10 +75,9 @@ export const waitForIceBreakerThreads = async ({
 }: WaitForArgs) =>
   vi.waitFor(
     async () => {
-      const items = await testDb
-        .select()
-        .from(iceBreakerThreads)
-        .where(teamId ? eq(iceBreakerThreads.teamId, teamId) : undefined);
+      const items = await queryDb(
+        `SELECT * FROM ice_breaker_threads WHERE team_id = '${teamId}'`,
+      );
 
       if (items.length !== expectedCount) {
         throw new Error(
@@ -116,15 +99,9 @@ export const waitForPresentIdeas = async ({
 }: WaitForArgs) =>
   vi.waitFor(
     async () => {
-      const items = await testDb
-        .select()
-        .from(presentIdeas)
-        .where(
-          and(
-            userId ? eq(presentIdeas.userId, userId) : undefined,
-            teamId ? eq(presentIdeas.teamId, teamId) : undefined,
-          ),
-        );
+      const items = await queryDb(
+        `SELECT * FROM present_ideas WHERE user_id = '${userId}' AND team_id = '${teamId}'`,
+      );
 
       if (items.length !== expectedCount) {
         throw new Error(
@@ -146,15 +123,9 @@ export const waitForSquadJoins = async ({
 }: WaitForArgs) =>
   vi.waitFor(
     async () => {
-      const items = await testDb
-        .select()
-        .from(squadJoins)
-        .where(
-          and(
-            userId ? eq(squadJoins.userId, userId) : undefined,
-            teamId ? eq(squadJoins.teamId, teamId) : undefined,
-          ),
-        );
+      const items = await queryDb(
+        `SELECT * FROM squad_joins WHERE user_id = '${userId}' AND team_id = '${teamId}'`,
+      );
 
       if (items.length !== expectedCount) {
         throw new Error(

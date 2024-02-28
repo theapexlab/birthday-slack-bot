@@ -19,13 +19,12 @@ import {
 } from "vitest";
 
 import * as getSquadMembers from "@/db/queries/getSquadMembers";
-import { squadJoins, users } from "@/db/schema";
 import type { Events } from "@/events";
 import { handler } from "@/functions/events/createBirthdaySquad";
 import { BIRTHDAY_SQUAD_SIZE } from "@/functions/utils/constants";
 import { openConversation } from "@/services/slack/openConversation";
 import { seedSquadJoins } from "@/testUtils/seedSquadJoins";
-import { testDb } from "@/testUtils/testDb";
+import { cleanUp, insertDb } from "@/testUtils/unit/dbOperations";
 import { mockEventBridgePayload } from "@/testUtils/unit/mockEventBridgePayload";
 import { sendMockSqsMessage } from "@/testUtils/unit/sendMockSqsMessage";
 
@@ -125,19 +124,20 @@ describe("3 or more squad members applied", () => {
   let insertedSquadMembers: string[];
 
   beforeAll(async () => {
-    await testDb.delete(users);
-    await testDb.delete(squadJoins);
+    await cleanUp("users");
+    await cleanUp("squad_joins");
 
-    await testDb.insert(users).values({
+    await insertDb("users", {
       id: constants.birthdayPerson,
-      teamId: constants.teamId,
+      team_id: constants.teamId,
       birthday: dayjs.utc().toDate(),
     });
 
-    await testDb.insert(users).values(
+    await insertDb(
+      "users",
       constants.otherUserIds.map((userId) => ({
         id: userId,
-        teamId: constants.teamId,
+        team_id: constants.teamId,
         birthday: dayjs.utc().toDate(),
       })),
     );
@@ -152,8 +152,8 @@ describe("3 or more squad members applied", () => {
 
   afterAll(async () => {
     vi.clearAllMocks();
-    await testDb.delete(users);
-    await testDb.delete(squadJoins);
+    await cleanUp("users");
+    await cleanUp("squad_joins");
   });
 
   it("Should not call getRandomSquadMembers", async () => {
@@ -192,27 +192,28 @@ describe("Add admin to the squad", () => {
   let insertedSquadMembers: string[];
 
   beforeAll(async () => {
-    await testDb.delete(users);
-    await testDb.delete(squadJoins);
+    await cleanUp("users");
+    await cleanUp("squad_joins");
   });
 
   afterEach(async () => {
     vi.clearAllMocks();
-    await testDb.delete(users);
-    await testDb.delete(squadJoins);
+    await cleanUp("users");
+    await cleanUp("squad_joins");
   });
 
   it("Should add admin to conversation", async () => {
-    await testDb.insert(users).values({
+    await insertDb("users", {
       id: constants.birthdayPerson,
-      teamId: constants.teamId,
+      team_id: constants.teamId,
       birthday: dayjs.utc().toDate(),
     });
 
-    await testDb.insert(users).values(
+    await insertDb(
+      "users",
       constants.otherUserIds.map((userId) => ({
         id: userId,
-        teamId: constants.teamId,
+        team_id: constants.teamId,
         birthday: dayjs.utc().toDate(),
       })),
     );
@@ -232,16 +233,17 @@ describe("Add admin to the squad", () => {
   });
 
   it("Should add deputy admin to conversation if it's admins birthday", async () => {
-    await testDb.insert(users).values({
+    await insertDb("users", {
       id: constants.adminUserId,
-      teamId: constants.teamId,
+      team_id: constants.teamId,
       birthday: dayjs.utc().toDate(),
     });
 
-    await testDb.insert(users).values(
+    await insertDb(
+      "users",
       constants.otherUserIds.map((userId) => ({
         id: userId,
-        teamId: constants.teamId,
+        team_id: constants.teamId,
         birthday: dayjs.utc().toDate(),
       })),
     );

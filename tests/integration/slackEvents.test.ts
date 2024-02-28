@@ -1,10 +1,10 @@
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
-import { users } from "@/db/schema";
 import { timeout } from "@/testUtils/constants";
 import { deleteLastDm } from "@/testUtils/integration/deleteLastDm";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
-import { testDb, waitForUsers } from "@/testUtils/testDb";
+import { waitForUsers } from "@/testUtils/testDb";
+import { cleanUp, insertDb } from "@/testUtils/unit/dbOperations";
 import type { SlackCallbackRequest } from "@/types/SlackEventRequest";
 
 const constants = vi.hoisted(() => ({
@@ -27,12 +27,12 @@ export const sendSlackEvent = async (body: SlackCallbackRequest) =>
 
 describe("Slack events", () => {
   beforeAll(async () => {
-    await testDb.delete(users);
+    await cleanUp("users");
   });
 
   afterEach(async () => {
     await deleteLastDm();
-    await testDb.delete(users);
+    await cleanUp("users");
   });
 
   it(
@@ -107,9 +107,9 @@ describe("Slack events", () => {
     async () => {
       const eventId = "E3_" + Date.now().toString();
 
-      await testDb.insert(users).values({
+      await insertDb("users", {
         id: constants.userId,
-        teamId: constants.teamId,
+        team_id: constants.teamId,
         birthday: constants.birthday,
       });
 

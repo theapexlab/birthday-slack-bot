@@ -4,13 +4,12 @@ import dayjs from "dayjs";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { getBirthdaysBetween } from "@/db/queries/getBirthdays";
-import { users } from "@/db/schema";
 import {
   generateIceBreakerTestUsers,
   usersInWindow,
   usersOutsideWindow,
 } from "@/testUtils/generateIceBreakerTestUsers";
-import { testDb } from "@/testUtils/testDb";
+import { cleanUp } from "@/testUtils/unit/dbOperations";
 import { testCases } from "@/testUtils/unit/iceBreakerTestCases";
 
 const constants = vi.hoisted(() => ({
@@ -19,11 +18,11 @@ const constants = vi.hoisted(() => ({
 
 describe("Get birthdays between", () => {
   beforeAll(async () => {
-    await testDb.delete(users);
+    await cleanUp("users");
   });
 
   afterEach(async () => {
-    await testDb.delete(users);
+    await cleanUp("users");
   });
 
   testCases.forEach(async (testCase) => {

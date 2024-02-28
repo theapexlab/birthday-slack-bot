@@ -60,8 +60,15 @@ export function MyStack({ stack }: StackContext) {
     ...getDbFunctionProps(),
   });
 
+  const dbOperationsFn = new Function(stack, "DbOperations", {
+    handler: "packages/functions/lambdas/dbOperations.handler",
+    timeout: "60 seconds",
+    ...getDbFunctionProps(),
+  });
+
   stack.addOutputs({
     ApiEndpoint: api.url,
     MigrationFunctionName: migrationFn.functionName,
+    DbOperationsFunctionName: dbOperationsFn.functionName,
   });
 }

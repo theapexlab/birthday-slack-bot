@@ -1,6 +1,5 @@
 import { afterEach, beforeAll, describe, expect, it, test, vi } from "vitest";
 
-import { testItems, users } from "@/db/schema";
 import { constructAskBirthdayMessageReplacement } from "@/services/slack/constructAskBirthdayMessage";
 import { constructBirthdayConfirmedMessage } from "@/services/slack/constructBirthdayConfirmedMessage";
 import { constructConfirmBirthdayMessage } from "@/services/slack/constructConfirmBirthdayMessage";
@@ -11,7 +10,8 @@ import { sendCronEvent } from "@/testUtils/integration/sendCronEvent";
 import { sendSlackInteraction } from "@/testUtils/integration/sendSlackInteraction";
 import { app } from "@/testUtils/integration/testSlackApp";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
-import { testDb, waitForTestItems, waitForUsers } from "@/testUtils/testDb";
+import { waitForTestItems, waitForUsers } from "@/testUtils/testDb";
+import { cleanUp, insertDb } from "@/testUtils/unit/dbOperations";
 import {
   birthdayConfirmActionId,
   birthdayIncorrectActionId,
@@ -19,22 +19,22 @@ import {
 
 const constants = vi.hoisted(() => ({
   responseUrl: `${import.meta.env.VITE_API_URL}/slack/test-payload`,
-  birthday: "2000-02-15",
+  birthday: "2000-02-15T00:00:00.000Z",
   teamId: "T1",
   userId: "U1",
 }));
 
 describe("Slack interactions", () => {
   beforeAll(async () => {
-    await testDb.delete(users);
-    await testDb.delete(testItems);
+    await cleanUp("users");
+    await cleanUp("test_items");
   });
 
   afterEach(async () => {
     await deleteLastDm();
 
-    await testDb.delete(users);
-    await testDb.delete(testItems);
+    await cleanUp("users");
+    await cleanUp("test_items");
   });
 
   it(
@@ -181,7 +181,7 @@ describe("Slack interactions", () => {
       expect(item, "User doesn't match expected user").toEqual({
         id: constants.userId,
         teamId: constants.teamId,
-        birthday: new Date(constants.birthday),
+        birthday: new Date(constants.birthday).toISOString(),
       });
     },
     timeout,
@@ -246,10 +246,10 @@ describe("Slack interactions", () => {
     async () => {
       const eventId = "AB5_" + Date.now().toString();
 
-      await testDb.insert(users).values([
+      await insertDb("users", [
         {
           id: import.meta.env.VITE_SLACK_USER_ID,
-          teamId: import.meta.env.VITE_SLACK_TEAM_ID,
+          team_id: import.meta.env.VITE_SLACK_TEAM_ID,
           birthday: null,
         },
       ]);

@@ -2,14 +2,13 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
-import { squadJoins, users } from "@/db/schema";
 import { welcomeMessageEventType } from "@/services/slack/constructBirthdaySquadWelcomeMessage";
 import { timeout } from "@/testUtils/constants";
 import { deleteLastDm } from "@/testUtils/integration/deleteLastDm";
 import { sendScheduleEvent } from "@/testUtils/integration/sendScheduleEvent";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
 import { seedSquadJoins } from "@/testUtils/seedSquadJoins";
-import { testDb } from "@/testUtils/testDb";
+import { cleanUp, insertDb } from "@/testUtils/unit/dbOperations";
 
 dayjs.extend(utc);
 
@@ -27,29 +26,30 @@ const constants = vi.hoisted(() => ({
 
 describe("CreateBirthdaySquad", () => {
   beforeAll(async () => {
-    await testDb.delete(users);
-    await testDb.delete(squadJoins);
+    await cleanUp("users");
+    await cleanUp("squad_joins");
   });
 
   afterEach(async () => {
     await deleteLastDm();
-    await testDb.delete(users);
-    await testDb.delete(squadJoins);
+    await cleanUp("users");
+    await cleanUp("squad_joins");
   });
 
   it(
     "Should publish sendWelcomeMessage to the conversation with the joined members",
     async () => {
-      await testDb.insert(users).values({
+      await insertDb("users", {
         id: constants.birthdayPerson,
-        teamId: constants.teamId,
+        team_id: constants.teamId,
         birthday: dayjs.utc().toDate(),
       });
 
-      await testDb.insert(users).values(
+      await insertDb(
+        "users",
         constants.otherUserIds.map((userId) => ({
           id: userId,
-          teamId: constants.teamId,
+          team_id: constants.teamId,
           birthday: dayjs.utc().toDate(),
         })),
       );
@@ -85,16 +85,17 @@ describe("CreateBirthdaySquad", () => {
   it(
     "Should publish sendWelcomeMessage to the conversation with the random users",
     async () => {
-      await testDb.insert(users).values({
+      await insertDb("users", {
         id: constants.birthdayPerson,
-        teamId: constants.teamId,
+        team_id: constants.teamId,
         birthday: dayjs.utc().toDate(),
       });
 
-      await testDb.insert(users).values(
+      await insertDb(
+        "users",
         constants.otherUserIds.map((userId) => ({
           id: userId,
-          teamId: constants.teamId,
+          team_id: constants.teamId,
           birthday: dayjs.utc().toDate(),
         })),
       );

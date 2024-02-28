@@ -1,0 +1,280 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "id": "f2598857-1440-4766-9e9b-8f156b1ec3f7",
+  "prevId": "d701125e-c530-4f60-8612-83b472ca3b95",
+  "tables": {
+    "ice_breaker_threads": {
+      "name": "ice_breaker_threads",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "team_id": {
+          "name": "team_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "thread_id": {
+          "name": "thread_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ice_breaker_threads_user_id_team_id_users_id_team_id_fk": {
+          "name": "ice_breaker_threads_user_id_team_id_users_id_team_id_fk",
+          "tableFrom": "ice_breaker_threads",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id",
+            "team_id"
+          ],
+          "columnsTo": [
+            "id",
+            "team_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "present_ideas": {
+      "name": "present_ideas",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "team_id": {
+          "name": "team_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "birthday_person": {
+          "name": "birthday_person",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "present_idea": {
+          "name": "present_idea",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "present_ideas_user_id_team_id_users_id_team_id_fk": {
+          "name": "present_ideas_user_id_team_id_users_id_team_id_fk",
+          "tableFrom": "present_ideas",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id",
+            "team_id"
+          ],
+          "columnsTo": [
+            "id",
+            "team_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "present_ideas_birthday_person_team_id_users_id_team_id_fk": {
+          "name": "present_ideas_birthday_person_team_id_users_id_team_id_fk",
+          "tableFrom": "present_ideas",
+          "tableTo": "users",
+          "columnsFrom": [
+            "birthday_person",
+            "team_id"
+          ],
+          "columnsTo": [
+            "id",
+            "team_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "squad_joins": {
+      "name": "squad_joins",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "team_id": {
+          "name": "team_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "birthday_person": {
+          "name": "birthday_person",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "squad_joins_user_id_team_id_users_id_team_id_fk": {
+          "name": "squad_joins_user_id_team_id_users_id_team_id_fk",
+          "tableFrom": "squad_joins",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id",
+            "team_id"
+          ],
+          "columnsTo": [
+            "id",
+            "team_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "squad_joins_birthday_person_team_id_users_id_team_id_fk": {
+          "name": "squad_joins_birthday_person_team_id_users_id_team_id_fk",
+          "tableFrom": "squad_joins",
+          "tableTo": "users",
+          "columnsFrom": [
+            "birthday_person",
+            "team_id"
+          ],
+          "columnsTo": [
+            "id",
+            "team_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "squad_joins_birthday_person_user_id_team_id_unique": {
+          "name": "squad_joins_birthday_person_user_id_team_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "birthday_person",
+            "user_id",
+            "team_id"
+          ]
+        }
+      }
+    },
+    "test_items": {
+      "name": "test_items",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "test_id": {
+          "name": "test_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "payload": {
+          "name": "payload",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "team_id": {
+          "name": "team_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "birthday": {
+          "name": "birthday",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "users_id_team_id": {
+          "name": "users_id_team_id",
+          "columns": [
+            "id",
+            "team_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {
+      "\"iceBreakerThreads\"": "\"ice_breaker_threads\"",
+      "\"presentIdeas\"": "\"present_ideas\"",
+      "\"squadJoins\"": "\"squad_joins\"",
+      "\"testItems\"": "\"test_items\""
+    },
+    "columns": {}
+  }
+}

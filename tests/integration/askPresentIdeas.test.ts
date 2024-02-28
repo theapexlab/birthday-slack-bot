@@ -2,7 +2,6 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
-import { presentIdeas, testItems, users } from "@/db/schema";
 import { getScheduleWithTimeOffset } from "@/functions/utils/scheduler/getScheduleExtension";
 import { constructLoadingMessage } from "@/services/slack/constructLoadingMessage";
 import { constructPresentIdeaSavedMessage } from "@/services/slack/constructPresentIdeaSavedMessage";
@@ -15,11 +14,8 @@ import {
 import { sendCronEvent } from "@/testUtils/integration/sendCronEvent";
 import { sendSlackInteraction } from "@/testUtils/integration/sendSlackInteraction";
 import { waitForDm } from "@/testUtils/integration/waitForDm";
-import {
-  testDb,
-  waitForPresentIdeas,
-  waitForTestItems,
-} from "@/testUtils/testDb";
+import { waitForPresentIdeas, waitForTestItems } from "@/testUtils/testDb";
+import { cleanUp, insertDb } from "@/testUtils/unit/dbOperations";
 import {
   presentIdeasInputActionId,
   presentIdeasSaveButtonActionId,
@@ -36,31 +32,31 @@ const constants = vi.hoisted(() => ({
 
 describe("Present ideas", () => {
   beforeAll(async () => {
-    await testDb.delete(users);
-    await testDb.delete(testItems);
-    await testDb.delete(presentIdeas);
+    await cleanUp("users");
+    await cleanUp("test_items");
+    await cleanUp("present_ideas");
   });
 
   afterEach(async () => {
     await deleteLastDm();
 
-    await testDb.delete(users);
-    await testDb.delete(testItems);
-    await testDb.delete(presentIdeas);
+    await cleanUp("users");
+    await cleanUp("test_items");
+    await cleanUp("present_ideas");
   });
 
   it(
     "Should ask for present ideas in DM",
     async () => {
-      await testDb.insert(users).values([
+      await insertDb("users", [
         {
           id: import.meta.env.VITE_SLACK_USER_ID,
-          teamId: import.meta.env.VITE_SLACK_TEAM_ID,
+          team_id: import.meta.env.VITE_SLACK_TEAM_ID,
           birthday: new Date(),
         },
         {
           id: constants.birthdayPerson,
-          teamId: import.meta.env.VITE_SLACK_TEAM_ID,
+          team_id: import.meta.env.VITE_SLACK_TEAM_ID,
           birthday: dayjs.utc().add(2, "month").toDate(),
         },
       ]);
@@ -96,15 +92,15 @@ describe("Present ideas", () => {
   it(
     "Should save present idea to db",
     async () => {
-      await testDb.insert(users).values([
+      await insertDb("users", [
         {
           id: constants.userId,
-          teamId: constants.teamId,
+          team_id: constants.teamId,
           birthday: new Date(),
         },
         {
           id: constants.birthdayPerson,
-          teamId: constants.teamId,
+          team_id: constants.teamId,
           birthday: new Date(),
         },
       ]);
@@ -182,15 +178,15 @@ describe("Present ideas", () => {
   it(
     "Should create schedule for PresentAndSquadJoin event",
     async () => {
-      await testDb.insert(users).values([
+      await insertDb("users", [
         {
           id: import.meta.env.VITE_SLACK_USER_ID,
-          teamId: import.meta.env.VITE_SLACK_TEAM_ID,
+          team_id: import.meta.env.VITE_SLACK_TEAM_ID,
           birthday: new Date(),
         },
         {
           id: constants.birthdayPerson,
-          teamId: import.meta.env.VITE_SLACK_TEAM_ID,
+          team_id: import.meta.env.VITE_SLACK_TEAM_ID,
           birthday: dayjs.utc().add(2, "month").toDate(),
         },
       ]);
@@ -228,15 +224,15 @@ describe("Present ideas", () => {
   it(
     "Should create schedule for PresentAndSquadJoin event",
     async () => {
-      await testDb.insert(users).values([
+      await insertDb("users", [
         {
           id: import.meta.env.VITE_SLACK_USER_ID,
-          teamId: import.meta.env.VITE_SLACK_TEAM_ID,
+          team_id: import.meta.env.VITE_SLACK_TEAM_ID,
           birthday: new Date(),
         },
         {
           id: constants.birthdayPerson,
-          teamId: import.meta.env.VITE_SLACK_TEAM_ID,
+          team_id: import.meta.env.VITE_SLACK_TEAM_ID,
           birthday: dayjs.utc().add(2, "month").toDate(),
         },
       ]);
@@ -272,15 +268,15 @@ describe("Present ideas", () => {
   it(
     "Should create schedule for birthdayCleanup event",
     async () => {
-      await testDb.insert(users).values([
+      await insertDb("users", [
         {
           id: import.meta.env.VITE_SLACK_USER_ID,
-          teamId: import.meta.env.VITE_SLACK_TEAM_ID,
+          team_id: import.meta.env.VITE_SLACK_TEAM_ID,
           birthday: new Date(),
         },
         {
           id: constants.birthdayPerson,
-          teamId: import.meta.env.VITE_SLACK_TEAM_ID,
+          team_id: import.meta.env.VITE_SLACK_TEAM_ID,
           birthday: dayjs.utc().add(2, "month").toDate(),
         },
       ]);
