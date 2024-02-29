@@ -1,9 +1,9 @@
 import { use } from "sst/constructs";
+import { StorageStack } from "stacks/StorageStack";
 
 import { ConfigStack } from "../ConfigStack";
 import { EventBusStack } from "../EventBusStack";
 import { SchedulerStack } from "../SchedulerStack";
-import { StorageStack } from "../StorageStack";
 
 const getBaseFunctionProps = () => {
   const secrets = use(ConfigStack);
@@ -16,16 +16,18 @@ const getBaseFunctionProps = () => {
 
 export const getDbFunctionProps = () => {
   const baseFunctionProps = getBaseFunctionProps();
-  const { db } = use(StorageStack);
-
-  const bind = [...baseFunctionProps.bind, ...(db ? [db] : [])];
+  const { outputs, vpc } = use(StorageStack);
 
   return {
     ...baseFunctionProps,
+    vpc,
     environment: {
       DB_URL: process.env.DB_URL || "",
+      DB_HOST: outputs?.rdsHost || "",
+      DB_NAME: outputs?.rdsName || "",
+      DB_USER: outputs?.rdsUser || "",
+      DB_PASSWORD: outputs?.rdsPassword || "",
     },
-    bind,
   };
 };
 

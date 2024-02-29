@@ -7,7 +7,6 @@ dotenv.config({
 });
 
 const [, migrate] = dbFactory({
-  type: "node",
   connectionString: process.env.DB_URL ?? "",
 });
 
